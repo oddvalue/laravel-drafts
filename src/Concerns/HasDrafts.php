@@ -128,6 +128,7 @@ trait HasDrafts
             $draft->save();
             $this->fireModelEvent('savedAsDraft');
             $this->fireModelEvent('saved');
+
             return $draft;
         });
     }

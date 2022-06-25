@@ -3,9 +3,9 @@
 namespace Oddvalue\LaravelDrafts;
 
 use Illuminate\Database\Schema\Blueprint;
+use Oddvalue\LaravelDrafts\Commands\LaravelDraftsCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Oddvalue\LaravelDrafts\Commands\LaravelDraftsCommand;
 
 class LaravelDraftsServiceProvider extends PackageServiceProvider
 {

@@ -2,7 +2,6 @@
 
 namespace Oddvalue\LaravelDrafts\Scopes;
 
-use Carbon\Carbon;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
