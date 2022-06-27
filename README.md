@@ -1,3 +1,7 @@
+<p style="background: darkgoldenrod; padding: 1em; font-weight: bold; font-size: large">
+    This package is a work in progress. It is not yet ready for production use.
+</p>
+
 # A simple, drop-in drafts/revisions system for Laravel models
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
@@ -28,10 +32,7 @@ return [
 
 ## Usage
 
-```php
-$laravelDrafts = new Oddvalue\LaravelDrafts();
-echo $laravelDrafts->echoPhrase('Hello, Oddvalue!');
-```
+TODO
 
 ## Testing
 
