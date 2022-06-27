@@ -28,9 +28,10 @@ trait Publishes
      */
     public function initializePublishes(): void
     {
-        if (! isset($this->casts[$this->getPublishedAtColumn()])) {
-            $this->casts[$this->getPublishedAtColumn()] = 'datetime';
-        }
+        $this->mergeCasts([
+            $this->getPublishedAtColumn() => 'datetime',
+            $this->getIsPublishedColumn() => 'boolean',
+        ]);
     }
 
     /**
@@ -45,9 +46,10 @@ trait Publishes
         }
 
         $this->{$this->getPublishedAtColumn()} = now();
+        $this->{$this->getIsPublishedColumn()} = true;
 
-        static::saved(function ($model) {
-            $model->fireModelEvent('published');
+        static::saved(function () {
+            $this->fireModelEvent('published');
         });
 
         return $this;
@@ -60,7 +62,7 @@ trait Publishes
      */
     public function isPublished(): bool
     {
-        return $this->{$this->getPublishedAtColumn()}?->isPast() ?? false;
+        return $this->{$this->getIsPublishedColumn()} ?? false;
     }
 
     /**
@@ -116,5 +118,27 @@ trait Publishes
     public function getQualifiedPublishedAtColumn(): string
     {
         return $this->qualifyColumn($this->getPublishedAtColumn());
+    }
+
+    /**
+     * Get the name of the "published at" column.
+     *
+     * @return string
+     */
+    public function getIsPublishedColumn(): string
+    {
+        return defined(static::class.'::IS_PUBLISHED')
+            ? static::IS_PUBLISHED
+            : config('drafts.column_names.is_published', 'is_published');
+    }
+
+    /**
+     * Get the fully qualified "published at" column.
+     *
+     * @return string
+     */
+    public function getQualifiedIsPublishedColumn(): string
+    {
+        return $this->qualifyColumn($this->getIsPublishedColumn());
     }
 }

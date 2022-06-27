@@ -19,23 +19,34 @@ trait HasDrafts
     |--------------------------------------------------------------------------
     */
 
+    public function initializeHasDrafts()
+    {
+        $this->mergeCasts([
+            $this->getIsCurrentColumn() => 'boolean',
+            $this->getPublishedAtColumn() => 'datetime',
+        ]);
+    }
+
     public static function bootHasDrafts(): void
     {
         static::creating(function ($model) {
-            $model->is_current = true;
+            $model->{$model->getIsCurrentColumn()} = true;
             $model->setPublisher();
+            $model->generateUuid();
+            if ($model->{$model->getIsPublishedColumn()} !== false) {
+                $model->publish();
+            }
         });
 
         static::saving(function ($model) {
-            $model->generateUuid();
         });
 
         static::updating(function ($model) {
             $model->newRevision();
         });
 
-        static::updated(function ($model) {
-            $model->setCurrent();
+        static::publishing(function ($model) {
+            $model->setLive();
         });
 
         static::deleted(function ($model) {
@@ -57,14 +68,28 @@ trait HasDrafts
 
     protected function newRevision(): void
     {
-        $this->withoutEvents(function () {
-            $revision = $this->fresh()->replicate();
+        if (config('drafts.revisions.keep') === false) {
+            return;
+        }
+
+        if ($this->fireModelEvent('creatingRevision') === false) {
+            return;
+        }
+
+        $revision = $this->fresh()->replicate();
+
+        static::saved(function () use ($revision) {
             $revision->created_at = $this->created_at;
             $revision->updated_at = $this->updated_at;
+            $revision->is_current = false;
+            $revision->is_published = false;
 
-            $revision->save(['timestamps' => false]); // Preserve the existing updated_at
+            $revision->saveQuietly(['timestamps' => false]); // Preserve the existing updated_at
 
             $this->setPublisher();
+            $this->pruneRevisions();
+
+            $this->fireModelEvent('createdRevision');
         });
     }
 
@@ -78,68 +103,91 @@ trait HasDrafts
 
     public function setCurrent(): void
     {
-        $this->withoutEvents(function () {
-            // This has to be updated manually as with update() there's no way to prevent timestamp updates,
-            // which breaks the history of the updated_at timestamp
-            $oldCurrent = $this->revisions()->where('is_current', true)->first();
-            if ($oldCurrent) {
-                $oldCurrent->is_current = false;
-                $oldCurrent->timestamps = false;
-                $oldCurrent->save();
-            }
+        $oldCurrent = $this->revisions()->withDrafts()->current()->notSelf()->first();
 
-            $this->setAttribute('is_current', true)->save();
+        static::saved(function () use ($oldCurrent) {
+            if ($oldCurrent) {
+                $oldCurrent->{$this->getIsCurrentColumn()} = false;
+                $oldCurrent->timestamps = false;
+                $oldCurrent->saveQuietly();
+            }
         });
+
+        $this->{$this->getIsCurrentColumn()} = true;
     }
 
     public function setLive(): void
     {
-        $this->withoutEvents(function () {
-            // This has to be updated manually as with update() there's no way to prevent timestamp updates,
-            // which breaks the history of the updated_at timestamp
-            $oldPublished = $this->revisions()->whereNotNull('published_at')->first();
-            if ($oldPublished) {
-                $oldPublished->published_at = null;
-                $oldPublished->timestamps = false;
-                $oldPublished->save();
-            }
+        $oldPublished = $this->revisions()->published()->first();
 
-            $this->published_at = now();
-            $this->setCurrent();
+        static::saved(function () use ($oldPublished) {
+            if ($oldPublished) {
+                $oldPublished->{$this->getIsPublishedColumn()} = false;
+                $oldPublished->timestamps = false;
+                $oldPublished->saveQuietly();
+            }
         });
+        $publishedDate = $oldPublished?->{$this->getPublishedAtColumn()} ?? now();
+
+        $this->{$this->getPublishedAtColumn()} = $publishedDate;
+        $this->{$this->getIsPublishedColumn()} = true;
+        $this->setCurrent();
     }
 
     public function saveAsDraft()
     {
-        $this->withoutEvents(function () {
-            if ($this->fireModelEvent('savingAsDraft') === false || $this->fireModelEvent('saving') === false) {
-                return $this;
-            }
+        if ($this->fireModelEvent('savingAsDraft') === false || $this->fireModelEvent('saving') === false) {
+            return $this;
+        }
 
-            if ($this->is_current) {
-                $this->is_current = false;
-                $this->save();
-            } else {
-                $this->revisions()->where('is_current', true)->update(['is_current' => false]);
-            }
-            $draft = $this->replicate();
-            $draft->published_at = null;
-            $draft->is_current = true;
-            $draft->save();
+        $draft = $this->replicate();
+        $draft->{$this->getPublishedAtColumn()} = null;
+        $draft->{$this->getIsPublishedColumn()} = false;
+        $draft->setCurrent();
+
+        if ($draft->save()) {
             $this->fireModelEvent('savedAsDraft');
-            $this->fireModelEvent('saved');
+            $this->pruneRevisions();
+        }
 
-            return $draft;
+        return $draft;
+    }
+
+    public static function createDraft(...$attributes): self
+    {
+        return tap(static::make(...$attributes), function ($instance) {
+            $instance->{$instance->getIsPublishedColumn()} = false;
+
+            return $instance->save();
         });
     }
 
     public function setPublisher(): static
     {
-        if (! $this->getPublisherColumns()['id']) {
+        if ($this->{$this->getPublisherColumns()['id']} === null && LaravelDrafts::getCurrentUser()) {
             $this->publisher()->associate(LaravelDrafts::getCurrentUser());
         }
 
         return $this;
+    }
+
+    public function pruneRevisions()
+    {
+        $this->withoutEvents(function () {
+            $revisionsToKeep = $this->revisions()
+                ->orderByDesc('updated_at')
+                ->onlyDrafts()
+                ->withoutCurrent()
+                ->take(config('drafts.revisions.keep'))
+                ->pluck('id')
+                ->merge($this->revisions()->current()->pluck('id'))
+                ->merge($this->revisions()->published()->pluck('id'));
+
+            $this->revisions()
+                ->withDrafts()
+                ->whereNotIn('id', $revisionsToKeep)
+                ->delete();
+        });
     }
 
     /**
@@ -170,6 +218,13 @@ trait HasDrafts
         return array_map([$this, 'qualifyColumn'], $this->getPublisherColumns());
     }
 
+    public function getIsCurrentColumn(): string
+    {
+        return defined(static::class.'::CURRENT_COLUMN')
+            ? static::CURRENT_COLUMN
+            : config('drafts.column_names.is_current', 'is_current');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | RELATIONS
@@ -178,7 +233,8 @@ trait HasDrafts
 
     public function revisions(): HasMany
     {
-        return $this->hasMany(static::class, 'uuid', 'uuid')->where('id', '<>', $this->id)->orderBy('updated_at');
+        return $this->hasMany(static::class, 'uuid', 'uuid')
+            ->withDrafts();
     }
 
     public function publisher(): MorphTo
@@ -194,27 +250,22 @@ trait HasDrafts
 
     public function scopeCurrent(Builder $query): void
     {
-        $query->where('is_current', true);
+        $query->withDrafts()->where($this->getIsCurrentColumn(), true);
     }
 
-    public function scopePublished(Builder $query): void
+    public function scopeWithoutCurrent(Builder $query): void
     {
-        $query->where('published_at', true);
-    }
-
-    public function scopeWithUnpublished(Builder $query): void
-    {
-        $query->withoutGlobalScope('published');
-    }
-
-    public function scopeOnlyUnpublished(Builder $query)
-    {
-        $query->withoutGlobalScope('published')->where('published_at', false);
+        $query->where($this->getIsCurrentColumn(), false);
     }
 
     public function scopeUuid(Builder $query, $uuid)
     {
         $query->where('uuid', $uuid);
+    }
+
+    public function scopeNotSelf(Builder $query)
+    {
+        $query->where('id', '!=', $this->id);
     }
 
     /*

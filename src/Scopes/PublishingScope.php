@@ -13,11 +13,11 @@ class PublishingScope implements Scope
      *
      * @var string[]
      */
-    protected $extensions = ['Publish', 'Unpublish', 'Schedule', 'WithDrafts', 'WithoutDrafts', 'OnlyDrafts'];
+    protected $extensions = [/*'Publish', 'Unpublish', 'Schedule', */'Published', 'WithDrafts', 'WithoutDrafts', 'OnlyDrafts'];
 
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->whereDate($model->getQualifiedPublishedAtColumn(), '<=', now());
+        $builder->where($model->getQualifiedIsPublishedColumn(), 1);
     }
 
     public function extend(Builder $builder): void
@@ -27,37 +27,44 @@ class PublishingScope implements Scope
         }
     }
 
-    protected function getPublishedAtColumn(Builder $builder): string
+    protected function getIsPublishedColumn(Builder $builder): string
     {
         if (count((array) $builder->getQuery()->joins) > 0) {
-            return $builder->getModel()->getQualifiedPublishedAtColumn();
+            return $builder->getModel()->getQualifiedIsPublishedColumn();
         }
 
-        return $builder->getModel()->getPublishedAtColumn();
+        return $builder->getModel()->getIsPublishedColumn();
     }
+//
+//    protected function addPublish(Builder $builder): void
+//    {
+//        $builder->macro('publish', function (Builder $builder) {
+//            $builder->withDrafts();
+//
+//            return $builder->update([$builder->getModel()->getIsPublishedColumn() => now()]);
+//        });
+//    }
+//
+//    protected function addUnpublish(Builder $builder): void
+//    {
+//        $builder->macro('unpublish', function (Builder $builder) {
+//            return $builder->update([$builder->getModel()->getIsPublishedColumn() => null]);
+//        });
+//    }
+//
+//    protected function addSchedule(Builder $builder): void
+//    {
+//        $builder->macro('schedule', function (Builder $builder, string | \DateTimeInterface $date) {
+//            $builder->withDrafts();
+//
+//            return $builder->update([$builder->getModel()->getIsPublishedColumn() => $date]);
+//        });
+//    }
 
-    protected function addPublish(Builder $builder): void
+    protected function addPublished(Builder $builder): void
     {
-        $builder->macro('publish', function (Builder $builder) {
-            $builder->withDrafts();
-
-            return $builder->update([$builder->getModel()->getPublishedAtColumn() => now()]);
-        });
-    }
-
-    protected function addUnpublish(Builder $builder): void
-    {
-        $builder->macro('unpublish', function (Builder $builder) {
-            return $builder->update([$builder->getModel()->getPublishedAtColumn() => null]);
-        });
-    }
-
-    protected function addSchedule(Builder $builder): void
-    {
-        $builder->macro('schedule', function (Builder $builder, string | \DateTimeInterface $date) {
-            $builder->withDrafts();
-
-            return $builder->update([$builder->getModel()->getPublishedAtColumn() => $date]);
+        $builder->macro('published', function (Builder $builder) {
+            return $builder->withoutDrafts();
         });
     }
 
@@ -78,7 +85,7 @@ class PublishingScope implements Scope
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
-                ->whereDate($model->getQualifiedPublishedAtColumn(), '<=', now());
+                ->where($model->getQualifiedIsPublishedColumn(), 1);
 
             return $builder;
         });
@@ -89,9 +96,8 @@ class PublishingScope implements Scope
         $builder->macro('onlyDrafts', function (Builder $builder) {
             $model = $builder->getModel();
 
-            $builder->withoutGlobalScope($this)->whereNull(
-                $model->getQualifiedPublishedAtColumn()
-            );
+            $builder->withoutGlobalScope($this)
+                ->where($model->getQualifiedIsPublishedColumn(), 0);
 
             return $builder;
         });

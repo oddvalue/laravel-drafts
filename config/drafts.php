@@ -7,9 +7,14 @@ return [
 
     'column_names' => [
         /*
-         * Boolean column that marks a row as the main, current version of the data.
+         * Boolean column that marks a row as the current version of the data for editing.
          */
         'is_current' => 'is_current',
+
+        /*
+         * Boolean column that marks a row as live and displayable to the public.
+         */
+        'is_published' => 'is_published',
 
         /*
          * Timestamp column that stores the date and time when the row was published.

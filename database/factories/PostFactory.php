@@ -23,6 +23,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
         return $this->state(function () {
             return [
                 'published_at' => null,
+                'is_published' => false,
             ];
         });
     }
@@ -32,6 +33,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
         return $this->state(function () {
             return [
                 'published_at' => now()->toDateTimeString(),
+                'is_published' => true,
             ];
         });
     }
