@@ -27,6 +27,7 @@ it('fires savingAsDraft event', function () {
     $post = Post::factory()->create(['title' => 'Published']);
     Post::savingAsDraft(function ($post) {
         $post->title = 'Draft';
+
         return false;
     });
     expect($post->title)->toBe('Published')
