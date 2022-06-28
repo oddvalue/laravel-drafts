@@ -1,6 +1,7 @@
 <?php
 
 use Oddvalue\LaravelDrafts\Tests\Post;
+use function Spatie\PestPluginTestTime\testTime;
 
 it('can draft model', function () {
     Post::createDraft(['title' => 'Hello World']);
@@ -11,7 +12,7 @@ it('can draft model', function () {
 });
 
 it('can publish a draft model', function () {
-    $this->freezeTime();
+    testTime()->freeze();
     Post::create(['title' => 'Hello World']);
     Post::withDrafts()->first()->save();
     $this->assertDatabaseHas('posts', [
@@ -20,7 +21,7 @@ it('can publish a draft model', function () {
 });
 
 it('can publish a model', function () {
-    $this->freezeTime();
+    testTime()->freeze();
     Post::make(['title' => 'Hello World'])->save();
     $this->assertDatabaseHas('posts', [
         'title' => 'Hello World',

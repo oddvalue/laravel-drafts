@@ -1,10 +1,11 @@
 <?php
 
 use Oddvalue\LaravelDrafts\Tests\Post;
+use function Spatie\PestPluginTestTime\testTime;
 
 it('creates drafts', function () {
     config(['drafts.revisions.keep' => 2]);
-    $this->freezeTime();
+    testTime()->freeze();
     $post = Post::factory()->published()->create(['title' => 'Foo']);
     $newPost = Post::factory()->make(['title' => 'Bar']);
     $this->assertDatabaseCount('posts', 1);
