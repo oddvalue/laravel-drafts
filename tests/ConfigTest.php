@@ -32,11 +32,11 @@ it('can override columns via class constants', function () {
         public const PUBLISHER_TYPE = 'publisher_override_type';
     };
 
-    expect($post->getPublishedAtColumn())->toBe('published_at_override')
-        ->and($post->getQualifiedPublishedAtColumn())->toBe($post->qualifyColumn('published_at_override'))
-        ->and($post->getIsPublishedColumn())->toBe('is_published_override')
-        ->and($post->getIsCurrentColumn())->toBe('is_current_override')
-        ->and($post->getUuidColumn())->toBe('uuid_override')
-        ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type'])
-        ->and($post->getQualifiedPublisherColumns())->toBe($post->qualifyColumns(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']));
+    expect($post->getPublishedAtColumn())->toBe($post::PUBLISHED_AT)
+        ->and($post->getQualifiedPublishedAtColumn())->toBe($post->qualifyColumn($post::PUBLISHED_AT))
+        ->and($post->getIsPublishedColumn())->toBe($post::IS_PUBLISHED)
+        ->and($post->getIsCurrentColumn())->toBe($post::IS_CURRENT)
+        ->and($post->getUuidColumn())->toBe($post::UUID)
+        ->and($post->getPublisherColumns())->toBe(['id' => $post::PUBLISHER_ID, 'type' => $post::PUBLISHER_TYPE])
+        ->and($post->getQualifiedPublisherColumns())->toBe($post->qualifyColumns(['id' => $post::PUBLISHER_ID, 'type' => $post::PUBLISHER_TYPE]));
 });

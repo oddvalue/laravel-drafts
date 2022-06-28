@@ -4,7 +4,8 @@
     "keywords": [
         "oddvalue",
         "laravel",
-        "laravel-drafts"
+        "drafts",
+        "revisions"
     ],
     "homepage": "https://github.com/oddvalue/laravel-drafts",
     "license": "MIT",

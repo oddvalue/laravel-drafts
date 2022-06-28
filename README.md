@@ -1,7 +1,3 @@
-<p style="background: darkgoldenrod; padding: 1em; font-weight: bold; font-size: large">
-    This package is a work in progress. It is not yet ready for production use.
-</p>
-
 # A simple, drop-in drafts/revisions system for Laravel models
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
@@ -185,9 +181,41 @@ This will create a draft record and the original record will be left unchanged.
 | 1 | Foo   | 9188eb5b-cc42-47e9-aec3-d396666b4e80 | 2000-01-01 00:00:00 | 1            | 0          | 2000-01-01 00:00:00 | 2000-01-01 00:00:00 |
 | 2 | Bar   | 9188eb5b-cc42-47e9-aec3-d396666b4e80 | 2000-01-02 00:00:00 | 0            | 1          | 2000-01-02 00:00:00 | 2000-01-02 00:00:00 |
 
+### Interacting with records
+
+#### Published revision
+
+The published revision if the live version of the record and will be the one that is displayed to the public. The default behavior is to only show the published revision.
+
+```php
+# Get all published posts
+$posts = Post::all();
+```
+
+#### Current Revision
+
+Every record will have a current revision. That is the most recent revision and what you would want to display in your admin. 
+
+To fetch the current revision you can call the `current` scope.
+
+```php
+$posts = Post::current()->get();
+```
+
+You can implement a preview mode for your frontend by calling the `current` scope when fetching records.
+
 #### Revisions
 
-Every time a record is updated a new row/revision will be inserted. The default number of revisions kept is 10, this can be updated in the published config file.  
+Every time a record is updated a new row/revision will be inserted. The default number of revisions kept is 10, this can be updated in the published config file.
+
+You can fetch the revisions of a record by calling the `revisions` method.
+
+```php
+$post = Post::find(1);
+$revisions = $post->revisions();
+```
+
+Deleting a record will also delete all of its revisions. Soft deleting records will soft delete the revisions and restoring records will restore the revisions.
 
 ## Testing
 
