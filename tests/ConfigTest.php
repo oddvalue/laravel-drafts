@@ -33,8 +33,10 @@ it('can override columns via class constants', function () {
     };
 
     expect($post->getPublishedAtColumn())->toBe('published_at_override')
+        ->and($post->getQualifiedPublishedAtColumn())->toBe($post->qualifyColumn('published_at_override'))
         ->and($post->getIsPublishedColumn())->toBe('is_published_override')
         ->and($post->getIsCurrentColumn())->toBe('is_current_override')
         ->and($post->getUuidColumn())->toBe('uuid_override')
-        ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']);
+        ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type'])
+        ->and($post->getQualifiedPublisherColumns())->toBe($post->qualifyColumns(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']));
 });

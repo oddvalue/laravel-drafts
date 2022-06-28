@@ -65,3 +65,34 @@ it('can publish drafts', function () {
 
     expect($post->fresh()->title)->toBe($draft->title);
 });
+
+it('returns false when calling update on a record that has not been persisted', function () {
+    $post = Post::factory()->make();
+    expect($post->updateAsDraft(['title' => 'Foo']))->toBeFalse();
+});
+
+it('gets draft record from loaded revisions relation', function () {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $draft = Post::factory()->make(['title' => 'Bar']);
+    $post->fresh()->updateAsDraft(['title' => $draft->title]);
+
+    $post->load('revisions');
+    expect($post->draft->title)->toBe($draft->title);
+});
+
+it('gets draft record from loaded draft relation', function () {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $draft = Post::factory()->make(['title' => 'Bar']);
+    $post->fresh()->updateAsDraft(['title' => $draft->title]);
+
+    $post->load('drafts');
+    expect($post->draft->title)->toBe($draft->title);
+});
+
+it('gets draft record when no relations loaded', function () {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $draft = Post::factory()->make(['title' => 'Bar']);
+    $post->fresh()->updateAsDraft(['title' => $draft->title]);
+
+    expect($post->draft->title)->toBe($draft->title);
+});
