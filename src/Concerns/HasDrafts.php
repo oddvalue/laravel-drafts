@@ -136,6 +136,7 @@ trait HasDrafts
             $this->{$this->getPublishedAtColumn()} ??= now();
             $this->{$this->getIsPublishedColumn()} = true;
             $this->setCurrent();
+
             return;
         }
 
@@ -340,6 +341,7 @@ trait HasDrafts
         if ($this->relationLoaded('revisions')) {
             return $this->revisions->firstWhere($this->getIsCurrentColumn(), true);
         }
+
         return $this->drafts()->first();
     }
 

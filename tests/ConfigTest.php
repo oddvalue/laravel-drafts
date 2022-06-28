@@ -23,13 +23,13 @@ it('can override columns via config', function () {
 });
 
 it('can override columns via class constants', function () {
-    $post = new class extends Post {
-        const PUBLISHED_AT = 'published_at_override';
-        const IS_PUBLISHED = 'is_published_override';
-        const IS_CURRENT = 'is_current_override';
-        const UUID = 'uuid_override';
-        const PUBLISHER_ID = 'publisher_override_id';
-        const PUBLISHER_TYPE = 'publisher_override_type';
+    $post = new class () extends Post {
+        public const PUBLISHED_AT = 'published_at_override';
+        public const IS_PUBLISHED = 'is_published_override';
+        public const IS_CURRENT = 'is_current_override';
+        public const UUID = 'uuid_override';
+        public const PUBLISHER_ID = 'publisher_override_id';
+        public const PUBLISHER_TYPE = 'publisher_override_type';
     };
 
     expect($post->getPublishedAtColumn())->toBe('published_at_override')
