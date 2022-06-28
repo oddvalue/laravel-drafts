@@ -61,6 +61,14 @@ class TestCase extends Orchestra
             $table->timestamps();
         });
 
+        $app['db']->connection()->getSchemaBuilder()->create('soft_deleting_posts', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title');
+            $table->drafts();
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
         $this->testUser = User::create(['email' => 'test@user.com']);
         Auth::login($this->testUser);
     }

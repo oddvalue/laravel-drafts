@@ -5,6 +5,7 @@ namespace Oddvalue\LaravelDrafts\Concerns;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
@@ -12,6 +13,8 @@ use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 trait HasDrafts
 {
     use Publishes;
+
+    protected bool $shouldCreateRevision = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -38,15 +41,14 @@ trait HasDrafts
             }
         });
 
-        static::saving(function ($model) {
-        });
-
         static::updating(function ($model) {
             $model->newRevision();
         });
 
         static::publishing(function ($model) {
             $model->setLive();
+
+            return false;
         });
 
         static::deleted(function ($model) {
@@ -68,11 +70,16 @@ trait HasDrafts
 
     protected function newRevision(): void
     {
-        if (config('drafts.revisions.keep') === false) {
-            return;
-        }
-
-        if ($this->fireModelEvent('creatingRevision') === false) {
+        if (
+            // Revisions are disabled
+            config('drafts.revisions.keep') < 1
+            // This model has been set not to create a revision
+            || $this->shouldCreateRevision() === false
+            // The record is being soft deleted or restored
+            || $this->isDirty('deleted_at')
+            // A listener of the creatingRevision event returned false
+            || $this->fireModelEvent('creatingRevision') === false
+        ) {
             return;
         }
 
@@ -93,17 +100,22 @@ trait HasDrafts
         });
     }
 
+    public function shouldCreateRevision(): bool
+    {
+        return $this->shouldCreateRevision;
+    }
+
     public function generateUuid(): void
     {
-        if ($this->uuid) {
+        if ($this->{$this->getUuidColumn()}) {
             return;
         }
-        $this->uuid = Str::uuid();
+        $this->{$this->getUuidColumn()} = Str::uuid();
     }
 
     public function setCurrent(): void
     {
-        $oldCurrent = $this->revisions()->withDrafts()->current()->notSelf()->first();
+        $oldCurrent = $this->revisions()->withDrafts()->current()->withoutSelf()->first();
 
         static::saved(function () use ($oldCurrent) {
             if ($oldCurrent) {
@@ -118,20 +130,35 @@ trait HasDrafts
 
     public function setLive(): void
     {
-        $oldPublished = $this->revisions()->published()->first();
+        $currentPublished = $this->revisions()->withoutSelf()->published()->first();
 
-        static::saved(function () use ($oldPublished) {
-            if ($oldPublished) {
-                $oldPublished->{$this->getIsPublishedColumn()} = false;
-                $oldPublished->timestamps = false;
-                $oldPublished->saveQuietly();
-            }
+        if (! $currentPublished) {
+            $this->{$this->getPublishedAtColumn()} ??= now();
+            $this->{$this->getIsPublishedColumn()} = true;
+            $this->setCurrent();
+            return;
+        }
+
+        $oldAttributes = $currentPublished?->getAttributes() ?? [];
+        $newAttributes = $this->getAttributes();
+        Arr::forget($oldAttributes, $this->getKeyName());
+        Arr::forget($newAttributes, $this->getKeyName());
+
+        $currentPublished->forceFill($newAttributes);
+        $this->forceFill($oldAttributes);
+
+        static::saved(function () use ($currentPublished) {
+            $currentPublished->{$this->getIsPublishedColumn()} = true;
+            $currentPublished->{$this->getPublishedAtColumn()} ??= now();
+            $currentPublished->setCurrent();
+            $currentPublished->saveQuietly();
         });
-        $publishedDate = $oldPublished?->{$this->getPublishedAtColumn()} ?? now();
 
-        $this->{$this->getPublishedAtColumn()} = $publishedDate;
-        $this->{$this->getIsPublishedColumn()} = true;
-        $this->setCurrent();
+        $this->{$this->getIsPublishedColumn()} = false;
+        $this->{$this->getPublishedAtColumn()} = null;
+        $this->{$this->getIsCurrentColumn()} = false;
+        $this->timestamps = false;
+        $this->shouldCreateRevision = false;
     }
 
     public function saveAsDraft(): bool
@@ -146,11 +173,22 @@ trait HasDrafts
         $draft->setCurrent();
 
         if ($saved = $draft->save()) {
-            $this->fireModelEvent('savedAsDraft');
+            $this->fireModelEvent('drafted');
             $this->pruneRevisions();
         }
 
         return $saved;
+    }
+
+    /**
+     * Register a "softDeleted" model event callback with the dispatcher.
+     *
+     * @param string|\Closure $callback
+     * @return void
+     */
+    public static function savedAsDraft(string|\Closure $callback): void
+    {
+        static::registerModelEvent('drafted', $callback);
     }
 
     public function updateAsDraft(array $attributes = [], array $options = []): bool
@@ -229,9 +267,16 @@ trait HasDrafts
 
     public function getIsCurrentColumn(): string
     {
-        return defined(static::class.'::CURRENT_COLUMN')
-            ? static::CURRENT_COLUMN
+        return defined(static::class.'::IS_CURRENT')
+            ? static::IS_CURRENT
             : config('drafts.column_names.is_current', 'is_current');
+    }
+
+    public function getUuidColumn(): string
+    {
+        return defined(static::class.'::UUID')
+            ? static::UUID
+            : config('drafts.column_names.uuid', 'uuid');
     }
 
     /*
@@ -242,7 +287,7 @@ trait HasDrafts
 
     public function revisions(): HasMany
     {
-        return $this->hasMany(static::class, 'uuid', 'uuid')->withDrafts();
+        return $this->hasMany(static::class, $this->getUuidColumn(), $this->getUuidColumn())->withDrafts();
     }
 
     public function drafts()
@@ -276,7 +321,7 @@ trait HasDrafts
         $query->where('uuid', $uuid);
     }
 
-    public function scopeNotSelf(Builder $query)
+    public function scopeWithoutSelf(Builder $query)
     {
         $query->where('id', '!=', $this->id);
     }
@@ -289,6 +334,12 @@ trait HasDrafts
 
     public function getDraftAttribute()
     {
+        if ($this->relationLoaded('drafts')) {
+            return $this->drafts->first();
+        }
+        if ($this->relationLoaded('revisions')) {
+            return $this->revisions->firstWhere($this->getIsCurrentColumn(), true);
+        }
         return $this->drafts()->first();
     }
 

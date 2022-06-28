@@ -66,17 +66,6 @@ trait Publishes
     }
 
     /**
-     * Register a "softDeleted" model event callback with the dispatcher.
-     *
-     * @param string|\Closure $callback
-     * @return void
-     */
-    public static function savedAsDraft(string|\Closure $callback): void
-    {
-        static::registerModelEvent('drafted', $callback);
-    }
-
-    /**
      * Register a "published" model event callback with the dispatcher.
      *
      * @param string|\Closure $callback

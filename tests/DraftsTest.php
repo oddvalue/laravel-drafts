@@ -30,50 +30,6 @@ it('creates drafts', function () {
     ]);
 });
 
-it('keeps the correct number of revisions', function () {
-    config(['drafts.revisions.keep' => 3]);
-    $revsExist = function (...$titles) {
-        $this->assertDatabaseCount('posts', count($titles));
-        foreach ($titles as $title) {
-            $this->assertDatabaseHas('posts', [
-                'title' => $title,
-            ]);
-        }
-    };
-
-    config(['drafts.revisions.keep' => 3]);
-    $post = Post::factory()->create(['title' => 'Rev 1']);
-    $revsExist('Rev 1');
-    $this->travel(1)->minutes();
-
-    $post->title = 'Rev 2';
-    $post->save();
-    $revsExist('Rev 1', 'Rev 2');
-    $this->travel(1)->minutes();
-
-    $post->fresh()->update(['title' => 'Rev 3']);
-    $revsExist('Rev 1', 'Rev 2', 'Rev 3');
-    $this->travel(1)->minutes();
-
-    $post->fresh()->update(['title' => 'Rev 4']);
-    $revsExist('Rev 1', 'Rev 2', 'Rev 3', 'Rev 4');
-    $this->travel(1)->minutes();
-
-    $post->fresh()->update(['title' => 'Rev 5']);
-    $revsExist('Rev 2', 'Rev 3', 'Rev 4', 'Rev 5');
-    $this->assertDatabaseMissing('posts', [
-        'title' => 'Rev 1',
-    ]);
-});
-
-it('can disable revisions', function () {
-    config(['drafts.revisions.keep' => 0]);
-    $post = Post::factory()->create(['title' => 'Foo']);
-    $this->assertDatabaseCount('posts', 1);
-    $post->update(['title' => 'Bar']);
-    $this->assertDatabaseCount('posts', 1);
-});
-
 it('can create drafts when revisions are disabled', function () {
     config(['drafts.revisions.keep' => 0]);
     $post = Post::factory()->create(['title' => 'Foo']);
@@ -91,5 +47,21 @@ it('can fetch the draft of a published record', function () {
     $draft = Post::factory()->make();
     $post->fresh()->updateAsDraft(['title' => $draft->title]);
 
+    expect($post->fresh()->title)->toBe($post->title);
     expect($post->draft->title)->toBe($draft->title);
+});
+
+it('can publish drafts', function () {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $draft = Post::factory()->make(['title' => 'Bar']);
+
+    testTime()->addMinute();
+
+    $post->fresh()->updateAsDraft(['title' => $draft->title]);
+
+    testTime()->addMinute();
+
+    $post->draft->publish()->save();
+
+    expect($post->fresh()->title)->toBe($draft->title);
 });
