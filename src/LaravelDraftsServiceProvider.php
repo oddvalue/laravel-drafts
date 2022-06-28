@@ -29,7 +29,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             string $publisherMorphName = null,
         ) {
             /** @var Blueprint $this */
-            $this->uuid($uuid ?? config('drafts.column_names.uuid', 'uuid'))->index();
+            $this->uuid($uuid ?? config('drafts.column_names.uuid', 'uuid'))->index()->nullable();
             $this->timestamp($publishedAt ?? config('drafts.column_names.published_at', 'published_at'))->nullable();
             $this->boolean($isPublished ?? config('drafts.column_names.is_published', 'is_published'))->default(false);
             $this->boolean($isCurrent ?? config('drafts.column_names.is_current', 'is_current'))->default(false);
