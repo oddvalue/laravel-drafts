@@ -20,8 +20,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ->name('laravel-drafts')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_laravel-drafts_table')
-            ->hasCommand(LaravelDraftsCommand::class);
+            ->hasMigration('create_laravel-drafts_table');
 
         Blueprint::macro('drafts', function () {
             /** @var Blueprint $this */
