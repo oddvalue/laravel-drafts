@@ -63,8 +63,8 @@ class PublishingScope implements Scope
 
     protected function addPublished(Builder $builder): void
     {
-        $builder->macro('published', function (Builder $builder) {
-            return $builder->withoutDrafts();
+        $builder->macro('published', function (Builder $builder, $withoutDrafts = true) {
+            return $builder->withDrafts(! $withoutDrafts);
         });
     }
 

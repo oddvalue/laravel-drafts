@@ -246,6 +246,11 @@ trait HasDrafts
             ->withDrafts();
     }
 
+    public function draft()
+    {
+        return $this->revisions()->current()->onlyDrafts();
+    }
+
     public function publisher(): MorphTo
     {
         return $this->morphTo(config('drafts.column_names.publisher_morph_name'));
