@@ -27,15 +27,6 @@ class PublishingScope implements Scope
         }
     }
 
-    protected function getIsPublishedColumn(Builder $builder): string
-    {
-        if (count((array) $builder->getQuery()->joins) > 0) {
-            return $builder->getModel()->getQualifiedIsPublishedColumn();
-        }
-
-        return $builder->getModel()->getIsPublishedColumn();
-    }
-//
 //    protected function addPublish(Builder $builder): void
 //    {
 //        $builder->macro('publish', function (Builder $builder) {
