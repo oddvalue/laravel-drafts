@@ -153,6 +153,15 @@ trait HasDrafts
         return $draft;
     }
 
+    public function updateAsDraft(array $attributes = [], array $options = []): bool
+    {
+        if (! $this->exists) {
+            return false;
+        }
+
+        return $this->fill($attributes)->saveAsDraft($options);
+    }
+
     public static function createDraft(...$attributes): self
     {
         return tap(static::make(...$attributes), function ($instance) {
