@@ -47,8 +47,6 @@ trait HasDrafts
 
         static::publishing(function ($model) {
             $model->setLive();
-
-            return false;
         });
 
         static::deleted(function ($model) {
@@ -165,7 +163,7 @@ trait HasDrafts
     public function saveAsDraft(): bool
     {
         if ($this->fireModelEvent('savingAsDraft') === false || $this->fireModelEvent('saving') === false) {
-            return $this;
+            return false;
         }
 
         $draft = $this->replicate();
@@ -181,12 +179,11 @@ trait HasDrafts
         return $saved;
     }
 
-    /**
-     * Register a "softDeleted" model event callback with the dispatcher.
-     *
-     * @param string|\Closure $callback
-     * @return void
-     */
+    public static function savingAsDraft(string|\Closure $callback): void
+    {
+        static::registerModelEvent('savingAsDraft', $callback);
+    }
+
     public static function savedAsDraft(string|\Closure $callback): void
     {
         static::registerModelEvent('drafted', $callback);
@@ -315,11 +312,6 @@ trait HasDrafts
     public function scopeWithoutCurrent(Builder $query): void
     {
         $query->where($this->getIsCurrentColumn(), false);
-    }
-
-    public function scopeUuid(Builder $query, $uuid)
-    {
-        $query->where('uuid', $uuid);
     }
 
     public function scopeWithoutSelf(Builder $query)

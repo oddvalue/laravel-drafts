@@ -21,21 +21,38 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigration('create_laravel-drafts_table');
 
-        Blueprint::macro('drafts', function () {
+        Blueprint::macro('drafts', function (
+            string $uuid = null,
+            string $publishedAt = null,
+            string $isPublished = null,
+            string $isCurrent = null,
+            string $publisherMorphName = null,
+        ) {
             /** @var Blueprint $this */
-            $this->uuid(config('drafts.column_names.uuid', 'uuid'))->index();
-            $this->timestamp(config('drafts.column_names.published_at', 'published_at'))->nullable();
-            $this->boolean(config('drafts.column_names.is_published', 'is_published'))->default(false);
-            $this->boolean(config('drafts.column_names.is_current', 'is_current'))->default(false);
-            $this->nullableMorphs(config('drafts.column_names.publisher_morph_name', 'publisher_morph_name'));
+            $this->uuid($uuid ?? config('drafts.column_names.uuid', 'uuid'))->index();
+            $this->timestamp($publishedAt ?? config('drafts.column_names.published_at', 'published_at'))->nullable();
+            $this->boolean($isPublished ?? config('drafts.column_names.is_published', 'is_published'))->default(false);
+            $this->boolean($isCurrent ?? config('drafts.column_names.is_current', 'is_current'))->default(false);
+            $this->nullableMorphs($publisherMorphName ?? config('drafts.column_names.publisher_morph_name', 'publisher_morph_name'));
         });
 
-        Blueprint::macro('dropDrafts', function () {
+        Blueprint::macro('dropDrafts', function (
+            string $uuid = null,
+            string $publishedAt = null,
+            string $isPublished = null,
+            string $isCurrent = null,
+            string $publisherMorphName = null,
+        ) {
             /** @var Blueprint $this */
-            $this->dropColumn(config('drafts.column_names.uuid', 'uuid'));
-            $this->dropColumn(config('drafts.column_names.published_at', 'published_at'));
-            $this->dropColumn(config('drafts.column_names.is_current', 'is_current'));
-            $this->dropMorphs(config('drafts.column_names.publisher_morph_name', 'publisher_morph_name'));
+            $publisherMorphName ??= config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+            $this->dropColumn([
+                $uuid ?? config('drafts.column_names.uuid', 'uuid'),
+                $publishedAt ?? config('drafts.column_names.published_at', 'published_at'),
+                $isPublished ?? config('drafts.column_names.is_published', 'is_published'),
+                $isCurrent ?? config('drafts.column_names.is_current', 'is_current'),
+                $publisherMorphName.'_id',
+                $publisherMorphName.'_type',
+            ]);
         });
 
         $this->app->singleton('laravel-drafts', function () {

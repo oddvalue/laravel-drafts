@@ -45,7 +45,7 @@ trait Publishes
             return $this;
         }
 
-        $this->{$this->getPublishedAtColumn()} = now();
+        $this->{$this->getPublishedAtColumn()} ??= now();
         $this->{$this->getIsPublishedColumn()} = true;
 
         static::saved(function () {

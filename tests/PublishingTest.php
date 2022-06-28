@@ -45,3 +45,11 @@ it('generates a uuid', function () {
     $post = Post::factory()->create();
     $this->assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $post->uuid);
 });
+
+it('has a method to check published status', function () {
+    $post = Post::factory()->create();
+    expect($post->isPublished())->toBeTrue();
+
+    $post = Post::factory()->draft()->create();
+    expect($post->isPublished())->toBeFalse();
+});
