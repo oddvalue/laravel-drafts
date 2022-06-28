@@ -6,6 +6,7 @@ it('fires publishing event', function () {
     $post = Post::factory()->draft()->create(['title' => 'Draft']);
     Post::publishing(function ($post) {
         $post->title = 'Published';
+
         return false;
     });
     expect($post->title)->toBe('Draft')
