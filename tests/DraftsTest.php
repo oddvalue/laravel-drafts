@@ -85,3 +85,11 @@ it('can create drafts when revisions are disabled', function () {
     $post->saveAsDraft();
     $this->assertDatabaseCount('posts', 2);
 });
+
+it('can fetch the draft of a published record', function () {
+    $post = Post::factory()->create();
+    $draft = Post::factory()->make();
+    $post->fresh()->updateAsDraft(['title' => $draft->title]);
+
+    expect($post->draft->title)->toBe($draft->title);
+});

@@ -134,7 +134,7 @@ trait HasDrafts
         $this->setCurrent();
     }
 
-    public function saveAsDraft()
+    public function saveAsDraft(): bool
     {
         if ($this->fireModelEvent('savingAsDraft') === false || $this->fireModelEvent('saving') === false) {
             return $this;
@@ -145,12 +145,12 @@ trait HasDrafts
         $draft->{$this->getIsPublishedColumn()} = false;
         $draft->setCurrent();
 
-        if ($draft->save()) {
+        if ($saved = $draft->save()) {
             $this->fireModelEvent('savedAsDraft');
             $this->pruneRevisions();
         }
 
-        return $draft;
+        return $saved;
     }
 
     public function updateAsDraft(array $attributes = [], array $options = []): bool
@@ -242,11 +242,10 @@ trait HasDrafts
 
     public function revisions(): HasMany
     {
-        return $this->hasMany(static::class, 'uuid', 'uuid')
-            ->withDrafts();
+        return $this->hasMany(static::class, 'uuid', 'uuid')->withDrafts();
     }
 
-    public function draft()
+    public function drafts()
     {
         return $this->revisions()->current()->onlyDrafts();
     }
@@ -287,6 +286,11 @@ trait HasDrafts
     | ACCESSORS
     |--------------------------------------------------------------------------
     */
+
+    public function getDraftAttribute()
+    {
+        return $this->drafts()->first();
+    }
 
     /*
     |--------------------------------------------------------------------------
