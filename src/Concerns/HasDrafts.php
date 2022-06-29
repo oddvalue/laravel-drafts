@@ -16,6 +16,8 @@ trait HasDrafts
 
     protected bool $shouldCreateRevision = true;
 
+    protected bool $shouldSaveAsDraft = false;
+
     /*
     |--------------------------------------------------------------------------
     | FUNCTIONS
@@ -160,7 +162,7 @@ trait HasDrafts
         $this->shouldCreateRevision = false;
     }
 
-    public function saveAsDraft(): bool
+    public function saveAsDraft(array $options = []): bool
     {
         if ($this->fireModelEvent('savingAsDraft') === false || $this->fireModelEvent('saving') === false) {
             return false;
@@ -169,14 +171,39 @@ trait HasDrafts
         $draft = $this->replicate();
         $draft->{$this->getPublishedAtColumn()} = null;
         $draft->{$this->getIsPublishedColumn()} = false;
+        $draft->shouldSaveAsDraft = false;
         $draft->setCurrent();
 
-        if ($saved = $draft->save()) {
+        if ($saved = $draft->save($options)) {
             $this->fireModelEvent('drafted');
             $this->pruneRevisions();
         }
 
         return $saved;
+    }
+
+    public function asDraft(): static
+    {
+        $this->shouldSaveAsDraft = true;
+        return $this;
+    }
+
+    public function shouldDraft(): bool
+    {
+        return $this->shouldSaveAsDraft;
+    }
+
+    public function save(array $options = []): bool
+    {
+        if (
+            $this->exists
+            && (
+                data_get($options, 'draft') || $this->shouldDraft()
+            )
+        ) {
+            return $this->saveAsDraft($options);
+        }
+        return parent::save($options);
     }
 
     public static function savingAsDraft(string|\Closure $callback): void

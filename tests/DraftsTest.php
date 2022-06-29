@@ -96,3 +96,14 @@ it('gets draft record when no relations loaded', function () {
 
     expect($post->draft->title)->toBe($draft->title);
 });
+
+it('can create draft using default save method', function () {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $draft = Post::factory()->make(['title' => 'Bar']);
+    $post->refresh();
+    $post->title = $draft->title;
+    $post->asDraft()->save();
+
+    expect($post->fresh()->title)->toBe('Foo');
+    expect($post->draft->title)->toBe($draft->title);
+});
