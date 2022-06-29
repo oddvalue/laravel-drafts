@@ -185,6 +185,7 @@ trait HasDrafts
     public function asDraft(): static
     {
         $this->shouldSaveAsDraft = true;
+
         return $this;
     }
 
@@ -203,6 +204,7 @@ trait HasDrafts
         ) {
             return $this->saveAsDraft($options);
         }
+
         return parent::save($options);
     }
 
