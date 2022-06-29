@@ -32,11 +32,19 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             string $publisherMorphName = null,
         ) {
             /** @var Blueprint $this */
-            $this->uuid($uuid ?? config('drafts.column_names.uuid', 'uuid'))->index()->nullable();
-            $this->timestamp($publishedAt ?? config('drafts.column_names.published_at', 'published_at'))->nullable();
-            $this->boolean($isPublished ?? config('drafts.column_names.is_published', 'is_published'))->default(false);
-            $this->boolean($isCurrent ?? config('drafts.column_names.is_current', 'is_current'))->default(false);
-            $this->nullableMorphs($publisherMorphName ?? config('drafts.column_names.publisher_morph_name', 'publisher_morph_name'));
+            $uuid ??= config('drafts.column_names.uuid', 'uuid');
+            $publishedAt ??= config('drafts.column_names.published_at', 'published_at');
+            $isPublished ??= config('drafts.column_names.is_published', 'is_published');
+            $isCurrent ??= config('drafts.column_names.is_current', 'is_current');
+            $publisherMorphName ??= config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+
+            $this->uuid($uuid)->nullable();
+            $this->timestamp($publishedAt)->nullable();
+            $this->boolean($isPublished)->default(false);
+            $this->boolean($isCurrent)->default(false);
+            $this->nullableMorphs($publisherMorphName);
+
+            $this->index([$uuid, $isPublished, $isCurrent]);
         });
 
         Blueprint::macro('dropDrafts', function (
