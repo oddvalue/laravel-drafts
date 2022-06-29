@@ -1,3 +1,5 @@
+![](https://banners.beyondco.de/Laravel%20Drafts.png?theme=dark&packageManager=composer+require&packageName=oddvalue%2Flaravel-drafts&pattern=architect&style=style_1&description=A+simple%2C+drop-in+drafts%2Frevisions+system+for+Laravel+models&md=1&showWatermark=1&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg "Laravel Drafts")
+
 # A simple, drop-in drafts/revisions system for Laravel models
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
