@@ -13,7 +13,7 @@
 * [Usage](#usage)
   + [Preparing your models](#preparing-your-models)
     - [Add the trait](#add-the-trait)
-    - [Revisions](#revisions)
+    - [Relations](#relations)
     - [Database](#database)
   + [The API](#the-api)
     - [Creating a new record](#creating-a-new-record)
