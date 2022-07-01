@@ -61,6 +61,29 @@ class TestCase extends Orchestra
             $table->timestamps();
         });
 
+        $app['db']->connection()->getSchemaBuilder()->create('post_sections', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('content');
+            $table->foreignIdFor(Post::class)->constrained();
+            $table->timestamps();
+        });
+
+        $app['db']->connection()->getSchemaBuilder()->create('tags', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
+        });
+
+        $app['db']->connection()->getSchemaBuilder()->create('taggables', function (Blueprint $table) {
+            $table->foreignIdFor(Tag::class)->constrained();
+            $table->morphs('taggable');
+        });
+
+        $app['db']->connection()->getSchemaBuilder()->create('post_tag', function (Blueprint $table) {
+            $table->foreignIdFor(Tag::class)->constrained();
+            $table->foreignIdFor(Post::class)->constrained();
+        });
+
         $app['db']->connection()->getSchemaBuilder()->create('soft_deleting_posts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');

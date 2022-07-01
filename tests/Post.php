@@ -4,6 +4,10 @@ namespace Oddvalue\LaravelDrafts\Tests;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 
 class Post extends Model
@@ -12,4 +16,34 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = ['title'];
+
+    protected array $draftableRelations = [];
+
+    /**
+     * @param array $draftableRelations
+     */
+    public function setDraftableRelations(array $draftableRelations): void
+    {
+        $this->draftableRelations = $draftableRelations;
+    }
+
+    public function sections(): HasMany
+    {
+        return $this->hasMany(PostSection::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function morphToTags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function section(): HasOne
+    {
+        return $this->hasOne(PostSection::class);
+    }
 }

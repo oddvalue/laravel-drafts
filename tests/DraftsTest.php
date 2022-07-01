@@ -107,3 +107,19 @@ it('can create draft using default save method', function () {
     expect($post->fresh()->title)->toBe('Foo');
     expect($post->draft->title)->toBe($draft->title);
 });
+
+it('creates drafts without altering the original post', function () {
+    config(['drafts.revisions.keep' => 10]);
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $originalId = $post->id;
+    $post->updateAsDraft(['title' => 'Bar']);
+    $post->updateAsDraft(['title' => 'Baz']);
+    $post->updateAsDraft(['title' => 'Qux']);
+
+    expect(Post::find($originalId)->title)->toBe('Foo')
+        ->and(DB::table('posts')->count())->toBe(4);
+
+    $post->publish()->save();
+
+    expect(Post::find($originalId)->title)->toBe('Qux');
+});

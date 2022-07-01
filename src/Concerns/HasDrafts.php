@@ -3,8 +3,11 @@
 namespace Oddvalue\LaravelDrafts\Concerns;
 
 use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
@@ -130,9 +133,9 @@ trait HasDrafts
 
     public function setLive(): void
     {
-        $currentPublished = $this->revisions()->withoutSelf()->published()->first();
+        $published = $this->revisions()->withoutSelf()->published()->first();
 
-        if (! $currentPublished) {
+        if (! $published) {
             $this->{$this->getPublishedAtColumn()} ??= now();
             $this->{$this->getIsPublishedColumn()} = true;
             $this->setCurrent();
@@ -140,19 +143,39 @@ trait HasDrafts
             return;
         }
 
-        $oldAttributes = $currentPublished?->getAttributes() ?? [];
+        $oldAttributes = $published?->getAttributes() ?? [];
         $newAttributes = $this->getAttributes();
         Arr::forget($oldAttributes, $this->getKeyName());
         Arr::forget($newAttributes, $this->getKeyName());
 
-        $currentPublished->forceFill($newAttributes);
+        $published->forceFill($newAttributes);
         $this->forceFill($oldAttributes);
 
-        static::saved(function () use ($currentPublished) {
-            $currentPublished->{$this->getIsPublishedColumn()} = true;
-            $currentPublished->{$this->getPublishedAtColumn()} ??= now();
-            $currentPublished->setCurrent();
-            $currentPublished->saveQuietly();
+        static::saved(function () use ($published) {
+            $published->{$this->getIsPublishedColumn()} = true;
+            $published->{$this->getPublishedAtColumn()} ??= now();
+            $published->setCurrent();
+            $published->saveQuietly();
+
+            collect($this->getDraftableRelations())->each(function (string $relationName) use ($published) {
+                $relation = $published->{$relationName}();
+                switch (true) {
+                    case $relation instanceof HasOne:
+                        if ($related = $this->{$relationName}) {
+                            $published->{$relationName}()->create($related->replicate()->getAttributes());
+                        }
+                        break;
+                    case $relation instanceof HasMany:
+                        $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
+                            $published->{$relationName}()->create($model->replicate()->getAttributes());
+                        });
+                        break;
+                    case $relation instanceof MorphToMany:
+                    case $relation instanceof BelongsToMany:
+                        $published->{$relationName}()->sync($this->{$relationName}()->pluck('id'));
+                        break;
+                }
+            });
         });
 
         $this->{$this->getIsPublishedColumn()} = false;
@@ -160,6 +183,11 @@ trait HasDrafts
         $this->{$this->getIsCurrentColumn()} = false;
         $this->timestamps = false;
         $this->shouldCreateRevision = false;
+    }
+
+    public function getDraftableRelations(): array
+    {
+        return property_exists($this, 'draftableRelations') ? $this->draftableRelations : [];
     }
 
     public function saveAsDraft(array $options = []): bool

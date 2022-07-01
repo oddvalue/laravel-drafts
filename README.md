@@ -183,6 +183,26 @@ This will create a draft record and the original record will be left unchanged.
 | 1 | Foo   | 9188eb5b-cc42-47e9-aec3-d396666b4e80 | 2000-01-01 00:00:00 | 1            | 0          | 2000-01-01 00:00:00 | 2000-01-01 00:00:00 |
 | 2 | Bar   | 9188eb5b-cc42-47e9-aec3-d396666b4e80 | 2000-01-02 00:00:00 | 0            | 1          | 2000-01-02 00:00:00 | 2000-01-02 00:00:00 |
 
+#### Relations
+
+The package can handle basic relations to other models. When a draft is published `HasOne` and `HasMany` relations will be duplicated to the published model and `BelongsToMany` and `MorphToMany` relations will be synced to the published model. In order for this to happen you first need to set the `$draftableRelations` property on the model.
+
+```php
+protected array $draftableRelations = [
+    'posts',
+    'tags',
+];
+```
+
+Alternatively you may override the `getDraftableRelations` method.
+
+```php
+public function getDraftableRelations()
+{
+    return ['posts', 'tags'];
+}
+```
+
 ### Interacting with records
 
 #### Published revision

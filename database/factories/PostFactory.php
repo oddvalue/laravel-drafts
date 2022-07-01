@@ -15,6 +15,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
     {
         return [
             'title' => $this->faker->sentence,
+            'is_current' => true,
         ];
     }
 
