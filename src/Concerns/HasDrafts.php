@@ -164,15 +164,18 @@ trait HasDrafts
                         if ($related = $this->{$relationName}) {
                             $published->{$relationName}()->create($related->replicate()->getAttributes());
                         }
+
                         break;
                     case $relation instanceof HasMany:
                         $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
                             $published->{$relationName}()->create($model->replicate()->getAttributes());
                         });
+
                         break;
                     case $relation instanceof MorphToMany:
                     case $relation instanceof BelongsToMany:
                         $published->{$relationName}()->sync($this->{$relationName}()->pluck('id'));
+
                         break;
                 }
             });

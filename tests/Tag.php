@@ -10,7 +10,7 @@ class Tag extends \Illuminate\Database\Eloquent\Model
 
     protected $guarded = [];
 
-    function taggables()
+    public function taggables()
     {
         return $this->morphTo('taggable');
     }
