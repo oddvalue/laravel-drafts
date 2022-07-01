@@ -1,11 +1,31 @@
 ![](https://banners.beyondco.de/Laravel%20Drafts.png?theme=dark&packageManager=composer+require&packageName=oddvalue%2Flaravel-drafts&pattern=architect&style=style_1&description=A+simple%2C+drop-in+drafts%2Frevisions+system+for+Laravel+models&md=1&showWatermark=1&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg "Laravel Drafts")
 
+
+
 # A simple, drop-in drafts/revisions system for Laravel models
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/oddvalue/laravel-drafts/run-tests?label=tests)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/oddvalue/laravel-drafts/Check%20&%20fix%20styling?label=code%20style)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
+
+* [Installation](#installation)
+* [Usage](#usage)
+  + [Preparing your models](#preparing-your-models)
+  + [Database](#database)
+  + [The API](#the-api)
+    - [Creating a new record](#creating-a-new-record)
+    - [Relations](#relations)
+  + [Interacting with records](#interacting-with-records)
+    - [Published revision](#published-revision)
+    - [Current Revision](#current-revision)
+    - [Revisions](#revisions)
+* [Testing](#testing)
+* [Changelog](#changelog)
+* [Contributing](#contributing)
+* [Security Vulnerabilities](#security-vulnerabilities)
+* [Credits](#credits)
+* [License](#license)
 
 ## Installation
 
