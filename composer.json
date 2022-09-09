@@ -1,5 +1,5 @@
 {
-    "name": "oddvalue/laravel-drafts",
+    "name": "technologyadvice/laravel-drafts",
     "description": "A simple, drop-in drafts/revisions system for Laravel models",
     "keywords": [
         "oddvalue",
