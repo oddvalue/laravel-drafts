@@ -2,7 +2,7 @@
 
 namespace Oddvalue\LaravelDrafts\Concerns;
 
-use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 use JetBrains\PhpStorm\ArrayShape;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
@@ -136,7 +137,7 @@ trait HasDrafts
         $published = $this->revisions()->withoutSelf()->published()->first();
 
         if (! $published) {
-            $this->{$this->getPublishedAtColumn()} ??= now();
+            $this->{$this->getPublishedAtColumn()} ??= Carbon::now();
             $this->{$this->getIsPublishedColumn()} = true;
             $this->setCurrent();
 
@@ -153,7 +154,7 @@ trait HasDrafts
 
         static::saved(function () use ($published) {
             $published->{$this->getIsPublishedColumn()} = true;
-            $published->{$this->getPublishedAtColumn()} ??= now();
+            $published->{$this->getPublishedAtColumn()} ??= Carbon::now();
             $published->setCurrent();
             $published->saveQuietly();
 
