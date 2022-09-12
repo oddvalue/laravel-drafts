@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts;
+namespace TechnologyAdvice\LaravelDrafts;
 
 use Illuminate\Support\Facades\Auth;
 

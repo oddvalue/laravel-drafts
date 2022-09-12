@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Scopes;
+namespace TechnologyAdvice\LaravelDrafts\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

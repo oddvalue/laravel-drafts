@@ -1,11 +1,11 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Facades;
+namespace TechnologyAdvice\LaravelDrafts\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Oddvalue\LaravelDrafts\LaravelDrafts
+ * @see \TechnologyAdvice\LaravelDrafts\LaravelDrafts
  */
 class LaravelDrafts extends Facade
 {

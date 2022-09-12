@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts;
+namespace TechnologyAdvice\LaravelDrafts;
 
 use Illuminate\Database\Schema\Blueprint;
 use Spatie\LaravelPackageTools\Package;

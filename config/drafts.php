@@ -1,5 +1,5 @@
 <?php
-// config for Oddvalue/LaravelDrafts
+// config for TechnologyAdvice/LaravelDrafts
 return [
     'revisions' => [
         'keep' => 10,

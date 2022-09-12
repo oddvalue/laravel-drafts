@@ -1,6 +1,6 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\Post;
+use TechnologyAdvice\LaravelDrafts\Tests\Post;
 
 use function Spatie\PestPluginTestTime\testTime;
 

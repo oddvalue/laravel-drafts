@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Database\Factories;
+namespace TechnologyAdvice\LaravelDrafts\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Concerns;
+namespace TechnologyAdvice\LaravelDrafts\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use JetBrains\PhpStorm\ArrayShape;
-use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
+use TechnologyAdvice\LaravelDrafts\Facades\LaravelDrafts;
 
 trait HasDrafts
 {

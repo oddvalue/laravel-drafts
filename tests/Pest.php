@@ -1,5 +1,5 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\TestCase;
+use TechnologyAdvice\LaravelDrafts\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

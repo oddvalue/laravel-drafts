@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Tests;
+namespace TechnologyAdvice\LaravelDrafts\Tests;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 

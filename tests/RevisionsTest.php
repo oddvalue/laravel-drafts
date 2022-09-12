@@ -1,7 +1,7 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\Post;
-use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
+use TechnologyAdvice\LaravelDrafts\Tests\Post;
+use TechnologyAdvice\LaravelDrafts\Tests\SoftDeletingPost;
 
 it('keeps the correct number of revisions', function () {
     config(['drafts.revisions.keep' => 3]);

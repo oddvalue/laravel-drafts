@@ -1,8 +1,8 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Database\Factories;
+namespace TechnologyAdvice\LaravelDrafts\Database\Factories;
 
-use Oddvalue\LaravelDrafts\Tests\Tag;
+use TechnologyAdvice\LaravelDrafts\Tests\Tag;
 
 class TagFactory extends \Illuminate\Database\Eloquent\Factories\Factory
 {

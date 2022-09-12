@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Tests;
+namespace TechnologyAdvice\LaravelDrafts\Tests;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
+use TechnologyAdvice\LaravelDrafts\Concerns\HasDrafts;
 
 class Post extends Model
 {

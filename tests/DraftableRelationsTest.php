@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
-use Oddvalue\LaravelDrafts\Tests\Post;
-use Oddvalue\LaravelDrafts\Tests\PostSection;
-use Oddvalue\LaravelDrafts\Tests\Tag;
+use TechnologyAdvice\LaravelDrafts\Tests\Post;
+use TechnologyAdvice\LaravelDrafts\Tests\PostSection;
+use TechnologyAdvice\LaravelDrafts\Tests\Tag;
 
 it('can draft HasMany relations', function () {
     $post = Post::factory()->create([

@@ -1,8 +1,8 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Concerns;
+namespace TechnologyAdvice\LaravelDrafts\Concerns;
 
-use Oddvalue\LaravelDrafts\Scopes\PublishingScope;
+use TechnologyAdvice\LaravelDrafts\Scopes\PublishingScope;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withPublished(bool $withPublished = true)

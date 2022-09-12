@@ -1,8 +1,8 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Database\Factories;
+namespace TechnologyAdvice\LaravelDrafts\Database\Factories;
 
-use Oddvalue\LaravelDrafts\Tests\PostSection;
+use TechnologyAdvice\LaravelDrafts\Tests\PostSection;
 
 class PostSectionFactory extends \Illuminate\Database\Eloquent\Factories\Factory
 {
