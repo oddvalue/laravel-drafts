@@ -5,8 +5,8 @@ namespace TechnologyAdvice\LaravelDrafts\Tests;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
-use TechnologyAdvice\LaravelDrafts\LaravelDraftsServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use TechnologyAdvice\LaravelDrafts\LaravelDraftsServiceProvider;
 
 class TestCase extends Orchestra
 {

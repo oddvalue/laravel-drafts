@@ -1,8 +1,8 @@
 <?php
 
-use TechnologyAdvice\LaravelDrafts\Tests\Post;
-
 use function Spatie\PestPluginTestTime\testTime;
+
+use TechnologyAdvice\LaravelDrafts\Tests\Post;
 
 it('creates drafts', function () {
     config(['drafts.revisions.keep' => 2]);

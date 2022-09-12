@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
 use TechnologyAdvice\LaravelDrafts\Facades\LaravelDrafts;
 
@@ -87,7 +87,9 @@ trait HasDrafts
             return;
         }
 
-        $revision = $this->fresh()->replicate();
+        $revision = $this->fresh()->replicate([
+            'uuid',
+        ]);
 
         static::saved(function () use ($revision) {
             $revision->created_at = $this->created_at;
@@ -200,7 +202,9 @@ trait HasDrafts
             return false;
         }
 
-        $draft = $this->replicate();
+        $draft = $this->replicate([
+            'uuid',
+        ]);
         $draft->{$this->getPublishedAtColumn()} = null;
         $draft->{$this->getIsPublishedColumn()} = false;
         $draft->shouldSaveAsDraft = false;
