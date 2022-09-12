@@ -7,7 +7,7 @@
         "drafts",
         "revisions"
     ],
-    "homepage": "https://github.com/oddvalue/laravel-drafts",
+    "homepage": "https://github.com/technologyadvice/laravel-drafts",
     "license": "MIT",
     "authors": [
         {
@@ -38,13 +38,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Oddvalue\\LaravelDrafts\\": "src",
-            "Oddvalue\\LaravelDrafts\\Database\\Factories\\": "database/factories"
+            "TechnologyAdvice\\LaravelDrafts\\": "src",
+            "TechnologyAdvice\\LaravelDrafts\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Oddvalue\\LaravelDrafts\\Tests\\": "tests"
+            "TechnologyAdvice\\LaravelDrafts\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -63,10 +63,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Oddvalue\\LaravelDrafts\\LaravelDraftsServiceProvider"
+                "TechnologyAdvice\\LaravelDrafts\\LaravelDraftsServiceProvider"
             ],
             "aliases": {
-                "LaravelDrafts": "Oddvalue\\LaravelDrafts\\Facades\\LaravelDrafts"
+                "LaravelDrafts": "TechnologyAdvice\\LaravelDrafts\\Facades\\LaravelDrafts"
             }
         }
     },
