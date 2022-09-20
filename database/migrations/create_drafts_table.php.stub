@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('laravel_drafts_table', function (Blueprint $table) {
+        Schema::create('drafts', function (Blueprint $table) {
             $table->id();
 
             // add fields
