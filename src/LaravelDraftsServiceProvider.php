@@ -18,8 +18,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-drafts')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel-drafts_table');
+            ->hasViews();
     }
 
     public function packageRegistered()
