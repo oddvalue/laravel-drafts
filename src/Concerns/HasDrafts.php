@@ -106,6 +106,33 @@ trait HasDrafts
         });
     }
 
+    private function copyRelationships($model)
+    {
+        collect($this->getDraftableRelations())->each(function (string $relationName) use ($model) {
+            $relation = $model->{$relationName}();
+            switch (true) {
+                case $relation instanceof HasOne:
+                    if ($related = $this->{$relationName}) {
+                        $model->{$relationName}()->create($related->replicate()->getAttributes());
+                    }
+
+                    break;
+                case $relation instanceof HasMany:
+                    $this->{$relationName}()->get()->each(function ($relation) use ($model, $relationName) {
+                        $model->{$relationName}()->create($relation->replicate()->getAttributes());
+                    });
+
+                    break;
+                case $relation instanceof MorphToMany:
+                case $relation instanceof BelongsToMany:
+                    $relationKey = $this->{$relationName}()->getRelatedKeyName();
+                    $model->{$relationName}()->sync($this->{$relationName}()->pluck($relationKey));
+
+                    break;
+            }
+        });
+    }
+
     public function shouldCreateRevision(): bool
     {
         return $this->shouldCreateRevision;
@@ -206,36 +233,41 @@ trait HasDrafts
             'uuid',
         ]);
 
-        collect($this->getDraftableRelations())->each(function (string $relationName) use ($draft) {
-            $relation = $draft->{$relationName}();
-            switch (true) {
-                case $relation instanceof HasOne:
-                    if ($related = $this->{$relationName}) {
-                        $draft->{$relationName}()->create($related->replicate()->getAttributes());
-                    }
-
-                    break;
-                case $relation instanceof HasMany:
-                    $this->{$relationName}()->get()->each(function ($model) use ($draft, $relationName) {
-                        $draft->{$relationName}()->create($model->replicate()->getAttributes());
-                    });
-
-                    break;
-                case $relation instanceof MorphToMany:
-                case $relation instanceof BelongsToMany:
-                    $relationKey = $this->{$relationName}()->getRelatedKeyName();
-                    $draft->{$relationName}()->sync($this->{$relationName}()->pluck($relationKey));
-
-                    break;
-            }
-        });
-
         $draft->{$this->getPublishedAtColumn()} = null;
         $draft->{$this->getIsPublishedColumn()} = false;
         $draft->shouldSaveAsDraft = false;
         $draft->setCurrent();
 
         if ($saved = $draft->save($options)) {
+            $draft->refresh();
+            collect($this->getDraftableRelations())->each(function (string $relationName) use ($draft) {
+                $relation = $draft->{$relationName}();
+                switch (true) {
+                    case $relation instanceof HasOne:
+                        if ($related = $this->{$relationName}) {
+                            $draft->{$relationName}()->create($related->replicate()->getAttributes());
+                        }
+    
+                        break;
+                    case $relation instanceof HasMany:
+                        $this->{$relationName}()->get()->each(function ($model) use ($draft, $relationName) {
+                            $draft->{$relationName}()->create($model->replicate()->getAttributes());
+                        });
+    
+                        break;
+                    case $relation instanceof MorphToMany:
+                    case $relation instanceof BelongsToMany:
+                        $relationKey = $this->{$relationName}()->getRelatedKeyName();
+                        $draft->{$relationName}()->sync($this->{$relationName}()->pluck($relationKey));
+    
+                        break;
+                }
+            });
+
+            if (method_exists($this, 'saveCustomRelations')) {
+                $this->saveCustomRelations($draft);
+            }
+
             $this->fireModelEvent('drafted');
             $this->pruneRevisions();
         }
