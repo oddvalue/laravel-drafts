@@ -179,8 +179,8 @@ trait HasDrafts
 
         $oldAttributes = $published?->getAttributes() ?? [];
         $newAttributes = $this->getAttributes();
-        Arr::forget($oldAttributes, $this->getKeyName());
-        Arr::forget($newAttributes, $this->getKeyName());
+        Arr::forget($oldAttributes, [$this->getKeyName(), 'uuid']);
+        Arr::forget($newAttributes, [$this->getKeyName(), 'uuid']);
 
         $published->forceFill($newAttributes);
         $this->forceFill($oldAttributes);
