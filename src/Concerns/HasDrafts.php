@@ -205,6 +205,31 @@ trait HasDrafts
         $draft = $this->replicate([
             'uuid',
         ]);
+
+        collect($this->getDraftableRelations())->each(function (string $relationName) use ($draft) {
+            $relation = $draft->{$relationName}();
+            switch (true) {
+                case $relation instanceof HasOne:
+                    if ($related = $this->{$relationName}) {
+                        $draft->{$relationName}()->create($related->replicate()->getAttributes());
+                    }
+
+                    break;
+                case $relation instanceof HasMany:
+                    $this->{$relationName}()->get()->each(function ($model) use ($draft, $relationName) {
+                        $draft->{$relationName}()->create($model->replicate()->getAttributes());
+                    });
+
+                    break;
+                case $relation instanceof MorphToMany:
+                case $relation instanceof BelongsToMany:
+                    $relationKey = $this->{$relationName}()->getRelatedKeyName();
+                    $draft->{$relationName}()->sync($this->{$relationName}()->pluck($relationKey));
+
+                    break;
+            }
+        });
+
         $draft->{$this->getPublishedAtColumn()} = null;
         $draft->{$this->getIsPublishedColumn()} = false;
         $draft->shouldSaveAsDraft = false;
