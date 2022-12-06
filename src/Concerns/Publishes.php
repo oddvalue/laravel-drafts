@@ -2,6 +2,7 @@
 
 namespace TechnologyAdvice\LaravelDrafts\Concerns;
 
+use Carbon\Carbon;
 use TechnologyAdvice\LaravelDrafts\Scopes\PublishingScope;
 
 /**
@@ -45,7 +46,7 @@ trait Publishes
             return $this;
         }
 
-        $this->{$this->getPublishedAtColumn()} ??= now();
+        $this->{$this->getPublishedAtColumn()} ??= Carbon::now();
         $this->{$this->getIsPublishedColumn()} = true;
 
         static::saved(function () {
