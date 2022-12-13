@@ -17,9 +17,9 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.0",
         "doctrine/dbal": "^3.3",
-        "illuminate/contracts": "^8.0",
+        "illuminate/contracts": "^9.0",
         "spatie/laravel-package-tools": "^1.9.2"
     },
     "require-dev": {
