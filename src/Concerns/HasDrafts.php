@@ -152,7 +152,7 @@ trait HasDrafts
 
     public function setCurrent(): void
     {
-        $oldCurrent = $this->revisions()->withDrafts()->current()->withoutSelf()->first();
+        $oldCurrent = $this->revisions()->withDrafts()->current()->where('id', '!=', $this->id)->first();
 
         static::saved(function () use ($oldCurrent) {
             if ($oldCurrent) {
@@ -167,8 +167,7 @@ trait HasDrafts
 
     public function setLive(): void
     {
-        $published = $this->revisions()->withoutSelf()->published()->first();
-
+        $published = $this->revisions()->where('id', '!=', $this->id)->published()->first();
         if (! $published) {
             $this->{$this->getPublishedAtColumn()} ??= Carbon::now();
             $this->{$this->getIsPublishedColumn()} = true;
@@ -399,10 +398,11 @@ trait HasDrafts
         $query->where($this->getIsCurrentColumn(), false);
     }
 
-    public function scopeWithoutSelf(Builder $query)
-    {
-        $query->where('id', '!=', $this->id);
-    }
+    /** DOES NOT WORK AS INTENDED. $this is not the model instance but the class so $this->id doesn't exist */
+    // public function scopeWithoutSelf(Builder $query)
+    // {
+    //     $query->where('id', '!=', $this->id);
+    // }
 
     /*
     |--------------------------------------------------------------------------
