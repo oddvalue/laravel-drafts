@@ -307,10 +307,16 @@ trait HasDrafts
                 ->merge($this->revisions()->current()->pluck('id'))
                 ->merge($this->revisions()->published()->pluck('id'));
 
-            $this->revisions()
+            $revisionsToDelete = $this->revisions()
                 ->withDrafts()
-                ->whereNotIn('id', $revisionsToKeep)
-                ->delete();
+                ->whereNotIn('id', $revisionsToKeep);
+
+            if ($this->forceDeleteRevisions) {
+                $revisionsToDelete->forceDelete();
+            }
+            else {
+                $revisionsToDelete->delete();
+            }
         });
     }
 
