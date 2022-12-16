@@ -136,6 +136,34 @@ trait HasDrafts
             $this->saveCustomRelations($model);
         }
     }
+    
+    private function deleteRelationships($model)
+    {
+        collect($this->getDraftableRelations())->each(function (string $relationName) use ($model) {
+            $relation = $model->{$relationName}();
+            switch (true) {
+                case $relation instanceof HasOne:
+                    $this->{$relationName}->forceDelete();
+
+                    break;
+                case $relation instanceof HasMany:
+                    $this->{$relationName}()->get()->each(function ($relation) {
+                        $relation->forceDelete();
+                    });
+
+                    break;
+                case $relation instanceof MorphToMany:
+                case $relation instanceof BelongsToMany:
+                    $model->{$relationName}()->detach();
+
+                    break;
+            }
+        });
+
+        if (method_exists($this, 'saveCustomRelations')) {
+            $this->saveCustomRelations($model);
+        }
+    }
 
     public function shouldCreateRevision(): bool
     {
@@ -311,7 +339,10 @@ trait HasDrafts
                 ->whereNotIn('id', $revisionsToKeep);
 
             if ($this->forceDeleteRevisions) {
-                $revisionsToDelete->forceDelete();
+                $revisionsToDelete->get()->each(function ($revision) {
+                    $this->deleteRelationships($revision);
+                    $revision->forceDelete();
+                });
             }
             else {
                 $revisionsToDelete->delete();
