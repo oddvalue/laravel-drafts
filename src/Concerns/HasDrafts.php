@@ -450,7 +450,7 @@ trait HasDrafts
             return $this->revisions->firstWhere($this->getIsCurrentColumn(), true);
         }
 
-        return $this->drafts()->first();
+        return null;
     }
 
     /*
