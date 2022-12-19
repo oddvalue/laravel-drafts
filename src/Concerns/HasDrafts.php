@@ -160,8 +160,8 @@ trait HasDrafts
             }
         });
 
-        if (method_exists($this, 'saveCustomRelations')) {
-            $this->saveCustomRelations($model);
+        if (method_exists($this, 'deleteCustomRelations')) {
+            $this->deleteCustomRelations($model);
         }
     }
 
