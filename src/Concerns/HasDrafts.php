@@ -304,6 +304,14 @@ trait HasDrafts
         return $this->fill($attributes)->saveAsDraft($options);
     }
 
+    public function makeDraft($params = [])
+    {
+        $this->updateAsDraft($params);
+        return self::whereDraftUuid($this->draft_uuid)
+            ->current()
+            ->first();
+    }
+
     public static function createDraft(...$attributes): self
     {
         return tap(static::make(...$attributes), function ($instance) {
