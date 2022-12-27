@@ -143,11 +143,11 @@ trait HasDrafts
             $relation = $model->{$relationName}();
             switch (true) {
                 case $relation instanceof HasOne:
-                    $this->{$relationName}->forceDelete();
+                    $model->{$relationName}->forceDelete();
 
                     break;
                 case $relation instanceof HasMany:
-                    $this->{$relationName}()->get()->each(function ($relation) {
+                    $model->{$relationName}()->get()->each(function ($relation) {
                         $relation->forceDelete();
                     });
 
