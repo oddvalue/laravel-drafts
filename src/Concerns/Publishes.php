@@ -42,12 +42,12 @@ trait Publishes
      */
     public function publish(): static
     {
+        $this->{$this->getPublishedAtColumn()} ??= Carbon::now();
+        $this->{$this->getIsPublishedColumn()} = true;
+        
         if ($this->fireModelEvent('publishing') === false) {
             return $this;
         }
-
-        $this->{$this->getPublishedAtColumn()} ??= Carbon::now();
-        $this->{$this->getIsPublishedColumn()} = true;
 
         static::saved(function () {
             $this->fireModelEvent('published');
