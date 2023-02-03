@@ -125,7 +125,7 @@ trait HasDrafts
                     break;
                 case $relation instanceof MorphToMany:
                 case $relation instanceof BelongsToMany:
-                    $relationKey = $this->{$relationName}()->getRelatedKeyName();
+                    $relationKey = $this->{$relationName}()->getQualifiedRelatedPivotKeyName();
                     $model->{$relationName}()->sync($this->{$relationName}()->pluck($relationKey));
 
                     break;
