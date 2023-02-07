@@ -17,11 +17,11 @@ class PublishScheduledDrafts extends Command
     {
         $class = $this->argument('model');
 
-        if (! class_exists($class) || !in_array(HasDrafts::class, class_uses_recursive($class), strict: true)) {
+        if (! class_exists($class) || ! in_array(HasDrafts::class, class_uses_recursive($class), strict: true)) {
             throw new InvalidArgumentException("The model `{$class}` either doesn't exist or doesn't use the `HasDrafts` trait.");
         }
 
-        $model = new $class;
+        $model = new $class();
 
         $model::query()
             ->onlyDrafts()
