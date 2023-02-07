@@ -22,6 +22,11 @@ return [
         'published_at' => 'published_at',
 
         /*
+         * Timestamp column that stores the date and time when the row is scheduled for publishing.
+         */
+        'will_publish_at' => 'will_publish_at',
+
+        /*
          * UUID column that stores the unique identifier of the model drafts.
          */
         'uuid' => 'uuid',
