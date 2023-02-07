@@ -3,6 +3,7 @@
 namespace Oddvalue\LaravelDrafts\Concerns;
 
 use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -13,6 +14,11 @@ use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
+/**
+ * @method void Current(Builder $query)
+ * @method void WithoutCurrent(Builder $query)
+ * @method void ExcludeRevision(Builder $query, int | Model $exclude)
+ */
 trait HasDrafts
 {
     use Publishes;
@@ -86,7 +92,7 @@ trait HasDrafts
             return;
         }
 
-        $revision = $this->fresh()->replicate();
+        $revision = $this->fresh()?->replicate();
 
         static::saved(function () use ($revision) {
             $revision->created_at = $this->created_at;
@@ -118,7 +124,7 @@ trait HasDrafts
 
     public function setCurrent(): void
     {
-        $oldCurrent = $this->revisions()->withDrafts()->current()->withoutSelf()->first();
+        $oldCurrent = $this->revisions()->withDrafts()->current()->excludeRevision($this)->first();
 
         static::saved(function () use ($oldCurrent) {
             if ($oldCurrent) {
@@ -133,7 +139,7 @@ trait HasDrafts
 
     public function setLive(): void
     {
-        $published = $this->revisions()->withoutSelf()->published()->first();
+        $published = $this->revisions()->excludeRevision($this)->published()->first();
 
         if (! $published) {
             $this->{$this->getPublishedAtColumn()} ??= now();
@@ -278,7 +284,7 @@ trait HasDrafts
 
     public function pruneRevisions()
     {
-        $this->withoutEvents(function () {
+        self::withoutEvents(function () {
             $revisionsToKeep = $this->revisions()
                 ->orderByDesc('updated_at')
                 ->onlyDrafts()
@@ -374,7 +380,15 @@ trait HasDrafts
         $query->where($this->getIsCurrentColumn(), false);
     }
 
-    public function scopeWithoutSelf(Builder $query)
+    public function scopeExcludeRevision(Builder $query, int | Model $exclude): void
+    {
+        $query->where($this->getKeyName(), '!=', is_int($exclude) ? $exclude : $exclude->getKey());
+    }
+
+    /**
+     * @deprecated This doesn't actually work, will be removed in next version
+     */
+    public function scopeWithoutSelf(Builder $query): void
     {
         $query->where('id', '!=', $this->id);
     }

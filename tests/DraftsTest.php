@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Oddvalue\LaravelDrafts\Tests\Post;
 
 use function Spatie\PestPluginTestTime\testTime;
@@ -123,4 +124,14 @@ it('creates drafts without altering the original post', function () {
     $post->publish()->save();
 
     expect(Post::find($originalId)->title)->toBe('Qux');
+});
+
+it('can get all revisions excluding self', function (): void {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $post->updateAsDraft(['title' => 'Bar']);
+    $post->updateAsDraft(['title' => 'Baz']);
+    $post->updateAsDraft(['title' => 'Qux']);
+
+    expect($post->revisions()->excludeRevision($post)->pluck('id'))
+        ->not()->toContain($post->id);
 });
