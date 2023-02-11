@@ -283,7 +283,7 @@ trait HasDrafts
         return $this->fill($attributes)->saveAsDraft($options);
     }
 
-    public static function createDraft(...$attributes): self
+    public static function createDraft(...$attributes): static
     {
         return tap(static::make(...$attributes), function ($instance) {
             $instance->{$instance->getIsPublishedColumn()} = false;

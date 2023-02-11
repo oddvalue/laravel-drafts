@@ -53,7 +53,7 @@ interface Draftable
 
     public function updateAsDraft(array $attributes = [], array $options = []): bool;
 
-    public static function createDraft(...$attributes): self;
+    public static function createDraft(...$attributes): static;
 
     public function setPublisher(): static;
 

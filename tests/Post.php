@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 use Oddvalue\LaravelDrafts\Contacts\Draftable;
 
-class Post extends Model implements Draftable
+class Post extends Model
 {
     use HasDrafts;
     use HasFactory;

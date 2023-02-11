@@ -1,12 +1,12 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\Post;
+use Oddvalue\LaravelDrafts\Tests\SchedulingPost;
 
 use function Spatie\PestPluginTestTime\testTime;
 
 it('can schedule draft', function () {
     $willPublishAt = now()->addMonth();
-    $post = Post::factory()->published()->create();
+    $post = SchedulingPost::factory()->published()->create();
     $draft = $post->createDraft(['title' => 'Hello World']);
     $draft->schedulePublishing($willPublishAt);
     $this->assertDatabaseHas('posts', [
@@ -18,13 +18,13 @@ it('can schedule draft', function () {
 
 it('can publish scheduled drafts', function () {
     $willPublishAt = now()->addWeek();
-    $post = Post::factory()->published()->create();
+    $post = SchedulingPost::factory()->published()->create();
     $draft = $post->createDraft(['title' => 'Hello World']);
     $draft->schedulePublishing($willPublishAt);
 
     testTime()->addMonth()->freeze();
 
-    \Illuminate\Support\Facades\Artisan::call('drafts:publish', ['model' => Post::class]);
+    \Illuminate\Support\Facades\Artisan::call('drafts:publish', ['model' => SchedulingPost::class]);
 
     $this->assertDatabaseHas('posts', [
         'title' => 'Hello World',
