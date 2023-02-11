@@ -3,6 +3,7 @@
 namespace Oddvalue\LaravelDrafts\Concerns;
 
 use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,12 +13,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Oddvalue\LaravelDrafts\Contacts\Draftable;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
 /**
- * @method void Current(Builder $query)
- * @method void WithoutCurrent(Builder $query)
- * @method void ExcludeRevision(Builder $query, int | Model $exclude)
+ * @method \Illuminate\Database\Eloquent\Builder<Draftable> current()
+ * @method \Illuminate\Database\Eloquent\Builder<Draftable> withoutCurrent()
+ * @method \Illuminate\Database\Eloquent\Builder<Draftable> excludeRevision(int | Model $exclude)
  */
 trait HasDrafts
 {
@@ -43,7 +45,7 @@ trait HasDrafts
 
     public static function bootHasDrafts(): void
     {
-        static::creating(function ($model) {
+        static::creating(function (Draftable | Model $model) {
             $model->{$model->getIsCurrentColumn()} = true;
             $model->setPublisher();
             $model->generateUuid();
@@ -52,26 +54,26 @@ trait HasDrafts
             }
         });
 
-        static::updating(function ($model) {
+        static::updating(function (Draftable | Model $model) {
             $model->newRevision();
         });
 
-        static::publishing(function ($model) {
+        static::publishing(function (Draftable | Model $model) {
             $model->setLive();
         });
 
-        static::deleted(function ($model) {
+        static::deleted(function (Draftable | Model $model) {
             $model->revisions()->delete();
         });
 
         if (method_exists(static::class, 'restored')) {
-            static::restored(function ($model) {
+            static::restored(function (Draftable | Model $model) {
                 $model->revisions()->restore();
             });
         }
 
         if (method_exists(static::class, 'forceDeleted')) {
-            static::forceDeleted(function ($model) {
+            static::forceDeleted(function (Draftable | Model $model) {
                 $model->revisions()->forceDelete();
             });
         }
@@ -262,12 +264,12 @@ trait HasDrafts
         return parent::save($options);
     }
 
-    public static function savingAsDraft(string|\Closure $callback): void
+    public static function savingAsDraft(string | Closure $callback): void
     {
         static::registerModelEvent('savingAsDraft', $callback);
     }
 
-    public static function savedAsDraft(string|\Closure $callback): void
+    public static function savedAsDraft(string | Closure $callback): void
     {
         static::registerModelEvent('drafted', $callback);
     }

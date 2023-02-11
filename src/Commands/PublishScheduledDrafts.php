@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
+use Oddvalue\LaravelDrafts\Contacts\Draftable;
 
 class PublishScheduledDrafts extends Command
 {
@@ -27,7 +28,7 @@ class PublishScheduledDrafts extends Command
             ->onlyDrafts()
             ->where($model->getWillPublishAtColumn(), '<', now())
             ->whereNull($model->getPublishedAtColumn())
-            ->each(function (Model $record): void {
+            ->each(function (Draftable $record): void {
                 $record->setLive();
                 $record->save();
             });
