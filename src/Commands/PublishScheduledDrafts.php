@@ -3,7 +3,6 @@
 namespace Oddvalue\LaravelDrafts\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 use Oddvalue\LaravelDrafts\Contacts\Draftable;

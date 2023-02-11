@@ -6,7 +6,6 @@ use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Contracts\Database\Query\Builder;
 
 interface Draftable
 {
