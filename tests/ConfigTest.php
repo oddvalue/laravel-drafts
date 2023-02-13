@@ -25,6 +25,7 @@ it('can override columns via config', function () {
 it('can override columns via class constants', function () {
     $post = new class () extends Post {
         public const PUBLISHED_AT = 'published_at_override';
+        public const WILL_PUBLISH_AT = 'will_publish_at_overridee';
         public const IS_PUBLISHED = 'is_published_override';
         public const IS_CURRENT = 'is_current_override';
         public const UUID = 'uuid_override';
@@ -34,6 +35,7 @@ it('can override columns via class constants', function () {
 
     expect($post->getPublishedAtColumn())->toBe($post::PUBLISHED_AT)
         ->and($post->getQualifiedPublishedAtColumn())->toBe($post->qualifyColumn($post::PUBLISHED_AT))
+        ->and($post->getWillPublishAtColumn())->toBe($post::WILL_PUBLISH_AT)
         ->and($post->getIsPublishedColumn())->toBe($post::IS_PUBLISHED)
         ->and($post->getIsCurrentColumn())->toBe($post::IS_CURRENT)
         ->and($post->getUuidColumn())->toBe($post::UUID)

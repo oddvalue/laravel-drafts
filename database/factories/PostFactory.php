@@ -11,7 +11,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
     /**
      * @inheritDoc
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'title' => $this->faker->sentence,
@@ -19,23 +19,19 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
         ];
     }
 
-    public function draft()
+    public function draft(): PostFactory
     {
-        return $this->state(function () {
-            return [
-                'published_at' => null,
-                'is_published' => false,
-            ];
-        });
+        return $this->state(fn (): array => [
+            'published_at' => null,
+            'is_published' => false,
+        ]);
     }
 
-    public function published()
+    public function published(): PostFactory
     {
-        return $this->state(function () {
-            return [
-                'published_at' => now()->toDateTimeString(),
-                'is_published' => true,
-            ];
-        });
+        return $this->state(fn (): array => [
+            'published_at' => now()->toDateTimeString(),
+            'is_published' => true,
+        ]);
     }
 }

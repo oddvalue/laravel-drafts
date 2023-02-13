@@ -17,8 +17,8 @@ class PublishScheduledDrafts extends Command
     {
         $class = $this->argument('model');
 
-        if (! class_exists($class) || ! in_array(HasDrafts::class, class_uses_recursive($class), strict: true)) {
-            throw new InvalidArgumentException("The model `{$class}` either doesn't exist or doesn't use the `HasDrafts` trait.");
+        if (! class_exists($class) || ! in_array(Draftable::class, class_implements($class), strict: true)) {
+            throw new InvalidArgumentException("The model `{$class}` either doesn't exist or doesn't implement `Draftable`.");
         }
 
         $model = new $class();
