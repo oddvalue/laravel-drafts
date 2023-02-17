@@ -57,14 +57,8 @@ trait HasDrafts
             $model->newRevision();
         });
 
-        static::publishing(function (Model $model): bool {
+        static::publishing(function (Model $model): void {
             $model->setLive();
-
-            static::saved(function (Model $model): void {
-                $model->fireModelEvent('published');
-            });
-
-            return false;
         });
 
         static::deleted(function (Model $model): void {
@@ -246,6 +240,11 @@ trait HasDrafts
     public function shouldDraft(): bool
     {
         return $this->shouldSaveAsDraft;
+    }
+
+    public function setPublishedAttributes(): void
+    {
+        // Do nothing, everything should be handled by `setLive`
     }
 
     public function save(array $options = []): bool

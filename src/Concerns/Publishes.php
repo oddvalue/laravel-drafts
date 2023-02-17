@@ -46,11 +46,10 @@ trait Publishes
             return $this;
         }
 
-        $this->{$this->getPublishedAtColumn()} ??= now();
-        $this->{$this->getIsPublishedColumn()} = true;
+        $this->setPublishedAttributes();
 
         static::saved(function (Model $model): void {
-            if ($model->is($this)) {
+            if ($model->isNot($this)) {
                 return;
             }
 
@@ -58,6 +57,12 @@ trait Publishes
         });
 
         return $this;
+    }
+
+    protected function setPublishedAttributes(): void
+    {
+        $this->{$this->getPublishedAtColumn()} ??= now();
+        $this->{$this->getIsPublishedColumn()} = true;
     }
 
     /**
