@@ -49,8 +49,8 @@ trait Publishes
         $this->{$this->getPublishedAtColumn()} ??= now();
         $this->{$this->getIsPublishedColumn()} = true;
 
-        static::saved(function (Model $record): void {
-            if ($record->getKey() !== $this->getKey()) {
+        static::saved(function (Model $model): void {
+            if ($model->is($this)) {
                 return;
             }
 

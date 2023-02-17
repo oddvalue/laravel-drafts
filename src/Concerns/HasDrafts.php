@@ -37,13 +37,14 @@ trait HasDrafts
     {
         $this->mergeCasts([
             $this->getIsCurrentColumn() => 'boolean',
+            $this->getIsPublishedColumn() => 'boolean',
             $this->getPublishedAtColumn() => 'datetime',
         ]);
     }
 
     public static function bootHasDrafts(): void
     {
-        static::creating(function ($model) {
+        static::creating(function (Model $model): void {
             $model->{$model->getIsCurrentColumn()} = true;
             $model->setPublisher();
             $model->generateUuid();
@@ -52,26 +53,32 @@ trait HasDrafts
             }
         });
 
-        static::updating(function ($model) {
+        static::updating(function (Model $model): void {
             $model->newRevision();
         });
 
-        static::publishing(function ($model) {
+        static::publishing(function (Model $model): bool {
             $model->setLive();
+
+            static::saved(function (Model $model): void {
+                $model->fireModelEvent('published');
+            });
+
+            return false;
         });
 
-        static::deleted(function ($model) {
+        static::deleted(function (Model $model): void {
             $model->revisions()->delete();
         });
 
         if (method_exists(static::class, 'restored')) {
-            static::restored(function ($model) {
+            static::restored(function (Model $model): void {
                 $model->revisions()->restore();
             });
         }
 
         if (method_exists(static::class, 'forceDeleted')) {
-            static::forceDeleted(function ($model) {
+            static::forceDeleted(function (Model $model): void {
                 $model->revisions()->forceDelete();
             });
         }
