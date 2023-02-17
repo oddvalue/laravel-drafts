@@ -94,7 +94,11 @@ trait HasDrafts
 
         $revision = $this->fresh()?->replicate();
 
-        static::saved(function () use ($revision) {
+        static::saved(function (Model $model) use ($revision): void {
+            if ($model->isNot($this)) {
+                return;
+            }
+
             $revision->created_at = $this->created_at;
             $revision->updated_at = $this->updated_at;
             $revision->is_current = false;
@@ -126,12 +130,14 @@ trait HasDrafts
     {
         $oldCurrent = $this->revisions()->withDrafts()->current()->excludeRevision($this)->first();
 
-        static::saved(function () use ($oldCurrent) {
-            if ($oldCurrent) {
-                $oldCurrent->{$this->getIsCurrentColumn()} = false;
-                $oldCurrent->timestamps = false;
-                $oldCurrent->saveQuietly();
+        static::saved(function (Model $model) use ($oldCurrent): void {
+            if ($model->isNot($this) || ! $oldCurrent) {
+                return;
             }
+
+            $oldCurrent->{$this->getIsCurrentColumn()} = false;
+            $oldCurrent->timestamps = false;
+            $oldCurrent->saveQuietly();
         });
 
         $this->{$this->getIsCurrentColumn()} = true;
@@ -139,9 +145,9 @@ trait HasDrafts
 
     public function setLive(): void
     {
-        $published = $this->revisions()->excludeRevision($this)->published()->first();
+        $published = $this->revisions()->published()->first();
 
-        if (! $published) {
+        if (! $published || $this->is($published)) {
             $this->{$this->getPublishedAtColumn()} ??= now();
             $this->{$this->getIsPublishedColumn()} = true;
             $this->setCurrent();
@@ -157,7 +163,11 @@ trait HasDrafts
         $published->forceFill($newAttributes);
         $this->forceFill($oldAttributes);
 
-        static::saved(function () use ($published) {
+        static::saved(function (Model $model) use ($published): void {
+            if ($model->isNot($this)) {
+                return;
+            }
+
             $published->{$this->getIsPublishedColumn()} = true;
             $published->{$this->getPublishedAtColumn()} ??= now();
             $published->setCurrent();

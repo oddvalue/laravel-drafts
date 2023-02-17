@@ -2,6 +2,7 @@
 
 namespace Oddvalue\LaravelDrafts\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use Oddvalue\LaravelDrafts\Scopes\PublishingScope;
 
 /**
@@ -48,7 +49,11 @@ trait Publishes
         $this->{$this->getPublishedAtColumn()} ??= now();
         $this->{$this->getIsPublishedColumn()} = true;
 
-        static::saved(function () {
+        static::saved(function (Model $record): void {
+            if ($record->getKey() !== $this->getKey()) {
+                return;
+            }
+
             $this->fireModelEvent('published');
         });
 
