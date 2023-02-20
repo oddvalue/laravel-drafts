@@ -115,6 +115,6 @@ it('save without revision', function () {
     $this->assertDatabaseCount('posts', 1);
 
     $this->assertDatabaseHas('posts', [
-        'title' => $post->title
+        'title' => $post->title,
     ]);
 });
