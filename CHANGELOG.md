@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-drafts` will be documented in this file.
 
+## v1.1.0 - 2023-02-20
+
+### What's Changed
+
+- Added a method to avoid creating revison by @Froxz in https://github.com/oddvalue/laravel-drafts/pull/15
+
+### New Contributors
+
+- @Froxz made their first contribution in https://github.com/oddvalue/laravel-drafts/pull/15
+
+**Full Changelog**: https://github.com/oddvalue/laravel-drafts/compare/v1.0.2...v1.1.0
+
 ## v1.0.2 - 2023-02-17
 
 **Full Changelog**: https://github.com/oddvalue/laravel-drafts/compare/v1.0.1...v1.0.2
