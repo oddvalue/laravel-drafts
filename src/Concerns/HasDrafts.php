@@ -114,6 +114,13 @@ trait HasDrafts
         });
     }
 
+    public function withoutRevision(): static
+    {
+        $this->shouldCreateRevision = false;
+
+        return $this;
+    }
+
     public function shouldCreateRevision(): bool
     {
         return $this->shouldCreateRevision;
