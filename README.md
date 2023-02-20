@@ -262,6 +262,12 @@ $revisions = $post->revisions();
 
 Deleting a record will also delete all of its revisions. Soft deleting records will soft delete the revisions and restoring records will restore the revisions.
 
+If you need to update a record without creating revision
+
+```php
+$post->withoutRevision()->update($options);
+```
+
 ## Testing
 
 ```bash
