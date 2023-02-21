@@ -5,12 +5,17 @@ namespace Oddvalue\LaravelDrafts\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static \Illuminate\Contracts\Auth\Authenticatable getCurrentUser()
+ * @method static void previewMode(bool $previewMode = true)
+ * @method static void disablePreviewMode()
+ * @method static bool isPreviewModeEnabled()
+ *
  * @see \Oddvalue\LaravelDrafts\LaravelDrafts
  */
 class LaravelDrafts extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'laravel-drafts';
+        return \Oddvalue\LaravelDrafts\LaravelDrafts::class;
     }
 }

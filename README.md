@@ -21,6 +21,8 @@
   + [Interacting with records](#interacting-with-records)
     - [Published revision](#published-revision)
     - [Current Revision](#current-revision)
+    - [Revisions](#revisions)
+    - [Preview mode](#preview-mode)
 * [Testing](#testing)
 * [Changelog](#changelog)
 * [Contributing](#contributing)
@@ -247,8 +249,6 @@ To fetch the current revision you can call the `current` scope.
 $posts = Post::current()->get();
 ```
 
-You can implement a preview mode for your frontend by calling the `current` scope when fetching records.
-
 #### Revisions
 
 Every time a record is updated a new row/revision will be inserted. The default number of revisions kept is 10, this can be updated in the published config file.
@@ -266,6 +266,20 @@ If you need to update a record without creating revision
 
 ```php
 $post->withoutRevision()->update($options);
+```
+
+#### Preview Mode
+
+Enabling preview mode will disable the global scope that fetches only published records and will instead fetch the current revision regardless of published state.
+
+```php
+# Enable preview mode
+\Oddvalue\LaravelDrafts\Facades\LaravelDrafts::previewMode();
+\Oddvalue\LaravelDrafts\Facades\LaravelDrafts::previewMode(true);
+
+# Disable preview mode
+\Oddvalue\LaravelDrafts\Facades\LaravelDrafts::disablePreviewMode();
+\Oddvalue\LaravelDrafts\Facades\LaravelDrafts::previewMode(false);
 ```
 
 ## Testing

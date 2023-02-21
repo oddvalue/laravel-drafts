@@ -68,5 +68,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
         $this->app->singleton('laravel-drafts', function () {
             return new LaravelDrafts();
         });
+
+
     }
 }

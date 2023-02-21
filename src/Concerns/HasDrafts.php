@@ -44,6 +44,12 @@ trait HasDrafts
 
     public static function bootHasDrafts(): void
     {
+        static::addGlobalScope('onlyCurrentInPreviewMode', static function (Builder $builder): void {
+            if (LaravelDrafts::isPreviewModeEnabled()) {
+                $builder->current();
+            }
+        });
+
         static::creating(function (Model $model): void {
             $model->{$model->getIsCurrentColumn()} = true;
             $model->setPublisher();
