@@ -1,10 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 use Oddvalue\LaravelDrafts\Tests\Post;
-
-use function Spatie\PestPluginTestTime\testTime;
 
 it('can enable preview mode', function () {
     LaravelDrafts::previewMode();
