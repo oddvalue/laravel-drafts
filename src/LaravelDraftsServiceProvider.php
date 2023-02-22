@@ -3,6 +3,8 @@
 namespace Oddvalue\LaravelDrafts;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
+use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -23,6 +25,10 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
+        if (method_exists(Builder::class, 'useNativeSchemaOperationsIfPossible')) {
+            Schema::useNativeSchemaOperationsIfPossible();
+        }
+
         Blueprint::macro('drafts', function (
             string $uuid = null,
             string $publishedAt = null,
