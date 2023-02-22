@@ -3,7 +3,6 @@
 namespace Oddvalue\LaravelDrafts;
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
