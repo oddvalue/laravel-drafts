@@ -3,8 +3,8 @@
 namespace Oddvalue\LaravelDrafts\Http\Middleware;
 
 use Closure;
-use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 use Illuminate\Http\Request;
+use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
 class WithDraftsMiddleware
 {
