@@ -18,7 +18,7 @@ class PublishingScope implements Scope
 
     public function apply(Builder $builder, Model $model): void
     {
-        if (LaravelDrafts::isPreviewModeEnabled()) {
+        if (LaravelDrafts::isPreviewModeEnabled() || LaravelDrafts::isWithDraftsEnabled()) {
             return;
         }
         $builder->where($model->getQualifiedIsPublishedColumn(), 1);

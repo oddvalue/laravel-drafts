@@ -34,6 +34,7 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
+        config()->set('app.key', 'thisisa32bitkeyforunittests12345');
         config()->set('database.default', 'testing');
     }
 
@@ -52,6 +53,7 @@ class TestCase extends Orchestra
         $app['db']->connection()->getSchemaBuilder()->create('posts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
+            $table->json('traits')->nullable();
             $table->drafts();
             $table->timestamps();
         });
