@@ -140,6 +140,11 @@ trait HasDrafts
         $this->{$this->getUuidColumn()} = Str::uuid();
     }
 
+    public function getDraftableAttributes(): array
+    {
+        return $this->getAttributes();
+    }
+
     public function setCurrent(): void
     {
         $oldCurrent = $this->revisions()->withDrafts()->current()->excludeRevision($this)->first();
@@ -169,8 +174,8 @@ trait HasDrafts
             return;
         }
 
-        $oldAttributes = $published?->getAttributes() ?? [];
-        $newAttributes = $this->getAttributes();
+        $oldAttributes = $published?->getDraftableAttributes() ?? [];
+        $newAttributes = $this->getDraftableAttributes();
         Arr::forget($oldAttributes, $this->getKeyName());
         Arr::forget($newAttributes, $this->getKeyName());
 
@@ -192,13 +197,23 @@ trait HasDrafts
                 switch (true) {
                     case $relation instanceof HasOne:
                         if ($related = $this->{$relationName}) {
-                            $published->{$relationName}()->create($related->replicate()->getAttributes());
+
+                            $replicated = $related->replicate();
+
+                            $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
+
+                            $published->{$relationName}()->create($replicated->$method());
                         }
 
                         break;
                     case $relation instanceof HasMany:
                         $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
-                            $published->{$relationName}()->create($model->replicate()->getAttributes());
+
+                            $replicated = $model->replicate();
+
+                            $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
+
+                            $published->{$relationName}()->create($replicated->$method());
                         });
 
                         break;
