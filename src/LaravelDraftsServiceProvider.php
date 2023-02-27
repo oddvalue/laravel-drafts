@@ -3,7 +3,9 @@
 namespace Oddvalue\LaravelDrafts;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Oddvalue\LaravelDrafts\Http\Middleware\WithDraftsMiddleware;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -76,8 +78,8 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ]);
         });
 
-        $this->app->singleton('laravel-drafts', function () {
-            return new LaravelDrafts();
+        Route::macro('withDrafts', function (\Closure $routes): void {
+            Route::middleware(WithDraftsMiddleware::class)->group($routes);
         });
     }
 }
