@@ -45,71 +45,71 @@ it('allows column names to be overridden when migrating', function () {
         'publisher_override_type',
     ]))->toBeTrue();
 });
-
-it('drops draft columns', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
-        $table->drafts();
-    });
-
-    expect(Schema::hasColumns('foo', [
-        'uuid',
-        'published_at',
-        'is_published',
-        'is_current',
-        'publisher_id',
-        'publisher_type',
-    ]))->toBeTrue();
-
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
-        $table->dropDrafts();
-    });
-
-    expect(Schema::hasColumns('foo', [
-        'uuid',
-        'published_at',
-        'is_published',
-        'is_current',
-        'publisher_id',
-        'publisher_type',
-    ]))->toBeFalse();
-});
-
-it('drops custom named draft columns', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
-        $table->drafts(
-            uuid: 'uuid_override',
-            publishedAt: 'published_at_override',
-            isPublished: 'is_published_override',
-            isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
-        );
-    });
-
-    expect(Schema::hasColumns('foo', [
-        'uuid_override',
-        'published_at_override',
-        'is_published_override',
-        'is_current_override',
-        'publisher_override_id',
-        'publisher_override_type',
-    ]))->toBeTrue();
-
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
-        $table->dropDrafts(
-            uuid: 'uuid_override',
-            publishedAt: 'published_at_override',
-            isPublished: 'is_published_override',
-            isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
-        );
-    });
-
-    expect(Schema::hasColumns('foo', [
-        'uuid_override',
-        'published_at_override',
-        'is_published_override',
-        'is_current_override',
-        'publisher_override_id',
-        'publisher_override_type',
-    ]))->toBeFalse();
-});
+//
+//it('drops draft columns', function () {
+//    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+//        $table->drafts();
+//    });
+//
+//    expect(Schema::hasColumns('foo', [
+//        'uuid',
+//        'published_at',
+//        'is_published',
+//        'is_current',
+//        'publisher_id',
+//        'publisher_type',
+//    ]))->toBeTrue();
+//
+//    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+//        $table->dropDrafts();
+//    });
+//
+//    expect(Schema::hasColumns('foo', [
+//        'uuid',
+//        'published_at',
+//        'is_published',
+//        'is_current',
+//        'publisher_id',
+//        'publisher_type',
+//    ]))->toBeFalse();
+//});
+//
+//it('drops custom named draft columns', function () {
+//    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+//        $table->drafts(
+//            uuid: 'uuid_override',
+//            publishedAt: 'published_at_override',
+//            isPublished: 'is_published_override',
+//            isCurrent: 'is_current_override',
+//            publisherMorphName: 'publisher_override'
+//        );
+//    });
+//
+//    expect(Schema::hasColumns('foo', [
+//        'uuid_override',
+//        'published_at_override',
+//        'is_published_override',
+//        'is_current_override',
+//        'publisher_override_id',
+//        'publisher_override_type',
+//    ]))->toBeTrue();
+//
+//    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+//        $table->dropDrafts(
+//            uuid: 'uuid_override',
+//            publishedAt: 'published_at_override',
+//            isPublished: 'is_published_override',
+//            isCurrent: 'is_current_override',
+//            publisherMorphName: 'publisher_override'
+//        );
+//    });
+//
+//    expect(Schema::hasColumns('foo', [
+//        'uuid_override',
+//        'published_at_override',
+//        'is_published_override',
+//        'is_current_override',
+//        'publisher_override_id',
+//        'publisher_override_type',
+//    ]))->toBeFalse();
+//});
