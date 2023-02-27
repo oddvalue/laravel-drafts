@@ -286,7 +286,7 @@ Enabling preview mode will disable the global scope that fetches only published 
 
 #### WithDraftsMiddleware
 
-If you require a spacific route to be able to access drafts then you can use the `WithDraftsMiddleware` middleware.
+If you require a specific route to be able to access drafts then you can use the `WithDraftsMiddleware` middleware.
 
 ```php
 Route::get('/posts/publish/{post}', [PostController::class, 'publish'])->middleware(\Oddvalue\LaravelDrafts\Http\Middleware\WithDraftsMiddleware::class);
