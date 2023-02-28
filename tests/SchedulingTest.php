@@ -36,7 +36,7 @@ it('can publish scheduled drafts', function () {
 });
 
 it('fails when the model doesnt implement the contract', function (): void {
-    expect(static fn() => Artisan::call('drafts:publish', ['model' => Post::class]))
+    expect(static fn () => Artisan::call('drafts:publish', ['model' => Post::class]))
         ->toThrow(InvalidArgumentException::class);
 });
 

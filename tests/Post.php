@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 use Oddvalue\LaravelDrafts\Database\Factories\PostFactory;
-use Oddvalue\LaravelDrafts\Contacts\Draftable;
 
 class Post extends Model
 {

@@ -5,8 +5,8 @@ namespace Oddvalue\LaravelDrafts;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use Oddvalue\LaravelDrafts\Http\Middleware\WithDraftsMiddleware;
 use Oddvalue\LaravelDrafts\Commands\PublishScheduledDrafts;
+use Oddvalue\LaravelDrafts\Http\Middleware\WithDraftsMiddleware;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
