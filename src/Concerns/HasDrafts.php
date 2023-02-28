@@ -287,7 +287,7 @@ trait HasDrafts
         return $this->shouldSaveAsDraft;
     }
 
-    public function setPublishedAttribute(): void
+    public function setPublishedAttributes(): void
     {
         // Do nothing, everything should be handled by `setLive`
     }
