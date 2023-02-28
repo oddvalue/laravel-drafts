@@ -197,7 +197,6 @@ trait HasDrafts
                 switch (true) {
                     case $relation instanceof HasOne:
                         if ($related = $this->{$relationName}) {
-
                             $replicated = $related->replicate();
 
                             $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
@@ -208,7 +207,6 @@ trait HasDrafts
                         break;
                     case $relation instanceof HasMany:
                         $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
-
                             $replicated = $model->replicate();
 
                             $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
