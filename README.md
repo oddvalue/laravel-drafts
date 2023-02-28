@@ -23,7 +23,7 @@
     - [Current Revision](#current-revision)
     - [Revisions](#revisions)
     - [Preview mode](#preview-mode)
-  + [Middleware](#middlware)
+  + [Middleware](#middleware)
     - [WithDraftsMiddleware](#withdraftsmiddleware)
 * [Testing](#testing)
 * [Changelog](#changelog)
