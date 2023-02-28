@@ -39,13 +39,20 @@ trait HasDrafts
     {
         $this->mergeCasts([
             $this->getIsCurrentColumn() => 'boolean',
+            $this->getIsPublishedColumn() => 'boolean',
             $this->getPublishedAtColumn() => 'datetime',
         ]);
     }
 
     public static function bootHasDrafts(): void
     {
-        static::creating(function (Draftable | Model $model) {
+        static::addGlobalScope('onlyCurrentInPreviewMode', static function (Builder $builder): void {
+            if (LaravelDrafts::isPreviewModeEnabled()) {
+                $builder->current();
+            }
+        });
+
+        static::creating(function (Draftable | Model $model): void {
             $model->{$model->getIsCurrentColumn()} = true;
             $model->setPublisher();
             $model->generateUuid();
@@ -54,26 +61,26 @@ trait HasDrafts
             }
         });
 
-        static::updating(function (Draftable | Model $model) {
+        static::updating(function (Draftable | Model $model): void {
             $model->newRevision();
         });
 
-        static::publishing(function (Draftable | Model $model) {
+        static::publishing(function (Draftable | Model $model): void {
             $model->setLive();
         });
 
-        static::deleted(function (Draftable | Model $model) {
+        static::deleted(function (Draftable | Model $model): void {
             $model->revisions()->delete();
         });
 
         if (method_exists(static::class, 'restored')) {
-            static::restored(function (Draftable | Model $model) {
+            static::restored(function (Draftable | Model $model): void {
                 $model->revisions()->restore();
             });
         }
 
         if (method_exists(static::class, 'forceDeleted')) {
-            static::forceDeleted(function (Draftable | Model $model) {
+            static::forceDeleted(function (Draftable | Model $model): void {
                 $model->revisions()->forceDelete();
             });
         }
@@ -96,7 +103,11 @@ trait HasDrafts
 
         $revision = $this->fresh()?->replicate();
 
-        static::saved(function () use ($revision) {
+        static::saved(function (Model $model) use ($revision): void {
+            if ($model->isNot($this)) {
+                return;
+            }
+
             $revision->created_at = $this->created_at;
             $revision->updated_at = $this->updated_at;
             $revision->is_current = false;
@@ -109,6 +120,13 @@ trait HasDrafts
 
             $this->fireModelEvent('createdRevision');
         });
+    }
+
+    public function withoutRevision(): static
+    {
+        $this->shouldCreateRevision = false;
+
+        return $this;
     }
 
     public function shouldCreateRevision(): bool
@@ -124,16 +142,23 @@ trait HasDrafts
         $this->{$this->getUuidColumn()} = Str::uuid();
     }
 
+    public function getDraftableAttributes(): array
+    {
+        return $this->getAttributes();
+    }
+
     public function setCurrent(): void
     {
         $oldCurrent = $this->revisions()->withDrafts()->current()->excludeRevision($this)->first();
 
-        static::saved(function () use ($oldCurrent) {
-            if ($oldCurrent) {
-                $oldCurrent->{$this->getIsCurrentColumn()} = false;
-                $oldCurrent->timestamps = false;
-                $oldCurrent->saveQuietly();
+        static::saved(function (Model $model) use ($oldCurrent): void {
+            if ($model->isNot($this) || ! $oldCurrent) {
+                return;
             }
+
+            $oldCurrent->{$this->getIsCurrentColumn()} = false;
+            $oldCurrent->timestamps = false;
+            $oldCurrent->saveQuietly();
         });
 
         $this->{$this->getIsCurrentColumn()} = true;
@@ -141,9 +166,9 @@ trait HasDrafts
 
     public function setLive(): void
     {
-        $published = $this->revisions()->excludeRevision($this)->published()->first();
+        $published = $this->revisions()->published()->first();
 
-        if (! $published) {
+        if (! $published || $this->is($published)) {
             $this->{$this->getPublishedAtColumn()} ??= now();
             $this->{$this->getWillPublishAtColumn()} = null;
             $this->{$this->getIsPublishedColumn()} = true;
@@ -152,15 +177,19 @@ trait HasDrafts
             return;
         }
 
-        $oldAttributes = $published?->getAttributes() ?? [];
-        $newAttributes = $this->getAttributes();
+        $oldAttributes = $published?->getDraftableAttributes() ?? [];
+        $newAttributes = $this->getDraftableAttributes();
         Arr::forget($oldAttributes, $this->getKeyName());
         Arr::forget($newAttributes, $this->getKeyName());
 
         $published->forceFill($newAttributes);
         $this->forceFill($oldAttributes);
 
-        static::saved(function () use ($published) {
+        static::saved(function (Model $model) use ($published): void {
+            if ($model->isNot($this)) {
+                return;
+            }
+
             $published->{$this->getIsPublishedColumn()} = true;
             $published->{$this->getPublishedAtColumn()} ??= now();
             $published->setCurrent();
@@ -171,13 +200,21 @@ trait HasDrafts
                 switch (true) {
                     case $relation instanceof HasOne:
                         if ($related = $this->{$relationName}) {
-                            $published->{$relationName}()->create($related->replicate()->getAttributes());
+                            $replicated = $related->replicate();
+
+                            $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
+
+                            $published->{$relationName}()->create($replicated->$method());
                         }
 
                         break;
                     case $relation instanceof HasMany:
                         $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
-                            $published->{$relationName}()->create($model->replicate()->getAttributes());
+                            $replicated = $model->replicate();
+
+                            $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
+
+                            $published->{$relationName}()->create($replicated->$method());
                         });
 
                         break;
@@ -248,6 +285,11 @@ trait HasDrafts
     public function shouldDraft(): bool
     {
         return $this->shouldSaveAsDraft;
+    }
+
+    public function setPublishedAttribute(): void
+    {
+        // Do nothing, everything should be handled by `setLive`
     }
 
     public function save(array $options = []): bool

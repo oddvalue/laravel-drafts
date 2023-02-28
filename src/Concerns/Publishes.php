@@ -3,6 +3,7 @@
 namespace Oddvalue\LaravelDrafts\Concerns;
 
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Oddvalue\LaravelDrafts\Scopes\PublishingScope;
 
 /**
@@ -31,14 +32,23 @@ trait Publishes
             return $this;
         }
 
-        $this->{$this->getPublishedAtColumn()} ??= now();
-        $this->{$this->getIsPublishedColumn()} = true;
+        $this->setPublishedAttributes();
 
-        static::saved(function () {
+        static::saved(function (Model $model): void {
+            if ($model->isNot($this)) {
+                return;
+            }
+
             $this->fireModelEvent('published');
         });
 
         return $this;
+    }
+
+    protected function setPublishedAttributes(): void
+    {
+        $this->{$this->getPublishedAtColumn()} ??= now();
+        $this->{$this->getIsPublishedColumn()} = true;
     }
 
     public function isPublished(): bool

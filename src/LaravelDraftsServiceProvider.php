@@ -3,6 +3,9 @@
 namespace Oddvalue\LaravelDrafts;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Oddvalue\LaravelDrafts\Http\Middleware\WithDraftsMiddleware;
 use Oddvalue\LaravelDrafts\Commands\PublishScheduledDrafts;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -25,6 +28,10 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
+        if (method_exists($this->app['db']->connection()->getSchemaBuilder(), 'useNativeSchemaOperationsIfPossible')) {
+            Schema::useNativeSchemaOperationsIfPossible();
+        }
+
         Blueprint::macro('drafts', function (
             string $uuid = null,
             string $publishedAt = null,
@@ -59,19 +66,25 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             string $publisherMorphName = null,
         ) {
             /** @var Blueprint $this */
+            $uuid ??= config('drafts.column_names.uuid', 'uuid');
+            $publishedAt ??= config('drafts.column_names.published_at', 'published_at');
+            $isPublished ??= config('drafts.column_names.is_published', 'is_published');
+            $isCurrent ??= config('drafts.column_names.is_current', 'is_current');
             $publisherMorphName ??= config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+
+            $this->dropIndex([$uuid, $isPublished, $isCurrent]);
+            $this->dropMorphs($publisherMorphName);
+
             $this->dropColumn([
-                $uuid ?? config('drafts.column_names.uuid', 'uuid'),
-                $publishedAt ?? config('drafts.column_names.published_at', 'published_at'),
-                $isPublished ?? config('drafts.column_names.is_published', 'is_published'),
-                $isCurrent ?? config('drafts.column_names.is_current', 'is_current'),
-                $publisherMorphName.'_id',
-                $publisherMorphName.'_type',
+                $uuid,
+                $publishedAt,
+                $isPublished,
+                $isCurrent,
             ]);
         });
 
-        $this->app->singleton('laravel-drafts', function () {
-            return new LaravelDrafts();
+        Route::macro('withDrafts', function (\Closure $routes): void {
+            Route::middleware(WithDraftsMiddleware::class)->group($routes);
         });
     }
 }

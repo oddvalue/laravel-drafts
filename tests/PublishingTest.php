@@ -39,7 +39,8 @@ it('omits drafts from default query', function () {
 it('can use `withDrafts` scope to select drafts', function () {
     Post::factory()->count(5)->published()->create();
     Post::factory()->count(5)->draft()->create();
-    $this->assertCount(10, Post::withDrafts()->get());
+    expect(Post::withDrafts()->pluck('id'))
+        ->toHaveCount(10);
 });
 
 it('generates a uuid', function () {
@@ -53,4 +54,15 @@ it('has a method to check published status', function () {
 
     $post = Post::factory()->draft()->create();
     expect($post->isPublished())->toBeFalse();
+});
+
+it('does not create multiple published records', function () {
+    $post = Post::factory()->create();
+    $post->title = 'b';
+    $post->saveAsDraft();
+    $post->draft->publish()->save();
+    expect(Post::withDrafts()->pluck('id'))
+        ->toHaveCount(2);
+    expect(Post::withoutDrafts()->pluck('id'))
+        ->toHaveCount(1);
 });

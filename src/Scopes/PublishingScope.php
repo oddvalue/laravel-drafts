@@ -5,6 +5,7 @@ namespace Oddvalue\LaravelDrafts\Scopes;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
 class PublishingScope implements Scope
 {
@@ -17,6 +18,9 @@ class PublishingScope implements Scope
 
     public function apply(Builder $builder, Model $model): void
     {
+        if (LaravelDrafts::isPreviewModeEnabled() || LaravelDrafts::isWithDraftsEnabled()) {
+            return;
+        }
         $builder->where($model->getQualifiedIsPublishedColumn(), 1);
     }
 

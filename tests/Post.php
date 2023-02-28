@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
+use Oddvalue\LaravelDrafts\Database\Factories\PostFactory;
 use Oddvalue\LaravelDrafts\Contacts\Draftable;
 
 class Post extends Model
@@ -19,6 +20,8 @@ class Post extends Model
     protected $fillable = ['title'];
 
     protected array $draftableRelations = [];
+
+    protected $table = 'posts';
 
     /**
      * @param array $draftableRelations
@@ -46,5 +49,10 @@ class Post extends Model
     public function section(): HasOne
     {
         return $this->hasOne(PostSection::class);
+    }
+
+    protected static function newFactory()
+    {
+        return new PostFactory();
     }
 }

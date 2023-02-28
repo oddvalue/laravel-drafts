@@ -102,3 +102,19 @@ it('retores soft deleted revisions', function () {
     $this->assertDatabaseCount(SoftDeletingPost::class, 6);
     expect(SoftDeletingPost::withDrafts()->count())->toBe(6);
 });
+
+it('save without revision', function () {
+    $post = Post::factory()->published()->create(['title' => 'Foo']);
+    $this->assertDatabaseCount('posts', 1);
+
+    $post->withoutRevision();
+
+    $post->title = 'Bar';
+    $post->save();
+
+    $this->assertDatabaseCount('posts', 1);
+
+    $this->assertDatabaseHas('posts', [
+        'title' => $post->title,
+    ]);
+});
