@@ -23,6 +23,8 @@
     - [Current Revision](#current-revision)
     - [Revisions](#revisions)
     - [Preview mode](#preview-mode)
+  + Middleware(#middlware)
+    - WithDraftsMiddleware(#withdraftsmiddleware)
 * [Testing](#testing)
 * [Changelog](#changelog)
 * [Contributing](#contributing)
