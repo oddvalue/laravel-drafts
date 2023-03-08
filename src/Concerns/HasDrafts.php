@@ -209,6 +209,17 @@ trait HasDrafts
         Arr::forget($oldAttributes, [$this->getKeyName(), 'uuid']);
         Arr::forget($newAttributes, [$this->getKeyName(), 'uuid']);
 
+        // This logic has been added to prevent casted attributes that are json castable from double encoding on draft publish
+        $jsonCastableTypes = ['array', 'json', 'object', 'collection', 'encrypted:array', 'encrypted:collection', 'encrypted:json', 'encrypted:object'];
+        $castedAttributes = $this->getCasts();
+        foreach ($castedAttributes as $attribute=>$type) {
+            if (in_array($type, (array) $jsonCastableTypes, true)) {
+                $newAttributes[$attribute] = json_decode($newAttributes[$attribute]);
+                $oldAttributes[$attribute] = json_decode($oldAttributes[$attribute]);
+            }
+        }
+        // end 
+
         $published->forceFill($newAttributes);
         $this->forceFill($oldAttributes);
 
