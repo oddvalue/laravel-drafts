@@ -3,6 +3,26 @@
 use Oddvalue\LaravelDrafts\Tests\Post;
 use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
 
+it('can fetch revisions', function () {
+    $post = Post::factory()
+        ->hasRevisions(3)
+        ->create();
+
+    expect($post->revisions()->pluck('id'))
+        ->toHaveCount(4)
+        ->toContain($post->id);
+});
+
+it('can exclude a revision from the fetched revisions', function () {
+    $post = Post::factory()
+        ->hasRevisions(3)
+        ->create();
+
+    expect($post->revisions()->excludeRevision($post->id)->pluck('id'))
+        ->toHaveCount(3)
+        ->not->toContain($post);
+});
+
 it('keeps the correct number of revisions', function () {
     config(['drafts.revisions.keep' => 3]);
     $revsExist = function (...$titles) {
