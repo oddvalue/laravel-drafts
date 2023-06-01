@@ -15,9 +15,9 @@ use JetBrains\PhpStorm\ArrayShape;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
 /**
- * @method void Current(Builder $query)
- * @method void WithoutCurrent(Builder $query)
- * @method void ExcludeRevision(Builder $query, int | Model $exclude)
+ * @method Builder | Model current()
+ * @method Builder | Model withoutCurrent()
+ * @method Builder | Model excludeRevision(int | Model $exclude)
  */
 trait HasDrafts
 {
