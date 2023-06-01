@@ -96,15 +96,16 @@ return [
 
 #### Add the trait
 
-Add the `HasDrafts` trait to your model
+Add the `HasDrafts` trait and `Draftable` contact to your model
 
 ```php
 <?php
 
 use Illuminate\Database\Eloquent\Model;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
+use Oddvalue\LaravelDrafts\Contacts\Draftable;
 
-class Post extends Model
+class Post extends Model implements Draftable
 {
     use HasDrafts;
     

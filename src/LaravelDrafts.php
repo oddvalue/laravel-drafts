@@ -3,6 +3,7 @@
 namespace Oddvalue\LaravelDrafts;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -10,7 +11,7 @@ class LaravelDrafts
 {
     protected bool $withDrafts = false;
 
-    public function getCurrentUser(): Authenticatable
+    public function getCurrentUser(): Model | Authenticatable
     {
         return Auth::guard(config('drafts.auth.guard'))->user();
     }

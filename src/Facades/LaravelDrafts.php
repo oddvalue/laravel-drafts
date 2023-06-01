@@ -2,6 +2,8 @@
 
 namespace Oddvalue\LaravelDrafts\Facades;
 
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -13,10 +15,11 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool isWithDraftsEnabled()
  *
  * @see \Oddvalue\LaravelDrafts\LaravelDrafts
+ * @method Model | Authenticatable getCurrentUser();
  */
 class LaravelDrafts extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return \Oddvalue\LaravelDrafts\LaravelDrafts::class;
     }

@@ -5,6 +5,7 @@ namespace Oddvalue\LaravelDrafts;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Oddvalue\LaravelDrafts\Commands\PublishScheduledDrafts;
 use Oddvalue\LaravelDrafts\Http\Middleware\WithDraftsMiddleware;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -21,7 +22,8 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-drafts')
             ->hasConfigFile()
-            ->hasViews();
+            ->hasViews()
+            ->hasCommand(PublishScheduledDrafts::class);
     }
 
     public function packageRegistered()
@@ -36,6 +38,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             string $isPublished = null,
             string $isCurrent = null,
             string $publisherMorphName = null,
+            string $willPublishAt = null,
         ) {
             /** @var Blueprint $this */
             $uuid ??= config('drafts.column_names.uuid', 'uuid');
@@ -43,9 +46,11 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             $isPublished ??= config('drafts.column_names.is_published', 'is_published');
             $isCurrent ??= config('drafts.column_names.is_current', 'is_current');
             $publisherMorphName ??= config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+            $willPublishAt ??= config('drafts.column_names.will_publish_at', 'will_publish_at');
 
             $this->uuid($uuid)->nullable();
             $this->timestamp($publishedAt)->nullable();
+            $this->timestamp($willPublishAt)->nullable();
             $this->boolean($isPublished)->default(false);
             $this->boolean($isCurrent)->default(false);
             $this->nullableMorphs($publisherMorphName);

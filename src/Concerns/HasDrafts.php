@@ -2,6 +2,8 @@
 
 namespace Oddvalue\LaravelDrafts\Concerns;
 
+use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,13 +13,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use JetBrains\PhpStorm\ArrayShape;
+use Oddvalue\LaravelDrafts\Contacts\Draftable;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
 /**
- * @method void Current(Builder $query)
- * @method void WithoutCurrent(Builder $query)
- * @method void ExcludeRevision(Builder $query, int | Model $exclude)
+ * @method \Illuminate\Database\Eloquent\Builder<Draftable> current()
+ * @method \Illuminate\Database\Eloquent\Builder<Draftable> withoutCurrent()
+ * @method \Illuminate\Database\Eloquent\Builder<Draftable> excludeRevision(int | Model $exclude)
  */
 trait HasDrafts
 {
@@ -33,7 +35,7 @@ trait HasDrafts
     |--------------------------------------------------------------------------
     */
 
-    public function initializeHasDrafts()
+    public function initializeHasDrafts(): void
     {
         $this->mergeCasts([
             $this->getIsCurrentColumn() => 'boolean',
@@ -50,7 +52,7 @@ trait HasDrafts
             }
         });
 
-        static::creating(function (Model $model): void {
+        static::creating(function (Draftable | Model $model): void {
             $model->{$model->getIsCurrentColumn()} = true;
             $model->setPublisher();
             $model->generateUuid();
@@ -59,26 +61,26 @@ trait HasDrafts
             }
         });
 
-        static::updating(function (Model $model): void {
+        static::updating(function (Draftable | Model $model): void {
             $model->newRevision();
         });
 
-        static::publishing(function (Model $model): void {
+        static::publishing(function (Draftable | Model $model): void {
             $model->setLive();
         });
 
-        static::deleted(function (Model $model): void {
+        static::deleted(function (Draftable | Model $model): void {
             $model->revisions()->delete();
         });
 
         if (method_exists(static::class, 'restored')) {
-            static::restored(function (Model $model): void {
+            static::restored(function (Draftable | Model $model): void {
                 $model->revisions()->restore();
             });
         }
 
         if (method_exists(static::class, 'forceDeleted')) {
-            static::forceDeleted(function (Model $model): void {
+            static::forceDeleted(function (Draftable | Model $model): void {
                 $model->revisions()->forceDelete();
             });
         }
@@ -168,6 +170,7 @@ trait HasDrafts
 
         if (! $published || $this->is($published)) {
             $this->{$this->getPublishedAtColumn()} ??= now();
+            $this->{$this->getWillPublishAtColumn()} = null;
             $this->{$this->getIsPublishedColumn()} = true;
             $this->setCurrent();
 
@@ -226,9 +229,25 @@ trait HasDrafts
 
         $this->{$this->getIsPublishedColumn()} = false;
         $this->{$this->getPublishedAtColumn()} = null;
+        $this->{$this->getWillPublishAtColumn()} = null;
         $this->{$this->getIsCurrentColumn()} = false;
         $this->timestamps = false;
         $this->shouldCreateRevision = false;
+    }
+
+    public function schedulePublishing(CarbonInterface $date): static
+    {
+        $this->{$this->getWillPublishAtColumn()} = $date;
+        $this->save();
+
+        return $this;
+    }
+
+    public function clearScheduledPublishing(): static
+    {
+        $this->{$this->getWillPublishAtColumn()} = null;
+
+        return $this;
     }
 
     public function getDraftableRelations(): array
@@ -287,12 +306,12 @@ trait HasDrafts
         return parent::save($options);
     }
 
-    public static function savingAsDraft(string|\Closure $callback): void
+    public static function savingAsDraft(string | Closure $callback): void
     {
         static::registerModelEvent('savingAsDraft', $callback);
     }
 
-    public static function savedAsDraft(string|\Closure $callback): void
+    public static function savedAsDraft(string | Closure $callback): void
     {
         static::registerModelEvent('drafted', $callback);
     }
@@ -306,7 +325,7 @@ trait HasDrafts
         return $this->fill($attributes)->saveAsDraft($options);
     }
 
-    public static function createDraft(...$attributes): self
+    public static function createDraft(...$attributes): static
     {
         return tap(static::make(...$attributes), function ($instance) {
             $instance->{$instance->getIsPublishedColumn()} = false;
@@ -324,7 +343,7 @@ trait HasDrafts
         return $this;
     }
 
-    public function pruneRevisions()
+    public function pruneRevisions(): void
     {
         self::withoutEvents(function () {
             $revisionsToKeep = $this->revisions()
@@ -344,11 +363,11 @@ trait HasDrafts
     }
 
     /**
-     * Get the name of the "publisher" relation columns.
-     *
-     * @return array
+     * @return array{
+     *     id: string,
+     *     type: string
+     * }
      */
-    #[ArrayShape(['id' => "string", 'type' => "string"])]
     public function getPublisherColumns(): array
     {
         return [
@@ -362,9 +381,10 @@ trait HasDrafts
     }
 
     /**
-     * Get the fully qualified "publisher" relation columns.
-     *
-     * @return array
+     * @return array{
+     *     id: string,
+     *     type: string
+     * }
      */
     public function getQualifiedPublisherColumns(): array
     {
@@ -376,6 +396,13 @@ trait HasDrafts
         return defined(static::class.'::IS_CURRENT')
             ? static::IS_CURRENT
             : config('drafts.column_names.is_current', 'is_current');
+    }
+
+    public function getWillPublishAtColumn(): string
+    {
+        return defined(static::class.'::WILL_PUBLISH_AT')
+            ? static::WILL_PUBLISH_AT
+            : config('drafts.column_names.will_publish_at', 'will_publish_at');
     }
 
     public function getUuidColumn(): string
