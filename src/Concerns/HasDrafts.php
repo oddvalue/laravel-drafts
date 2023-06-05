@@ -229,6 +229,7 @@ trait HasDrafts
             $published->setCurrent();
             $published->saveQuietly();
 
+            $this->deleteRelationships($published);
             $this->copyRelationships($published);
         });
 
