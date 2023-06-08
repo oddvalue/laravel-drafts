@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Oddvalue\LaravelDrafts\Http\Middleware\WithDraftsMiddleware;
 use Oddvalue\LaravelDrafts\Tests\Post;
+
 use function Pest\Laravel\get;
 
 beforeEach(function () {
