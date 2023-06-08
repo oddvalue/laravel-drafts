@@ -33,8 +33,9 @@
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.5",
+        "roave/security-advisories": "dev-latest",
         "spatie/pest-plugin-test-time": "^1.1",
-        "roave/security-advisories": "dev-latest"
+        "spatie/ray": "^1.37"
     },
     "autoload": {
         "psr-4": {

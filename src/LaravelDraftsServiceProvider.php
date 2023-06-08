@@ -2,6 +2,7 @@
 
 namespace Oddvalue\LaravelDrafts;
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -29,6 +30,12 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
         if (method_exists($this->app['db']->connection()->getSchemaBuilder(), 'useNativeSchemaOperationsIfPossible')) {
             Schema::useNativeSchemaOperationsIfPossible();
         }
+
+        $this->app->singleton(LaravelDrafts::class, function () {
+            return new LaravelDrafts();
+        });
+
+        $this->app[Kernel::class]->prependToMiddlewarePriority(WithDraftsMiddleware::class);
 
         Blueprint::macro('drafts', function (
             string $uuid = null,
