@@ -147,19 +147,19 @@ trait HasDrafts
 
     public function setCurrent(): void
     {
-        $oldCurrent = $this->revisions()->withDrafts()->current()->excludeRevision($this)->first();
+        $this->{$this->getIsCurrentColumn()} = true;
 
-        static::saved(function (Model $model) use ($oldCurrent): void {
-            if ($model->isNot($this) || ! $oldCurrent) {
+        static::saved(function (Model $model): void {
+            if ($model->isNot($this)) {
                 return;
             }
 
-            $oldCurrent->{$this->getIsCurrentColumn()} = false;
-            $oldCurrent->timestamps = false;
-            $oldCurrent->saveQuietly();
+            $this->revisions()
+                ->withDrafts()
+                ->current()
+                ->excludeRevision($this)
+                ->update([$this->getIsCurrentColumn() => false]);
         });
-
-        $this->{$this->getIsCurrentColumn()} = true;
     }
 
     public function setLive(): void
@@ -199,7 +199,9 @@ trait HasDrafts
                         if ($related = $this->{$relationName}) {
                             $replicated = $related->replicate();
 
-                            $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
+                            $method = method_exists($replicated, 'getDraftableAttributes')
+                                ? 'getDraftableAttributes'
+                                : 'getAttributes';
 
                             $published->{$relationName}()->create($replicated->$method());
                         }
@@ -209,7 +211,9 @@ trait HasDrafts
                         $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
                             $replicated = $model->replicate();
 
-                            $method = method_exists($replicated, 'getDraftableAttributes') ? 'getDraftableAttributes' : 'getAttributes';
+                            $method = method_exists($replicated, 'getDraftableAttributes')
+                                ? 'getDraftableAttributes'
+                                : 'getAttributes';
 
                             $published->{$relationName}()->create($replicated->$method());
                         });
@@ -380,9 +384,14 @@ trait HasDrafts
 
     public function getUuidColumn(): string
     {
-        return defined(static::class.'::UUID')
+        return defined(static::class . '::UUID')
             ? static::UUID
             : config('drafts.column_names.uuid', 'uuid');
+    }
+
+    public function isCurrent(): bool
+    {
+        return $this->{$this->getIsCurrentColumn()} ?? false;
     }
 
     /*
