@@ -31,30 +31,30 @@ class PublishingScope implements Scope
         }
     }
 
-//    protected function addPublish(Builder $builder): void
-//    {
-//        $builder->macro('publish', function (Builder $builder) {
-//            $builder->withDrafts();
-//
-//            return $builder->update([$builder->getModel()->getIsPublishedColumn() => now()]);
-//        });
-//    }
-//
-//    protected function addUnpublish(Builder $builder): void
-//    {
-//        $builder->macro('unpublish', function (Builder $builder) {
-//            return $builder->update([$builder->getModel()->getIsPublishedColumn() => null]);
-//        });
-//    }
-//
-//    protected function addSchedule(Builder $builder): void
-//    {
-//        $builder->macro('schedule', function (Builder $builder, string | \DateTimeInterface $date) {
-//            $builder->withDrafts();
-//
-//            return $builder->update([$builder->getModel()->getIsPublishedColumn() => $date]);
-//        });
-//    }
+    //    protected function addPublish(Builder $builder): void
+    //    {
+    //        $builder->macro('publish', function (Builder $builder) {
+    //            $builder->withDrafts();
+    //
+    //            return $builder->update([$builder->getModel()->getIsPublishedColumn() => now()]);
+    //        });
+    //    }
+    //
+    //    protected function addUnpublish(Builder $builder): void
+    //    {
+    //        $builder->macro('unpublish', function (Builder $builder) {
+    //            return $builder->update([$builder->getModel()->getIsPublishedColumn() => null]);
+    //        });
+    //    }
+    //
+    //    protected function addSchedule(Builder $builder): void
+    //    {
+    //        $builder->macro('schedule', function (Builder $builder, string | \DateTimeInterface $date) {
+    //            $builder->withDrafts();
+    //
+    //            return $builder->update([$builder->getModel()->getIsPublishedColumn() => $date]);
+    //        });
+    //    }
 
     protected function addPublished(Builder $builder): void
     {
