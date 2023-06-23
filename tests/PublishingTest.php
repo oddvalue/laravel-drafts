@@ -66,3 +66,28 @@ it('does not create multiple published records', function () {
     expect(Post::withoutDrafts()->pluck('id'))
         ->toHaveCount(1);
 });
+
+it('can publish a draft that is not the current one', function () {
+    \Oddvalue\LaravelDrafts\Facades\LaravelDrafts::withDrafts();
+
+    Post::factory()->create(['title' => 'a']);
+
+    $post = Post::where('title', 'a')->first();
+    $post->title = 'b';
+    $b = $post->saveAsDraft();
+
+    $post = Post::where('title', 'b')->first();
+    $post->title = 'c';
+    $post->saveAsDraft();
+
+    expect(Post::where('title', 'a')->first()->isPublished())->toBeTrue();
+    expect(Post::where('title', 'c')->first()->isCurrent())->toBeTrue();
+
+    $draftB = Post::where('title', 'b')->first();
+    $draftB->setLive();
+    $draftB->save();
+
+    expect(Post::where('title', 'a')->first()->isPublished())->toBeFalse();
+    expect(Post::where('title', 'b')->first()->isPublished())->toBeTrue();
+    expect(Post::current()->count())->toBe(1);
+});
