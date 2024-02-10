@@ -192,40 +192,7 @@ trait HasDrafts
             $published->setCurrent();
             $published->saveQuietly();
 
-            collect($this->getDraftableRelations())->each(function (string $relationName) use ($published) {
-                $relation = $published->{$relationName}();
-                switch (true) {
-                    case $relation instanceof HasOne:
-                        if ($related = $this->{$relationName}) {
-                            $replicated = $related->replicate();
-
-                            $method = method_exists($replicated, 'getDraftableAttributes')
-                                ? 'getDraftableAttributes'
-                                : 'getAttributes';
-
-                            $published->{$relationName}()->create($replicated->$method());
-                        }
-
-                        break;
-                    case $relation instanceof HasMany:
-                        $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
-                            $replicated = $model->replicate();
-
-                            $method = method_exists($replicated, 'getDraftableAttributes')
-                                ? 'getDraftableAttributes'
-                                : 'getAttributes';
-
-                            $published->{$relationName}()->create($replicated->$method());
-                        });
-
-                        break;
-                    case $relation instanceof MorphToMany:
-                    case $relation instanceof BelongsToMany:
-                        $published->{$relationName}()->sync($this->{$relationName}()->pluck('id'));
-
-                        break;
-                }
-            });
+;           $this->replicateAndAssociateDraftableRelations($published);
         });
 
         $this->{$this->getIsPublishedColumn()} = false;
@@ -233,6 +200,44 @@ trait HasDrafts
         $this->{$this->getIsCurrentColumn()} = false;
         $this->timestamps = false;
         $this->shouldCreateRevision = false;
+    }
+
+    public function replicateAndAssociateDraftableRelations(Model $model): void
+    {
+        collect($this->getDraftableRelations())->each(function (string $relationName) use ($published) {
+            $relation = $published->{$relationName}();
+            switch (true) {
+                case $relation instanceof HasOne:
+                    if ($related = $this->{$relationName}) {
+                        $replicated = $related->replicate();
+
+                        $method = method_exists($replicated, 'getDraftableAttributes')
+                            ? 'getDraftableAttributes'
+                            : 'getAttributes';
+
+                        $published->{$relationName}()->create($replicated->$method());
+                    }
+
+                    break;
+                case $relation instanceof HasMany:
+                    $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
+                        $replicated = $model->replicate();
+
+                        $method = method_exists($replicated, 'getDraftableAttributes')
+                            ? 'getDraftableAttributes'
+                            : 'getAttributes';
+
+                        $published->{$relationName}()->create($replicated->$method());
+                    });
+
+                    break;
+                case $relation instanceof MorphToMany:
+                case $relation instanceof BelongsToMany:
+                    $published->{$relationName}()->sync($this->{$relationName}()->pluck('id'));
+
+                    break;
+            }
+        });
     }
 
     public function getDraftableRelations(): array
