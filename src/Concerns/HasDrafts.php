@@ -202,7 +202,7 @@ trait HasDrafts
         $this->shouldCreateRevision = false;
     }
 
-    public function replicateAndAssociateDraftableRelations(Model $model): void
+    public function replicateAndAssociateDraftableRelations(Model $published): void
     {
         collect($this->getDraftableRelations())->each(function (string $relationName) use ($published) {
             $relation = $published->{$relationName}();
