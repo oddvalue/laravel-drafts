@@ -192,7 +192,7 @@ trait HasDrafts
             $published->setCurrent();
             $published->saveQuietly();
 
-;           $this->replicateAndAssociateDraftableRelations($published);
+            $this->replicateAndAssociateDraftableRelations($published);
         });
 
         $this->{$this->getIsPublishedColumn()} = false;
