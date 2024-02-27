@@ -5,6 +5,8 @@
 # A simple, drop-in drafts/revisions system for Laravel models
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
+![PHP Support](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Foddvalue%2Flaravel-drafts%2Fmain%2Fcomposer.json&query=require.php&label=PHP)
+![Laravel Support](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Foddvalue%2Flaravel-drafts%2Fmain%2Fcomposer.json&query=require%5B'illuminate%2Fcontracts'%5D&label=Laravel)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/oddvalue/laravel-drafts/run-tests.yml?label=tests&style=flat-square)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/oddvalue/laravel-drafts/php-cs-fixer.yml?label=code%20style&style=flat-square)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
