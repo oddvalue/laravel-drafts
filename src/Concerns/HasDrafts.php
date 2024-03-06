@@ -92,7 +92,7 @@ trait HasDrafts
             // This model has been set not to create a revision
             || $this->shouldCreateRevision() === false
             // The record is being soft deleted or restored
-            || $this->isDirty('deleted_at')
+            || $this->isDirty(method_exists($this, 'getDeletedAtColumn') ? $this->getDeletedAtColumn() : 'deleted_at')
             // A listener of the creatingRevision event returned false
             || $this->fireModelEvent('creatingRevision') === false
         ) {
@@ -106,8 +106,8 @@ trait HasDrafts
                 return;
             }
 
-            $revision->created_at = $this->created_at;
-            $revision->updated_at = $this->updated_at;
+            $revision->{$this->getCreatedAtColumn()} = $this->{$this->getCreatedAtColumn()};
+            $revision->{$this->getUpdatedAtColumn()} = $this->{$this->getUpdatedAtColumn()};
             $revision->is_current = false;
             $revision->is_published = false;
 
@@ -337,7 +337,7 @@ trait HasDrafts
     {
         self::withoutEvents(function () {
             $revisionsToKeep = $this->revisions()
-                ->orderByDesc('updated_at')
+                ->orderByDesc($this->getUpdatedAtColumn())
                 ->onlyDrafts()
                 ->withoutCurrent()
                 ->take(config('drafts.revisions.keep'))
