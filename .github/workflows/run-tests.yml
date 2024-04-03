@@ -42,7 +42,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
-          coverage: none
+          coverage: xdebug
 
       - name: Setup problem matchers
         run: |
@@ -55,4 +55,11 @@ jobs:
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Execute tests
-        run: vendor/bin/pest
+        run: vendor/bin/pest --coverage-cobertura coverage.xml
+
+      - name: Upload coverage
+        uses: gaelgirodon/ci-badges-action@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          gist-id: 9dd8e508cb2433728d42a258193770eb
+          token: ${{ secrets.GIST_TOKEN }}

@@ -40,3 +40,32 @@ it('can override columns via class constants', function () {
         ->and($post->getPublisherColumns())->toBe(['id' => $post::PUBLISHER_ID, 'type' => $post::PUBLISHER_TYPE])
         ->and($post->getQualifiedPublisherColumns())->toBe($post->qualifyColumns(['id' => $post::PUBLISHER_ID, 'type' => $post::PUBLISHER_TYPE]));
 });
+
+it('honors column name overrides', function () {
+
+    $post = OverridePost::make([
+
+    ]);
+    invade($post)->newRevision();
+
+    expect($post->getPublishedAtColumn())->toBe('published_at_override')
+        ->and($post->getIsPublishedColumn())->toBe('is_published_override')
+        ->and($post->getIsCurrentColumn())->toBe('is_current_override')
+        ->and($post->getUuidColumn())->toBe('uuid_override')
+        ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']);
+});
+
+class OverridePost extends \Illuminate\Database\Eloquent\Model
+{
+    use \Oddvalue\LaravelDrafts\Concerns\HasDrafts;
+    use \Illuminate\Database\Eloquent\SoftDeletes;
+
+    public const PUBLISHED_AT = 'published_at_override';
+    public const IS_PUBLISHED = 'is_published_override';
+    public const IS_CURRENT = 'is_current_override';
+    public const UUID = 'uuid_override';
+    public const PUBLISHER_ID = 'publisher_override_id';
+    public const PUBLISHER_TYPE = 'publisher_override_type';
+
+    protected $guarded = [];
+}
