@@ -10,6 +10,7 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/oddvalue/laravel-drafts/run-tests.yml?label=tests&style=flat-square)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/oddvalue/laravel-drafts/php-cs-fixer.yml?label=code%20style&style=flat-square)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
+![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/oddvalue/9dd8e508cb2433728d42a258193770eb/raw/laravel-drafts-cobertura-coverage.json)
 
 * [Installation](#installation)
 * [Usage](#usage)

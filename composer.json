@@ -33,6 +33,7 @@
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.0|^10.0",
         "roave/security-advisories": "dev-latest",
+        "spatie/invade": "^2.0",
         "spatie/pest-plugin-test-time": "^1.0|^2.0",
         "spatie/ray": "^1.37"
     },
