@@ -10,7 +10,7 @@ class LaravelDrafts
 {
     protected bool $withDrafts = false;
 
-    public function getCurrentUser(): Authenticatable
+    public function getCurrentUser(): ?Authenticatable
     {
         return Auth::guard(config('drafts.auth.guard'))->user();
     }
