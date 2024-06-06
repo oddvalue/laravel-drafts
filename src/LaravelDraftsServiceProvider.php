@@ -27,10 +27,6 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
-        if (method_exists($this->app['db']->connection()->getSchemaBuilder(), 'useNativeSchemaOperationsIfPossible')) {
-            Schema::useNativeSchemaOperationsIfPossible();
-        }
-
         $this->app->singleton(LaravelDrafts::class, function () {
             return new LaravelDrafts();
         });
