@@ -35,6 +35,14 @@
 * [Credits](#credits)
 * [License](#license)
 
+## Version compatibility
+
+| Laravel | Drafts |
+|---------|--------|
+| v9.x    | v1.x   |
+| v10.x   | v1.x   |
+| v11.x   | v2.x   |
+
 ## Installation
 
 You can install the package via composer:
