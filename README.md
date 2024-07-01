@@ -193,7 +193,7 @@ Schema::table('posts', function (Blueprint $table) {
 
 The `HasDrafts` trait will add a default scope that will only return published/live records.
 
-The following quiery builder methods are available to alter this behavior:
+The following query builder methods are available to alter this behavior:
 
 * `withoutDrafts()`/`published(bool $withoutDrafts = true)` Only select published records (default)
 * `withDrafts(bool $withDrafts = false)` Include draft record
