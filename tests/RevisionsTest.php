@@ -2,6 +2,7 @@
 
 use Oddvalue\LaravelDrafts\Tests\Post;
 use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
+use function Spatie\PestPluginTestTime\testTime;
 
 it('keeps the correct number of revisions', function () {
     config(['drafts.revisions.keep' => 3]);
@@ -14,7 +15,6 @@ it('keeps the correct number of revisions', function () {
         }
     };
 
-    config(['drafts.revisions.keep' => 3]);
     $post = Post::factory()->create(['title' => 'Rev 1']);
     $revsExist('Rev 1');
     $this->travel(1)->minutes();
@@ -37,6 +37,46 @@ it('keeps the correct number of revisions', function () {
     $this->assertDatabaseMissing('posts', [
         'title' => 'Rev 1',
     ]);
+});
+
+it('sets the correct timestamps on revisions', function () {
+    $recordsExist = function (...$records) {
+        foreach ($records as $record) {
+            $this->assertDatabaseHas('posts', $record);
+        }
+    };
+
+    testTime()->freeze('2021-01-02 14:00:00');
+
+    $post = Post::factory()->create(['title' => 'Rev 1']);
+    $recordsExist(['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00']);
+
+    testTime()->addMinute();
+    $post->fresh()->update(['title' => 'Rev 2']);
+
+    $recordsExist(
+        ['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00'],
+        ['title' => 'Rev 2', 'updated_at' => '2021-01-02 14:01:00'],
+    );
+
+    testTime()->addMinute();
+    $post->fresh()->update(['title' => 'Rev 3']);
+
+    $recordsExist(
+        ['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00'],
+        ['title' => 'Rev 2', 'updated_at' => '2021-01-02 14:01:00'],
+        ['title' => 'Rev 3', 'updated_at' => '2021-01-02 14:02:00'],
+    );
+
+    testTime()->addMinute();
+    $post->fresh()->update(['title' => 'Rev 4']);
+
+    $recordsExist(
+        ['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00'],
+        ['title' => 'Rev 2', 'updated_at' => '2021-01-02 14:01:00'],
+        ['title' => 'Rev 3', 'updated_at' => '2021-01-02 14:02:00'],
+        ['title' => 'Rev 4', 'updated_at' => '2021-01-02 14:03:00'],
+    );
 });
 
 it('can disable revisions', function () {

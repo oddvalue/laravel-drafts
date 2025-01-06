@@ -99,15 +99,16 @@ trait HasDrafts
             return;
         }
 
-        $revision = $this->fresh()?->replicate();
+        $updatingModel = $this->fresh();
+        $revision = $updatingModel?->replicate();
 
-        static::saved(function (Model $model) use ($revision): void {
+        static::saved(function (Model $model) use ($updatingModel, $revision): void {
             if ($model->isNot($this)) {
                 return;
             }
 
-            $revision->{$this->getCreatedAtColumn()} = $this->{$this->getCreatedAtColumn()};
-            $revision->{$this->getUpdatedAtColumn()} = $this->{$this->getUpdatedAtColumn()};
+            $revision->{$this->getCreatedAtColumn()} = $updatingModel->{$this->getCreatedAtColumn()};
+            $revision->{$this->getUpdatedAtColumn()} = $updatingModel->{$this->getUpdatedAtColumn()};
             $revision->is_current = false;
             $revision->is_published = false;
 
