@@ -2,6 +2,7 @@
 
 use Oddvalue\LaravelDrafts\Tests\Post;
 use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
+
 use function Spatie\PestPluginTestTime\testTime;
 
 it('keeps the correct number of revisions', function () {
