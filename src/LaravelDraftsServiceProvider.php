@@ -33,11 +33,11 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
         $this->app[Kernel::class]->prependToMiddlewarePriority(WithDraftsMiddleware::class);
 
         Blueprint::macro('drafts', function (
-            string $uuid = null,
-            string $publishedAt = null,
-            string $isPublished = null,
-            string $isCurrent = null,
-            string $publisherMorphName = null,
+            ?string $uuid = null,
+            ?string $publishedAt = null,
+            ?string $isPublished = null,
+            ?string $isCurrent = null,
+            ?string $publisherMorphName = null,
         ) {
             /** @var Blueprint $this */
             $uuid ??= config('drafts.column_names.uuid', 'uuid');
