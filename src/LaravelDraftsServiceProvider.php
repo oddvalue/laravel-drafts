@@ -56,11 +56,11 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
         });
 
         Blueprint::macro('dropDrafts', function (
-            string $uuid = null,
-            string $publishedAt = null,
-            string $isPublished = null,
-            string $isCurrent = null,
-            string $publisherMorphName = null,
+            ?string $uuid = null,
+            ?string $publishedAt = null,
+            ?string $isPublished = null,
+            ?string $isCurrent = null,
+            ?string $publisherMorphName = null,
         ) {
             /** @var Blueprint $this */
             $uuid ??= config('drafts.column_names.uuid', 'uuid');
