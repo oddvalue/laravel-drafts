@@ -4,6 +4,7 @@ namespace Oddvalue\LaravelDrafts\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Oddvalue\LaravelDrafts\LaravelDraftsServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -19,7 +20,9 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Oddvalue\\LaravelDrafts\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn(string $modelName): string => 'Oddvalue\\LaravelDrafts\\Database\\Factories\\' . class_basename(
+                    $modelName,
+                ) . 'Factory',
         );
 
         $this->setUpDatabase($this->app);
@@ -32,7 +35,7 @@ class TestCase extends Orchestra
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app)
     {
         config()->set('app.key', 'thisisa32bitkeyforunittests12345');
         config()->set('database.default', 'testing');
@@ -40,17 +43,15 @@ class TestCase extends Orchestra
 
     /**
      * Set up the database.
-     *
-     * @param \Illuminate\Foundation\Application $app
      */
-    protected function setUpDatabase($app)
+    protected function setUpDatabase(Application $app)
     {
-        $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
+        $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('email');
         });
 
-        $app['db']->connection()->getSchemaBuilder()->create('posts', function (Blueprint $table) {
+        $app['db']->connection()->getSchemaBuilder()->create('posts', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('title');
             $table->json('traits')->nullable();
@@ -58,30 +59,30 @@ class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        $app['db']->connection()->getSchemaBuilder()->create('post_sections', function (Blueprint $table) {
+        $app['db']->connection()->getSchemaBuilder()->create('post_sections', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('content');
             $table->foreignIdFor(Post::class)->constrained();
             $table->timestamps();
         });
 
-        $app['db']->connection()->getSchemaBuilder()->create('tags', function (Blueprint $table) {
+        $app['db']->connection()->getSchemaBuilder()->create('tags', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
         });
 
-        $app['db']->connection()->getSchemaBuilder()->create('taggables', function (Blueprint $table) {
+        $app['db']->connection()->getSchemaBuilder()->create('taggables', function (Blueprint $table): void {
             $table->foreignIdFor(Tag::class)->constrained();
             $table->morphs('taggable');
         });
 
-        $app['db']->connection()->getSchemaBuilder()->create('post_tag', function (Blueprint $table) {
+        $app['db']->connection()->getSchemaBuilder()->create('post_tag', function (Blueprint $table): void {
             $table->foreignIdFor(Tag::class)->constrained();
             $table->foreignIdFor(Post::class)->constrained();
         });
 
-        $app['db']->connection()->getSchemaBuilder()->create('soft_deleting_posts', function (Blueprint $table) {
+        $app['db']->connection()->getSchemaBuilder()->create('soft_deleting_posts', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('title');
             $table->drafts();

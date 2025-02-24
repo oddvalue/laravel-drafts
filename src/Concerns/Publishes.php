@@ -14,8 +14,6 @@ trait Publishes
 {
     /**
      * Boot the publishes trait for a model.
-     *
-     * @return void
      */
     public static function bootPublishes(): void
     {
@@ -24,8 +22,6 @@ trait Publishes
 
     /**
      * Initialize the publishes trait for an instance.
-     *
-     * @return void
      */
     public function initializePublishes(): void
     {
@@ -37,8 +33,6 @@ trait Publishes
 
     /**
      * Publish a model instance.
-     *
-     * @return static
      */
     public function publish(): static
     {
@@ -67,8 +61,6 @@ trait Publishes
 
     /**
      * Determine if the model instance has been published.
-     *
-     * @return bool
      */
     public function isPublished(): bool
     {
@@ -77,9 +69,6 @@ trait Publishes
 
     /**
      * Register a "published" model event callback with the dispatcher.
-     *
-     * @param string|\Closure $callback
-     * @return void
      */
     public static function publishing(string|\Closure $callback): void
     {
@@ -88,9 +77,6 @@ trait Publishes
 
     /**
      * Register a "softDeleted" model event callback with the dispatcher.
-     *
-     * @param string|\Closure $callback
-     * @return void
      */
     public static function published(string|\Closure $callback): void
     {
@@ -99,8 +85,6 @@ trait Publishes
 
     /**
      * Get the name of the "published at" column.
-     *
-     * @return string
      */
     public function getPublishedAtColumn(): string
     {
@@ -111,8 +95,6 @@ trait Publishes
 
     /**
      * Get the fully qualified "published at" column.
-     *
-     * @return string
      */
     public function getQualifiedPublishedAtColumn(): string
     {
@@ -121,8 +103,6 @@ trait Publishes
 
     /**
      * Get the name of the "published at" column.
-     *
-     * @return string
      */
     public function getIsPublishedColumn(): string
     {
@@ -133,8 +113,6 @@ trait Publishes
 
     /**
      * Get the fully qualified "published at" column.
-     *
-     * @return string
      */
     public function getQualifiedIsPublishedColumn(): string
     {

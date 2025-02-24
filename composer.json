@@ -31,6 +31,7 @@
         "phpstan/phpstan-deprecation-rules": "^1.0|^2.0",
         "phpstan/phpstan-phpunit": "^1.0|^2.0",
         "phpunit/phpunit": "^9.0|^10.0|^11.5.3",
+        "rector/rector": "^1.2",
         "roave/security-advisories": "dev-latest",
         "spatie/invade": "^2.0",
         "spatie/pest-plugin-test-time": "^1.0|^2.0",
@@ -51,7 +52,7 @@
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes && vendor/bin/rector"
     },
     "config": {
         "sort-packages": true,

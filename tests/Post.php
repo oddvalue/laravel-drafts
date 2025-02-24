@@ -22,9 +22,6 @@ class Post extends Model
 
     protected $table = 'posts';
 
-    /**
-     * @param array $draftableRelations
-     */
     public function setDraftableRelations(array $draftableRelations): void
     {
         $this->draftableRelations = $draftableRelations;
@@ -50,7 +47,7 @@ class Post extends Model
         return $this->hasOne(PostSection::class);
     }
 
-    protected static function newFactory()
+    protected static function newFactory(): PostFactory
     {
         return new PostFactory();
     }

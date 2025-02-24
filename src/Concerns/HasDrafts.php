@@ -33,7 +33,7 @@ trait HasDrafts
     |--------------------------------------------------------------------------
     */
 
-    public function initializeHasDrafts()
+    public function initializeHasDrafts(): void
     {
         $this->mergeCasts([
             $this->getIsCurrentColumn() => 'boolean',
@@ -138,6 +138,7 @@ trait HasDrafts
         if ($this->{$this->getUuidColumn()}) {
             return;
         }
+
         $this->{$this->getUuidColumn()} = Str::uuid();
     }
 
@@ -205,7 +206,7 @@ trait HasDrafts
 
     public function replicateAndAssociateDraftableRelations(Model $published): void
     {
-        collect($this->getDraftableRelations())->each(function (string $relationName) use ($published) {
+        collect($this->getDraftableRelations())->each(function (string $relationName) use ($published): void {
             $relation = $published->{$relationName}();
             switch (true) {
                 case $relation instanceof HasOne:
@@ -221,7 +222,7 @@ trait HasDrafts
 
                     break;
                 case $relation instanceof HasMany:
-                    $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName) {
+                    $this->{$relationName}()->get()->each(function ($model) use ($published, $relationName): void {
                         $replicated = $model->replicate();
 
                         $method = method_exists($replicated, 'getDraftableAttributes')
@@ -334,9 +335,9 @@ trait HasDrafts
         return $this;
     }
 
-    public function pruneRevisions()
+    public function pruneRevisions(): void
     {
-        self::withoutEvents(function () {
+        self::withoutEvents(function (): void {
             $revisionsToKeep = $this->revisions()
                 ->orderByDesc($this->getUpdatedAtColumn())
                 ->onlyDrafts()
@@ -355,8 +356,6 @@ trait HasDrafts
 
     /**
      * Get the name of the "publisher" relation columns.
-     *
-     * @return array
      */
     #[ArrayShape(['id' => "string", 'type' => "string"])]
     public function getPublisherColumns(): array
@@ -373,8 +372,6 @@ trait HasDrafts
 
     /**
      * Get the fully qualified "publisher" relation columns.
-     *
-     * @return array
      */
     public function getQualifiedPublisherColumns(): array
     {
@@ -461,6 +458,7 @@ trait HasDrafts
         if ($this->relationLoaded('drafts')) {
             return $this->drafts->first();
         }
+
         if ($this->relationLoaded('revisions')) {
             return $this->revisions->firstWhere($this->getIsCurrentColumn(), true);
         }

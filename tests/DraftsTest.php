@@ -5,7 +5,7 @@ use Oddvalue\LaravelDrafts\Tests\Post;
 
 use function Spatie\PestPluginTestTime\testTime;
 
-it('creates drafts', function () {
+it('creates drafts', function (): void {
     config(['drafts.revisions.keep' => 2]);
     testTime()->freeze();
     $post = Post::factory()->published()->create(['title' => 'Foo']);
@@ -32,7 +32,7 @@ it('creates drafts', function () {
     ]);
 });
 
-it('can create drafts when revisions are disabled', function () {
+it('can create drafts when revisions are disabled', function (): void {
     config(['drafts.revisions.keep' => 0]);
     $post = Post::factory()->create(['title' => 'Foo']);
     $this->assertDatabaseCount('posts', 1);
@@ -44,7 +44,7 @@ it('can create drafts when revisions are disabled', function () {
     $this->assertDatabaseCount('posts', 2);
 });
 
-it('can fetch the draft of a published record', function () {
+it('can fetch the draft of a published record', function (): void {
     $post = Post::factory()->create();
     $draft = Post::factory()->make();
     $post->fresh()->updateAsDraft(['title' => $draft->title]);
@@ -53,7 +53,7 @@ it('can fetch the draft of a published record', function () {
     expect($post->draft->title)->toBe($draft->title);
 });
 
-it('can publish drafts', function () {
+it('can publish drafts', function (): void {
     $post = Post::factory()->create(['title' => 'Foo']);
     $draft = Post::factory()->make(['title' => 'Bar']);
 
@@ -68,12 +68,12 @@ it('can publish drafts', function () {
     expect($post->fresh()->title)->toBe($draft->title);
 });
 
-it('returns false when calling update on a record that has not been persisted', function () {
+it('returns false when calling update on a record that has not been persisted', function (): void {
     $post = Post::factory()->make();
     expect($post->updateAsDraft(['title' => 'Foo']))->toBeFalse();
 });
 
-it('gets draft record from loaded revisions relation', function () {
+it('gets draft record from loaded revisions relation', function (): void {
     $post = Post::factory()->create(['title' => 'Foo']);
     $draft = Post::factory()->make(['title' => 'Bar']);
     $post->fresh()->updateAsDraft(['title' => $draft->title]);
@@ -82,7 +82,7 @@ it('gets draft record from loaded revisions relation', function () {
     expect($post->draft->title)->toBe($draft->title);
 });
 
-it('gets draft record from loaded draft relation', function () {
+it('gets draft record from loaded draft relation', function (): void {
     $post = Post::factory()->create(['title' => 'Foo']);
     $draft = Post::factory()->make(['title' => 'Bar']);
     $post->fresh()->updateAsDraft(['title' => $draft->title]);
@@ -91,7 +91,7 @@ it('gets draft record from loaded draft relation', function () {
     expect($post->draft->title)->toBe($draft->title);
 });
 
-it('gets draft record when no relations loaded', function () {
+it('gets draft record when no relations loaded', function (): void {
     $post = Post::factory()->create(['title' => 'Foo']);
     $draft = Post::factory()->make(['title' => 'Bar']);
     $post->fresh()->updateAsDraft(['title' => $draft->title]);
@@ -99,7 +99,7 @@ it('gets draft record when no relations loaded', function () {
     expect($post->draft->title)->toBe($draft->title);
 });
 
-it('can create draft using default save method', function () {
+it('can create draft using default save method', function (): void {
     $post = Post::factory()->create(['title' => 'Foo']);
     $draft = Post::factory()->make(['title' => 'Bar']);
     $post->refresh();
@@ -110,7 +110,7 @@ it('can create draft using default save method', function () {
     expect($post->draft->title)->toBe($draft->title);
 });
 
-it('creates drafts without altering the original post', function () {
+it('creates drafts without altering the original post', function (): void {
     config(['drafts.revisions.keep' => 10]);
     $post = Post::factory()->create(['title' => 'Foo']);
     $originalId = $post->id;
