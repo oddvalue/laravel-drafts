@@ -61,7 +61,7 @@ class PublishingScope implements Scope
     {
         $builder->macro(
             'published',
-            fn(Builder $builder, $withoutDrafts = true) => $builder->withDrafts(!$withoutDrafts),
+            fn (Builder $builder, $withoutDrafts = true) => $builder->withDrafts(! $withoutDrafts),
         );
     }
 
