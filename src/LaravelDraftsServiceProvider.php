@@ -26,7 +26,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton(LaravelDrafts::class, fn(): LaravelDrafts => new LaravelDrafts());
+        $this->app->singleton(LaravelDrafts::class, fn (): LaravelDrafts => new LaravelDrafts());
 
         $this->app[Kernel::class]->prependToMiddlewarePriority(WithDraftsMiddleware::class);
 

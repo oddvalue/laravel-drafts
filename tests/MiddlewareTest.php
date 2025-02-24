@@ -11,17 +11,17 @@ beforeEach(function (): void {
     test()->draftPost = Post::createDraft(['title' => 'Hello World draft']);
 
     Route::middleware(['web'])->group(function (): void {
-        Route::get('/default', fn() => Post::all());
+        Route::get('/default', fn () => Post::all());
 
-        Route::get('/with-drafts-middleware', fn() => Post::all())->middleware(WithDraftsMiddleware::class);
+        Route::get('/with-drafts-middleware', fn () => Post::all())->middleware(WithDraftsMiddleware::class);
 
-        Route::get('/with-drafts-middleware/{post}', fn(Post $post): Post => $post)->middleware(
+        Route::get('/with-drafts-middleware/{post}', fn (Post $post): Post => $post)->middleware(
             WithDraftsMiddleware::class,
         );
 
         Route::withDrafts(function (): void {
-            Route::get('/with-drafts-macro', fn() => Post::all());
-            Route::get('/with-drafts-macro/{post}', fn(Post $post): Post => $post);
+            Route::get('/with-drafts-macro', fn () => Post::all());
+            Route::get('/with-drafts-macro/{post}', fn (Post $post): Post => $post);
         });
     });
 });
