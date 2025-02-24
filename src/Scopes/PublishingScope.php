@@ -21,13 +21,14 @@ class PublishingScope implements Scope
         if (LaravelDrafts::isPreviewModeEnabled() || LaravelDrafts::isWithDraftsEnabled()) {
             return;
         }
+
         $builder->where($model->getQualifiedIsPublishedColumn(), 1);
     }
 
     public function extend(Builder $builder): void
     {
         foreach ($this->extensions as $extension) {
-            $this->{"add{$extension}"}($builder);
+            $this->{'add' . $extension}($builder);
         }
     }
 
@@ -58,9 +59,9 @@ class PublishingScope implements Scope
 
     protected function addPublished(Builder $builder): void
     {
-        $builder->macro('published', function (Builder $builder, $withoutDrafts = true) {
-            return $builder->withDrafts(! $withoutDrafts);
-        });
+        $builder->macro(
+            'published', fn(Builder $builder, $withoutDrafts = true) => $builder->withDrafts(!$withoutDrafts),
+        );
     }
 
     protected function addWithDrafts(Builder $builder): void
@@ -76,7 +77,7 @@ class PublishingScope implements Scope
 
     protected function addWithoutDrafts(Builder $builder): void
     {
-        $builder->macro('withoutDrafts', function (Builder $builder) {
+        $builder->macro('withoutDrafts', function (Builder $builder): Builder {
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
@@ -88,7 +89,7 @@ class PublishingScope implements Scope
 
     protected function addOnlyDrafts(Builder $builder): void
     {
-        $builder->macro('onlyDrafts', function (Builder $builder) {
+        $builder->macro('onlyDrafts', function (Builder $builder): Builder {
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)

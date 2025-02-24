@@ -3,19 +3,19 @@
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 use Oddvalue\LaravelDrafts\Tests\Post;
 
-it('can enable preview mode', function () {
+it('can enable preview mode', function (): void {
     LaravelDrafts::previewMode();
     expect(LaravelDrafts::isPreviewModeEnabled())->toBeTrue();
 });
 
-it('can disable preview mode', function () {
+it('can disable preview mode', function (): void {
     LaravelDrafts::previewMode();
     expect(LaravelDrafts::isPreviewModeEnabled())->toBeTrue();
     LaravelDrafts::disablePreviewMode();
     expect(LaravelDrafts::isPreviewModeEnabled())->toBeFalse();
 });
 
-it('gets the current draft when preview mode is enabled', function () {
+it('gets the current draft when preview mode is enabled', function (): void {
     $post = Post::factory()->create(['title' => 'Foo']);
     $post->updateAsDraft(['title' => 'Bar']);
     $post->updateAsDraft(['title' => 'Baz']);

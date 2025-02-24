@@ -3,15 +3,15 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-beforeEach(function () {
-    $this->app['db']->connection()->getSchemaBuilder()->create('foo', function (Blueprint $table) {
+beforeEach(function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->create('foo', function (Blueprint $table): void {
         $table->increments('id');
         $table->timestamps();
     });
 });
 
-it('adds the required draft columns to the table', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('adds the required draft columns to the table', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts();
     });
 
@@ -25,8 +25,8 @@ it('adds the required draft columns to the table', function () {
     ]))->toBeTrue();
 });
 
-it('allows column names to be overridden when migrating', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('allows column names to be overridden when migrating', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts(
             uuid: 'uuid_override',
             publishedAt: 'published_at_override',
@@ -46,8 +46,8 @@ it('allows column names to be overridden when migrating', function () {
     ]))->toBeTrue();
 });
 
-it('drops draft columns', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('drops draft columns', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts();
     });
 
@@ -60,7 +60,7 @@ it('drops draft columns', function () {
         'publisher_type',
     ]))->toBeTrue();
 
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->dropDrafts();
     });
 
@@ -74,8 +74,8 @@ it('drops draft columns', function () {
     ]))->toBeFalse();
 });
 
-it('drops custom named draft columns', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('drops custom named draft columns', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts(
             uuid: 'uuid_override',
             publishedAt: 'published_at_override',
@@ -94,7 +94,7 @@ it('drops custom named draft columns', function () {
         'publisher_override_type',
     ]))->toBeTrue();
 
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->dropDrafts(
             uuid: 'uuid_override',
             publishedAt: 'published_at_override',

@@ -3,7 +3,7 @@
 
 use Oddvalue\LaravelDrafts\Tests\Post;
 
-it('can override columns via config', function () {
+it('can override columns via config', function (): void {
     config([
         'drafts.column_names' => [
             'published_at' => 'published_at_override',
@@ -22,13 +22,18 @@ it('can override columns via config', function () {
         ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']);
 });
 
-it('can override columns via class constants', function () {
+it('can override columns via class constants', function (): void {
     $post = new class () extends Post {
         public const PUBLISHED_AT = 'published_at_override';
+
         public const IS_PUBLISHED = 'is_published_override';
+
         public const IS_CURRENT = 'is_current_override';
+
         public const UUID = 'uuid_override';
+
         public const PUBLISHER_ID = 'publisher_override_id';
+
         public const PUBLISHER_TYPE = 'publisher_override_type';
     };
 
@@ -41,7 +46,7 @@ it('can override columns via class constants', function () {
         ->and($post->getQualifiedPublisherColumns())->toBe($post->qualifyColumns(['id' => $post::PUBLISHER_ID, 'type' => $post::PUBLISHER_TYPE]));
 });
 
-it('honors column name overrides', function () {
+it('honors column name overrides', function (): void {
 
     $post = OverridePost::make([
 
@@ -61,10 +66,15 @@ class OverridePost extends \Illuminate\Database\Eloquent\Model
     use \Illuminate\Database\Eloquent\SoftDeletes;
 
     public const PUBLISHED_AT = 'published_at_override';
+
     public const IS_PUBLISHED = 'is_published_override';
+
     public const IS_CURRENT = 'is_current_override';
+
     public const UUID = 'uuid_override';
+
     public const PUBLISHER_ID = 'publisher_override_id';
+
     public const PUBLISHER_TYPE = 'publisher_override_type';
 
     protected $guarded = [];

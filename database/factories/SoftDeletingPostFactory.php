@@ -4,7 +4,7 @@ namespace Oddvalue\LaravelDrafts\Database\Factories;
 
 use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
 
-class SoftDeletingPostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
+class SoftDeletingPostFactory extends PostFactory
 {
     protected $model = SoftDeletingPost::class;
 

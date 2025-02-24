@@ -5,9 +5,9 @@ use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
 
 use function Spatie\PestPluginTestTime\testTime;
 
-it('keeps the correct number of revisions', function () {
+it('keeps the correct number of revisions', function (): void {
     config(['drafts.revisions.keep' => 3]);
-    $revsExist = function (...$titles) {
+    $revsExist = function (...$titles): void {
         $this->assertDatabaseCount('posts', count($titles));
         foreach ($titles as $title) {
             $this->assertDatabaseHas('posts', [
@@ -40,8 +40,8 @@ it('keeps the correct number of revisions', function () {
     ]);
 });
 
-it('sets the correct timestamps on revisions', function () {
-    $recordsExist = function (...$records) {
+it('sets the correct timestamps on revisions', function (): void {
+    $recordsExist = function (...$records): void {
         foreach ($records as $record) {
             $this->assertDatabaseHas('posts', $record);
         }
@@ -80,7 +80,7 @@ it('sets the correct timestamps on revisions', function () {
     );
 });
 
-it('can disable revisions', function () {
+it('can disable revisions', function (): void {
     config(['drafts.revisions.keep' => 0]);
     $post = Post::factory()->create(['title' => 'Foo']);
     $this->assertDatabaseCount('posts', 1);
@@ -88,12 +88,12 @@ it('can disable revisions', function () {
     $this->assertDatabaseCount('posts', 1);
 });
 
-it('deletes revisions', function () {
+it('deletes revisions', function (): void {
     config(['drafts.revisions.keep' => 5]);
 
     $post = Post::factory()->create();
     for ($i = 0; $i < 5; $i++) {
-        $post->fresh()->update(['title' => "Title {$i}"]);
+        $post->fresh()->update(['title' => 'Title ' . $i]);
     }
 
     $this->assertDatabaseCount(Post::class, 6);
@@ -103,12 +103,12 @@ it('deletes revisions', function () {
     $this->assertDatabaseCount(Post::class, 0);
 });
 
-it('soft deletes revisions', function () {
+it('soft deletes revisions', function (): void {
     config(['drafts.revisions.keep' => 5]);
 
     $post = SoftDeletingPost::factory()->create();
     for ($i = 0; $i < 5; $i++) {
-        $post->fresh()->update(['title' => "Title {$i}"]);
+        $post->fresh()->update(['title' => 'Title ' . $i]);
     }
 
     $this->assertDatabaseCount(SoftDeletingPost::class, 6);
@@ -123,12 +123,12 @@ it('soft deletes revisions', function () {
     $this->assertDatabaseCount(SoftDeletingPost::class, 0);
 });
 
-it('retores soft deleted revisions', function () {
+it('retores soft deleted revisions', function (): void {
     config(['drafts.revisions.keep' => 5]);
 
     $post = SoftDeletingPost::factory()->create();
     for ($i = 0; $i < 5; $i++) {
-        $post->fresh()->update(['title' => "Title {$i}"]);
+        $post->fresh()->update(['title' => 'Title ' . $i]);
     }
 
     $this->assertDatabaseCount(SoftDeletingPost::class, 6);
@@ -144,7 +144,7 @@ it('retores soft deleted revisions', function () {
     expect(SoftDeletingPost::withDrafts()->count())->toBe(6);
 });
 
-it('save without revision', function () {
+it('save without revision', function (): void {
     $post = Post::factory()->published()->create(['title' => 'Foo']);
     $this->assertDatabaseCount('posts', 1);
 

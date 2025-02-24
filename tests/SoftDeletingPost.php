@@ -11,7 +11,7 @@ class SoftDeletingPost extends Post
 
     protected $table = 'soft_deleting_posts';
 
-    protected static function newFactory()
+    protected static function newFactory(): SoftDeletingPostFactory
     {
         return new SoftDeletingPostFactory();
     }

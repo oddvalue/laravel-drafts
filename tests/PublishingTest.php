@@ -4,7 +4,7 @@ use Oddvalue\LaravelDrafts\Tests\Post;
 
 use function Spatie\PestPluginTestTime\testTime;
 
-it('can draft model', function () {
+it('can draft model', function (): void {
     Post::createDraft(['title' => 'Hello World']);
     $this->assertDatabaseHas('posts', [
         'title' => 'Hello World',
@@ -12,7 +12,7 @@ it('can draft model', function () {
     ]);
 });
 
-it('can publish a draft model', function () {
+it('can publish a draft model', function (): void {
     testTime()->freeze();
     Post::create(['title' => 'Hello World']);
     Post::withDrafts()->first()->save();
@@ -21,7 +21,7 @@ it('can publish a draft model', function () {
     ]);
 });
 
-it('can publish a model', function () {
+it('can publish a model', function (): void {
     testTime()->freeze();
     Post::make(['title' => 'Hello World'])->save();
     $this->assertDatabaseHas('posts', [
@@ -30,25 +30,25 @@ it('can publish a model', function () {
     ]);
 });
 
-it('omits drafts from default query', function () {
+it('omits drafts from default query', function (): void {
     Post::factory()->count(5)->create();
     Post::factory()->count(5)->draft()->create();
     $this->assertCount(5, Post::all());
 });
 
-it('can use `withDrafts` scope to select drafts', function () {
+it('can use `withDrafts` scope to select drafts', function (): void {
     Post::factory()->count(5)->published()->create();
     Post::factory()->count(5)->draft()->create();
     expect(Post::withDrafts()->pluck('id'))
         ->toHaveCount(10);
 });
 
-it('generates a uuid', function () {
+it('generates a uuid', function (): void {
     $post = Post::factory()->create();
     $this->assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $post->uuid);
 });
 
-it('has a method to check published status', function () {
+it('has a method to check published status', function (): void {
     $post = Post::factory()->create();
     expect($post->isPublished())->toBeTrue();
 
@@ -56,7 +56,7 @@ it('has a method to check published status', function () {
     expect($post->isPublished())->toBeFalse();
 });
 
-it('does not create multiple published records', function () {
+it('does not create multiple published records', function (): void {
     $post = Post::factory()->create();
     $post->title = 'b';
     $post->saveAsDraft();
@@ -67,7 +67,7 @@ it('does not create multiple published records', function () {
         ->toHaveCount(1);
 });
 
-it('can publish a draft that is not the current one', function () {
+it('can publish a draft that is not the current one', function (): void {
     \Oddvalue\LaravelDrafts\Facades\LaravelDrafts::withDrafts();
 
     Post::factory()->create(['title' => 'a']);

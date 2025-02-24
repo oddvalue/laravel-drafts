@@ -2,9 +2,9 @@
 
 use Oddvalue\LaravelDrafts\Tests\Post;
 
-it('fires publishing event', function () {
+it('fires publishing event', function (): void {
     $post = Post::factory()->draft()->create(['title' => 'Draft']);
-    Post::publishing(function ($post) {
+    Post::publishing(function ($post): void {
         $post->title = 'Published';
     });
     expect($post->title)->toBe('Draft')
@@ -12,9 +12,9 @@ it('fires publishing event', function () {
         ->and($post->fresh()->title)->toBe('Published');
 });
 
-it('fires published event', function () {
+it('fires published event', function (): void {
     $post = Post::factory()->draft()->create(['title' => 'Draft']);
-    Post::published(function ($post) {
+    Post::published(function ($post): void {
         $post->title = 'Published';
     });
     expect($post->title)->toBe('Draft')
@@ -23,9 +23,9 @@ it('fires published event', function () {
         ->and($post->title)->toBe('Published');
 });
 
-it('fires savingAsDraft event', function () {
+it('fires savingAsDraft event', function (): void {
     $post = Post::factory()->create(['title' => 'Published']);
-    Post::savingAsDraft(function ($post) {
+    Post::savingAsDraft(function ($post): bool {
         $post->title = 'Draft';
 
         return false;
@@ -37,9 +37,9 @@ it('fires savingAsDraft event', function () {
         ->and($post->fresh()->title)->toBe('Published');
 });
 
-it('fires savedAsDraft event', function () {
+it('fires savedAsDraft event', function (): void {
     $post = Post::factory()->create(['title' => 'Published']);
-    Post::savedAsDraft(function ($post) {
+    Post::savedAsDraft(function ($post): void {
         $post->title = 'Draft';
     });
     expect($post->title)->toBe('Published')

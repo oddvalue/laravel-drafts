@@ -24,11 +24,9 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ->hasViews();
     }
 
-    public function packageRegistered()
+    public function packageRegistered(): void
     {
-        $this->app->singleton(LaravelDrafts::class, function () {
-            return new LaravelDrafts();
-        });
+        $this->app->singleton(LaravelDrafts::class, fn(): LaravelDrafts => new LaravelDrafts());
 
         $this->app[Kernel::class]->prependToMiddlewarePriority(WithDraftsMiddleware::class);
 
@@ -38,8 +36,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ?string $isPublished = null,
             ?string $isCurrent = null,
             ?string $publisherMorphName = null,
-        ) {
-            /** @var Blueprint $this */
+        ): void {
             $uuid ??= config('drafts.column_names.uuid', 'uuid');
             $publishedAt ??= config('drafts.column_names.published_at', 'published_at');
             $isPublished ??= config('drafts.column_names.is_published', 'is_published');
@@ -61,8 +58,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ?string $isPublished = null,
             ?string $isCurrent = null,
             ?string $publisherMorphName = null,
-        ) {
-            /** @var Blueprint $this */
+        ): void {
             $uuid ??= config('drafts.column_names.uuid', 'uuid');
             $publishedAt ??= config('drafts.column_names.published_at', 'published_at');
             $isPublished ??= config('drafts.column_names.is_published', 'is_published');
