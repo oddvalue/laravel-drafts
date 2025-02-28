@@ -1,7 +1,7 @@
 <?php
 
 
-use Oddvalue\LaravelDrafts\Tests\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 it('can override columns via config', function (): void {
     config([

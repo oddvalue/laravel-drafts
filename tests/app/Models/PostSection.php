@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Tests;
+namespace Oddvalue\LaravelDrafts\Tests\app\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

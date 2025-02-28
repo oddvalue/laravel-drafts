@@ -1,7 +1,7 @@
 <?php
 
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
-use Oddvalue\LaravelDrafts\Tests\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 it('can enable preview mode', function (): void {
     LaravelDrafts::previewMode();

@@ -7,6 +7,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Oddvalue\LaravelDrafts\LaravelDraftsServiceProvider;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Tag;
+use Oddvalue\LaravelDrafts\Tests\app\Models\User;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -20,9 +23,9 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn(string $modelName): string => 'Oddvalue\\LaravelDrafts\\Database\\Factories\\' . class_basename(
-                    $modelName,
-                ) . 'Factory',
+            fn (string $modelName): string => 'Oddvalue\\LaravelDrafts\\Database\\Factories\\' . class_basename(
+                $modelName,
+            ) . 'Factory',
         );
 
         $this->setUpDatabase($this->app);

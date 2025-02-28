@@ -1,6 +1,6 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 use function Spatie\PestPluginTestTime\testTime;
 
@@ -74,6 +74,7 @@ it('can publish a draft that is not the current one', function (): void {
 
     $post = Post::where('title', 'a')->first();
     $post->title = 'b';
+
     $b = $post->saveAsDraft();
 
     $post = Post::where('title', 'b')->first();
