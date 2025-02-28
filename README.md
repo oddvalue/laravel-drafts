@@ -42,6 +42,7 @@
 | v9.x    | v1.x   |
 | v10.x   | v1.x   |
 | v11.x   | v2.x   |
+| v12.x   | >2.1   |
 
 ## Installation
 
@@ -118,7 +119,7 @@ use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 class Post extends Model
 {
     use HasDrafts;
-    
+
     ...
 }
 ```
@@ -143,7 +144,7 @@ public function getDraftableRelations()
 }
 ```
 
-#### Database 
+#### Database
 
 The following database columns are required for the model to store drafts and revisions:
 
@@ -154,7 +155,7 @@ The following database columns are required for the model to store drafts and re
 * publisher_type
 * publisher_id
 
-The names of these columns can be changed in the config file or per model using constants 
+The names of these columns can be changed in the config file or per model using constants
 
 e.g. To alter the name of the `is_current` column then you would add a class constant called `IS_CURRENT`
 
@@ -167,9 +168,9 @@ use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 class Post extends Model
 {
     use HasDrafts;
-    
+
     public const IS_CURRENT = 'admin_editing';
-    
+
     ...
 }
 ```
@@ -179,11 +180,11 @@ There are two helper methods added to the schema builder for use in your migrati
 ```php
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
- 
+
 Schema::table('posts', function (Blueprint $table) {
     $table->drafts();
 });
- 
+
 Schema::table('posts', function (Blueprint $table) {
     $table->dropDrafts();
 });
@@ -231,10 +232,10 @@ $post->updateAsDraft(['title' => 'Bar']);
 # OR
 
 $post->title = 'Bar';
-$post->saveAsDraft(); 
+$post->saveAsDraft();
 ```
 
-This will create a draft record and the original record will be left unchanged. 
+This will create a draft record and the original record will be left unchanged.
 
 | # | title | uuid                                 | published_at        | is_published | is_current | created_at          | updated_at          |
 |---|-------|--------------------------------------|---------------------|--------------|------------|---------------------|---------------------|
@@ -254,7 +255,8 @@ $posts = Post::all();
 
 #### Current Revision
 
-Every record will have a current revision. That is the most recent revision and what you would want to display in your admin. 
+Every record will have a current revision. That is the most recent revision and what you would want to display in your
+admin.
 
 To fetch the current revision you can call the `current` scope.
 
