@@ -1,6 +1,7 @@
 <?php
 
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
+
 use function Spatie\PestPluginTestTime\testTime;
 
 it('can draft model', function (): void {

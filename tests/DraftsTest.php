@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
+
 use function Spatie\PestPluginTestTime\testTime;
 
 it('creates drafts', function (): void {

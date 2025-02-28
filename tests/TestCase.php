@@ -7,10 +7,10 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Oddvalue\LaravelDrafts\LaravelDraftsServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Tag;
 use Oddvalue\LaravelDrafts\Tests\app\Models\User;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
