@@ -1,6 +1,6 @@
 <?php
 
-namespace Oddvalue\LaravelDrafts\Tests;
+namespace Oddvalue\LaravelDrafts\Tests\app\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Oddvalue\LaravelDrafts\Database\Factories\SoftDeletingPostFactory;

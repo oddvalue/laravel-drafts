@@ -1,8 +1,7 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\Post;
-use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
-
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\SoftDeletingPost;
 use function Spatie\PestPluginTestTime\testTime;
 
 it('keeps the correct number of revisions', function (): void {

@@ -1,6 +1,6 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 it('fires publishing event', function (): void {
     $post = Post::factory()->draft()->create(['title' => 'Draft']);

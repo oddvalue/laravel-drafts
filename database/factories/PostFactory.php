@@ -2,7 +2,7 @@
 
 namespace Oddvalue\LaravelDrafts\Database\Factories;
 
-use Oddvalue\LaravelDrafts\Tests\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
 {
