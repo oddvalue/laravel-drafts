@@ -103,14 +103,14 @@ trait HasDrafts
         $revision = $updatingModel?->replicate();
 
         static::saved(function (Model $model) use ($updatingModel, $revision): void {
-            if ($model->isNot($this)) {
+            if ($model->isNot($this) || $revision === null || $updatingModel === null) {
                 return;
             }
 
             $revision->{$this->getCreatedAtColumn()} = $updatingModel->{$this->getCreatedAtColumn()};
             $revision->{$this->getUpdatedAtColumn()} = $updatingModel->{$this->getUpdatedAtColumn()};
-            $revision->is_current = false;
-            $revision->is_published = false;
+            $revision->{$this->getIsCurrentColumn()} = false;
+            $revision->{$this->getIsPublishedColumn()} = false;
 
             $revision->saveQuietly(['timestamps' => false]); // Preserve the existing updated_at
 
@@ -142,6 +142,9 @@ trait HasDrafts
         $this->{$this->getUuidColumn()} = Str::uuid();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getDraftableAttributes(): array
     {
         return $this->getAttributes();
@@ -242,11 +245,17 @@ trait HasDrafts
         });
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getDraftableRelations(): array
     {
         return property_exists($this, 'draftableRelations') ? $this->draftableRelations : [];
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function saveAsDraft(array $options = []): bool
     {
         if ($this->fireModelEvent('savingAsDraft') === false || $this->fireModelEvent('saving') === false) {
@@ -308,6 +317,10 @@ trait HasDrafts
         static::registerModelEvent('drafted', $callback);
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     * @param array<string, mixed> $options
+     */
     public function updateAsDraft(array $attributes = [], array $options = []): bool
     {
         if (! $this->exists) {
@@ -317,6 +330,9 @@ trait HasDrafts
         return $this->fill($attributes)->saveAsDraft($options);
     }
 
+    /**
+     * @param array<string, mixed> ...$attributes
+     */
     public static function createDraft(...$attributes): self
     {
         return tap(static::make(...$attributes), function ($instance) {
@@ -328,8 +344,9 @@ trait HasDrafts
 
     public function setPublisher(): static
     {
-        if ($this->{$this->getPublisherColumns()['id']} === null && LaravelDrafts::getCurrentUser()) {
-            $this->publisher()->associate(LaravelDrafts::getCurrentUser());
+        $currentUser = LaravelDrafts::getCurrentUser();
+        if ($this->{$this->getPublisherColumns()['id']} === null && $currentUser instanceof Model) {
+            $this->publisher()->associate($currentUser);
         }
 
         return $this;
@@ -339,7 +356,7 @@ trait HasDrafts
     {
         self::withoutEvents(function (): void {
             $revisionsToKeep = $this->revisions()
-                ->orderByDesc($this->getUpdatedAtColumn())
+                ->orderByDesc($this->getUpdatedAtColumn() ?? 'updated_at')
                 ->onlyDrafts()
                 ->withoutCurrent()
                 ->take(config('drafts.revisions.keep'))
@@ -358,6 +375,9 @@ trait HasDrafts
      * Get the name of the "publisher" relation columns.
      */
     #[ArrayShape(['id' => "string", 'type' => "string"])]
+    /**
+     * @return array{id: string, type: string}
+     */
     public function getPublisherColumns(): array
     {
         return [
@@ -372,6 +392,8 @@ trait HasDrafts
 
     /**
      * Get the fully qualified "publisher" relation columns.
+     *
+     * @return array{id: string, type: string}
      */
     public function getQualifiedPublisherColumns(): array
     {
@@ -403,16 +425,25 @@ trait HasDrafts
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @return HasMany<static, $this>
+     */
     public function revisions(): HasMany
     {
         return $this->hasMany(static::class, $this->getUuidColumn(), $this->getUuidColumn())->withDrafts();
     }
 
-    public function drafts()
+    /**
+     * @return HasMany<static, $this>
+     */
+    public function drafts(): HasMany
     {
         return $this->revisions()->current()->onlyDrafts();
     }
 
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function publisher(): MorphTo
     {
         return $this->morphTo(config('drafts.column_names.publisher_morph_name'));
@@ -453,7 +484,10 @@ trait HasDrafts
     |--------------------------------------------------------------------------
     */
 
-    public function getDraftAttribute()
+    /**
+     * @return static|null
+     */
+    public function getDraftAttribute(): ?self
     {
         if ($this->relationLoaded('drafts')) {
             return $this->drafts->first();

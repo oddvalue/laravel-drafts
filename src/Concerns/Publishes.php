@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Oddvalue\LaravelDrafts\Scopes\PublishingScope;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withPublished(bool $withPublished = true)
- * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyPublished()
- * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withoutPublished()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|\Illuminate\Database\Query\Builder withPublished(bool $withPublished = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|\Illuminate\Database\Query\Builder onlyPublished()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|\Illuminate\Database\Query\Builder withoutPublished()
  */
 trait Publishes
 {

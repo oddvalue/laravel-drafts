@@ -25,30 +25,6 @@ parameters:
 			path: src/Scopes/PublishingScope.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getQualifiedIsPublishedColumn\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Scopes/PublishingScope.php
-
-		-
-			message: '#^Access to an undefined property Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\:\:\$drafts\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/app/Models/Post.php
-
-		-
-			message: '#^Access to an undefined property Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\:\:\$is_current\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/app/Models/Post.php
-
-		-
-			message: '#^Access to an undefined property Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\:\:\$is_published\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/app/Models/Post.php
-
-		-
 			message: '#^Access to undefined constant static\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\)\:\:IS_CURRENT\.$#'
 			identifier: classConstant.notFound
 			count: 1
@@ -145,25 +121,13 @@ parameters:
 			path: tests/app/Models/Post.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:current\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<static\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\), \$this\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\)\>\:\:onlyDrafts\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: tests/app/Models/Post.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:onlyDrafts\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/app/Models/Post.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:published\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/app/Models/Post.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:withDrafts\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<static\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\), \$this\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\)\>\:\:published\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: tests/app/Models/Post.php
@@ -171,7 +135,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<static\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\), \$this\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\)\>\:\:withDrafts\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 3
 			path: tests/app/Models/Post.php
 
 		-
@@ -181,13 +145,91 @@ parameters:
 			path: tests/app/Models/Post.php
 
 		-
-			message: '#^Right side of && is always true\.$#'
-			identifier: booleanAnd.rightAlwaysTrue
-			count: 1
-			path: tests/app/Models/Post.php
-
-		-
 			message: '#^Using nullsafe method call on non\-nullable type mixed\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: tests/app/Models/Post.php
+
+		-
+			message: '#^Method Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\:\:getPublisherColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Concerns/HasDrafts.php
+
+		-
+			message: '#^Method Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\:\:getDraftAttribute\(\) should return static\(Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\)\|null but returns Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\|null\.$#'
+			identifier: return.type
+			count: 3
+			path: src/Concerns/HasDrafts.php
+
+		-
+			message: '#^Class Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/app/Models/Post.php
+
+		-
+			message: '#^Class Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\PostSection uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/app/Models/PostSection.php
+
+		-
+			message: '#^Class Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Tag uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/app/Models/Tag.php
+
+		-
+			message: '#^Method Oddvalue\\LaravelDrafts\\Database\\Factories\\PostFactory\:\:definition\(\) should return array\<model property of Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post, mixed\> but returns array\<string, string\|true\>\.$#'
+			identifier: return.type
+			count: 1
+			path: database/factories/PostFactory.php
+
+		-
+			message: '#^Method Oddvalue\\LaravelDrafts\\Database\\Factories\\PostSectionFactory\:\:definition\(\) should return array\<model property of Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\PostSection, mixed\> but returns array\<string, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: database/factories/PostSectionFactory.php
+
+		-
+			message: '#^Method Oddvalue\\LaravelDrafts\\Database\\Factories\\SoftDeletingPostFactory\:\:definition\(\) should return array\<model property of Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post, mixed\> but returns array\<string, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: database/factories/SoftDeletingPostFactory.php
+
+		-
+			message: '#^Method Oddvalue\\LaravelDrafts\\Database\\Factories\\TagFactory\:\:definition\(\) should return array\<model property of Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Tag, mixed\> but returns array\<string, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: database/factories/TagFactory.php
+
+		-
+			message: '#^Cannot call method getDraftableAttributes\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Concerns/HasDrafts.php
+
+		-
+			message: '#^Parameter \#2 \$callback of static method Illuminate\\Database\\Eloquent\\Model\:\:registerModelEvent\(\) expects array\|\(callable\(\)\: mixed\)\|class\-string\|Illuminate\\Events\\QueuedClosure, Closure\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Concerns/HasDrafts.php
+
+		-
+			message: '#^Method Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\Post\:\:getQualifiedPublisherColumns\(\) should return array\{id\: string, type\: string\} but returns array\<string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Concerns/HasDrafts.php
+
+		-
+			message: '#^Parameter \#2 \$callback of static method Illuminate\\Database\\Eloquent\\Model\:\:registerModelEvent\(\) expects array\|\(callable\(\)\: mixed\)\|class\-string\|Illuminate\\Events\\QueuedClosure, Closure\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Concerns/Publishes.php
+
+		-
+			message: '#^Cannot access offset ''Illuminate\\\\Contracts\\\\Http\\\\Kernel'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/LaravelDraftsServiceProvider.php

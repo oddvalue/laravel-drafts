@@ -4,6 +4,9 @@ namespace Oddvalue\LaravelDrafts\Database\Factories;
 
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<Post>
+ */
 class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
 {
     protected $model = Post::class;
@@ -19,7 +22,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
         ];
     }
 
-    public function draft()
+    public function draft(): static
     {
         return $this->state(function () {
             return [
@@ -29,7 +32,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
         });
     }
 
-    public function published()
+    public function published(): static
     {
         return $this->state(function () {
             return [

@@ -18,7 +18,7 @@ class SoftDeletingPostFactory extends PostFactory
         ];
     }
 
-    public function draft()
+    public function draft(): static
     {
         return $this->state(function () {
             return [
@@ -28,7 +28,7 @@ class SoftDeletingPostFactory extends PostFactory
         });
     }
 
-    public function published()
+    public function published(): static
     {
         return $this->state(function () {
             return [

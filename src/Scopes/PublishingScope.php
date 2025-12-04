@@ -22,6 +22,7 @@ class PublishingScope implements Scope
             return;
         }
 
+        /** @phpstan-ignore method.notFound */
         $builder->where($model->getQualifiedIsPublishedColumn(), 1);
     }
 
