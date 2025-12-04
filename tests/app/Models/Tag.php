@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Oddvalue\LaravelDrafts\Database\Factories\TagFactory;
 
 /**
- * @phpstan-use HasFactory<TagFactory>
+ * @use HasFactory<TagFactory>
  */
 class Tag extends \Illuminate\Database\Eloquent\Model
 {

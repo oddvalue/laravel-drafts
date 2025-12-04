@@ -12,9 +12,10 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
     protected $model = Post::class;
 
     /**
-     * @inheritDoc
+     * @return array<string, mixed>
+     * @phpstan-ignore method.childReturnType
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'title' => $this->faker->sentence,

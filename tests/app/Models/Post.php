@@ -13,7 +13,7 @@ use Oddvalue\LaravelDrafts\Database\Factories\PostFactory;
 
 /**
  * @mixes \Oddvalue\LaravelDrafts\Concerns\HasDrafts
- * @phpstan-use HasFactory<PostFactory>
+ * @use HasFactory<PostFactory>
  */
 class Post extends Model
 {

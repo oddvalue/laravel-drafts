@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Oddvalue\LaravelDrafts\Database\Factories\PostSectionFactory;
 
 /**
- * @phpstan-use HasFactory<PostSectionFactory>
+ * @use HasFactory<PostSectionFactory>
  */
 class PostSection extends \Illuminate\Database\Eloquent\Model
 {

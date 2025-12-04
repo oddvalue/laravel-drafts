@@ -12,9 +12,10 @@ class TagFactory extends \Illuminate\Database\Eloquent\Factories\Factory
     protected $model = Tag::class;
 
     /**
-     * @inheritDoc
+     * @return array<string, mixed>
+     * @phpstan-ignore method.childReturnType
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => $this->faker->word(),

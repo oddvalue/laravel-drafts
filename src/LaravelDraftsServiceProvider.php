@@ -28,6 +28,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(LaravelDrafts::class, fn (): LaravelDrafts => new LaravelDrafts());
 
+        /** @phpstan-ignore offsetAccess.nonOffsetAccessible, method.nonObject */
         $this->app[Kernel::class]->prependToMiddlewarePriority(WithDraftsMiddleware::class);
 
         Blueprint::macro('drafts', function (
@@ -37,19 +38,24 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ?string $isCurrent = null,
             ?string $publisherMorphName = null,
         ): void {
-            $uuid ??= config('drafts.column_names.uuid', 'uuid');
-            $publishedAt ??= config('drafts.column_names.published_at', 'published_at');
-            $isPublished ??= config('drafts.column_names.is_published', 'is_published');
-            $isCurrent ??= config('drafts.column_names.is_current', 'is_current');
-            $publisherMorphName ??= config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+            /** @var string $uuidCol */
+            $uuidCol = $uuid ?? config('drafts.column_names.uuid', 'uuid');
+            /** @var string $publishedAtCol */
+            $publishedAtCol = $publishedAt ?? config('drafts.column_names.published_at', 'published_at');
+            /** @var string $isPublishedCol */
+            $isPublishedCol = $isPublished ?? config('drafts.column_names.is_published', 'is_published');
+            /** @var string $isCurrentCol */
+            $isCurrentCol = $isCurrent ?? config('drafts.column_names.is_current', 'is_current');
+            /** @var string $publisherMorphNameCol */
+            $publisherMorphNameCol = $publisherMorphName ?? config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
 
-            $this->uuid($uuid)->nullable();
-            $this->timestamp($publishedAt)->nullable();
-            $this->boolean($isPublished)->default(false);
-            $this->boolean($isCurrent)->default(false);
-            $this->nullableMorphs($publisherMorphName);
+            $this->uuid($uuidCol)->nullable();
+            $this->timestamp($publishedAtCol)->nullable();
+            $this->boolean($isPublishedCol)->default(false);
+            $this->boolean($isCurrentCol)->default(false);
+            $this->nullableMorphs($publisherMorphNameCol);
 
-            $this->index([$uuid, $isPublished, $isCurrent]);
+            $this->index([$uuidCol, $isPublishedCol, $isCurrentCol]);
         });
 
         Blueprint::macro('dropDrafts', function (
@@ -59,20 +65,25 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ?string $isCurrent = null,
             ?string $publisherMorphName = null,
         ): void {
-            $uuid ??= config('drafts.column_names.uuid', 'uuid');
-            $publishedAt ??= config('drafts.column_names.published_at', 'published_at');
-            $isPublished ??= config('drafts.column_names.is_published', 'is_published');
-            $isCurrent ??= config('drafts.column_names.is_current', 'is_current');
-            $publisherMorphName ??= config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+            /** @var string $uuidCol */
+            $uuidCol = $uuid ?? config('drafts.column_names.uuid', 'uuid');
+            /** @var string $publishedAtCol */
+            $publishedAtCol = $publishedAt ?? config('drafts.column_names.published_at', 'published_at');
+            /** @var string $isPublishedCol */
+            $isPublishedCol = $isPublished ?? config('drafts.column_names.is_published', 'is_published');
+            /** @var string $isCurrentCol */
+            $isCurrentCol = $isCurrent ?? config('drafts.column_names.is_current', 'is_current');
+            /** @var string $publisherMorphNameCol */
+            $publisherMorphNameCol = $publisherMorphName ?? config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
 
-            $this->dropIndex([$uuid, $isPublished, $isCurrent]);
-            $this->dropMorphs($publisherMorphName);
+            $this->dropIndex([$uuidCol, $isPublishedCol, $isCurrentCol]);
+            $this->dropMorphs($publisherMorphNameCol);
 
             $this->dropColumn([
-                $uuid,
-                $publishedAt,
-                $isPublished,
-                $isCurrent,
+                $uuidCol,
+                $publishedAtCol,
+                $isPublishedCol,
+                $isCurrentCol,
             ]);
         });
 

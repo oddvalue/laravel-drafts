@@ -12,7 +12,10 @@ class LaravelDrafts
 
     public function getCurrentUser(): ?Authenticatable
     {
-        return Auth::guard(config('drafts.auth.guard'))->user();
+        /** @var string|null $guard */
+        $guard = config('drafts.auth.guard');
+
+        return Auth::guard($guard)->user();
     }
 
     public function previewMode(bool $previewMode = true): void
@@ -27,7 +30,10 @@ class LaravelDrafts
 
     public function isPreviewModeEnabled(): bool
     {
-        return Session::get('drafts.preview', false);
+        /** @var bool $preview */
+        $preview = Session::get('drafts.preview', false);
+
+        return $preview;
     }
 
     public function withDrafts(bool $withDrafts = true): void

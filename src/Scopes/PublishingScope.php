@@ -2,7 +2,8 @@
 
 namespace Oddvalue\LaravelDrafts\Scopes;
 
-use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
@@ -16,6 +17,9 @@ class PublishingScope implements Scope
      */
     protected $extensions = [/*'Publish', 'Unpublish', 'Schedule', */'Published', 'WithDrafts', 'WithoutDrafts', 'OnlyDrafts'];
 
+    /**
+     * @param Builder<Model> $builder
+     */
     public function apply(Builder $builder, Model $model): void
     {
         if (LaravelDrafts::isPreviewModeEnabled() || LaravelDrafts::isWithDraftsEnabled()) {
@@ -26,6 +30,9 @@ class PublishingScope implements Scope
         $builder->where($model->getQualifiedIsPublishedColumn(), 1);
     }
 
+    /**
+     * @param Builder<Model> $builder
+     */
     public function extend(Builder $builder): void
     {
         foreach ($this->extensions as $extension) {
@@ -58,14 +65,21 @@ class PublishingScope implements Scope
     //        });
     //    }
 
+    /**
+     * @param Builder<Model> $builder
+     */
     protected function addPublished(Builder $builder): void
     {
         $builder->macro(
             'published',
+            /** @param Builder<Model> $builder */
             fn (Builder $builder, $withoutDrafts = true) => $builder->withDrafts(! $withoutDrafts),
         );
     }
 
+    /**
+     * @param Builder<Model> $builder
+     */
     protected function addWithDrafts(Builder $builder): void
     {
         $builder->macro('withDrafts', function (Builder $builder, $withDrafts = true) {
@@ -77,24 +91,32 @@ class PublishingScope implements Scope
         });
     }
 
+    /**
+     * @param Builder<Model> $builder
+     */
     protected function addWithoutDrafts(Builder $builder): void
     {
         $builder->macro('withoutDrafts', function (Builder $builder): Builder {
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
+                /** @phpstan-ignore argument.type */
                 ->where($model->getQualifiedIsPublishedColumn(), 1);
 
             return $builder;
         });
     }
 
+    /**
+     * @param Builder<Model> $builder
+     */
     protected function addOnlyDrafts(Builder $builder): void
     {
         $builder->macro('onlyDrafts', function (Builder $builder): Builder {
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
+                /** @phpstan-ignore argument.type */
                 ->where($model->getQualifiedIsPublishedColumn(), 0);
 
             return $builder;
