@@ -23,7 +23,7 @@ it('can draft HasMany relations', function (): void {
 
     expect($draft->fresh()->sections)->toHaveCount(2)
         ->and($post->fresh()->sections)->toHaveCount(2)
-        ->and(PostSection::count())->toBe(4);
+        ->and(PostSection::query()->count())->toBe(4);
 });
 
 it('can draft BelongsToMany relations', function (): void {
@@ -44,7 +44,7 @@ it('can draft BelongsToMany relations', function (): void {
 
     expect($draft->fresh()->tags)->toHaveCount(2)
         ->and($post->fresh()->tags)->toHaveCount(2)
-        ->and(Tag::count())->toBe(2)
+        ->and(Tag::query()->count())->toBe(2)
         ->and(DB::table('post_tag')->count())->toBe(4);
 });
 
@@ -66,7 +66,7 @@ it('can draft MorphToMany relations', function (): void {
 
     expect($draft->fresh()->morphToTags)->toHaveCount(2)
         ->and($post->fresh()->morphToTags)->toHaveCount(2)
-        ->and(Tag::count())->toBe(2)
+        ->and(Tag::query()->count())->toBe(2)
         ->and(DB::table('taggables')->count())->toBe(4);
 });
 
@@ -88,5 +88,5 @@ it('can draft HasOne relations', function (): void {
 
     expect($draft->fresh()->section)->toBeInstanceOf(PostSection::class)
         ->and($post->fresh()->section)->toBeInstanceOf(PostSection::class)
-        ->and(PostSection::count())->toBe(2);
+        ->and(PostSection::query()->count())->toBe(2);
 });

@@ -2,7 +2,7 @@
 
 namespace Oddvalue\LaravelDrafts\Concerns;
 
-use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -339,12 +339,12 @@ trait HasDrafts
         return parent::save($options);
     }
 
-    public static function savingAsDraft(string|\Closure $callback): void
+    public static function savingAsDraft(string|Closure $callback): void
     {
         static::registerModelEvent('savingAsDraft', $callback);
     }
 
-    public static function savedAsDraft(string|\Closure $callback): void
+    public static function savedAsDraft(string|Closure $callback): void
     {
         static::registerModelEvent('drafted', $callback);
     }
@@ -491,7 +491,7 @@ trait HasDrafts
     /**
      * @param Builder<Model> $query
      */
-    public function scopeCurrent(Builder $query): void
+    protected function scopeCurrent(Builder $query): void
     {
         /** @phpstan-ignore method.notFound, method.nonObject */
         $query->withDrafts()->where($this->getIsCurrentColumn(), true);
@@ -500,7 +500,7 @@ trait HasDrafts
     /**
      * @param Builder<Model> $query
      */
-    public function scopeWithoutCurrent(Builder $query): void
+    protected function scopeWithoutCurrent(Builder $query): void
     {
         $query->where($this->getIsCurrentColumn(), false);
     }
@@ -508,7 +508,7 @@ trait HasDrafts
     /**
      * @param Builder<Model> $query
      */
-    public function scopeExcludeRevision(Builder $query, int | Model $exclude): void
+    protected function scopeExcludeRevision(Builder $query, int | Model $exclude): void
     {
         $query->where($this->getKeyName(), '!=', is_int($exclude) ? $exclude : $exclude->getKey());
     }
@@ -517,7 +517,7 @@ trait HasDrafts
      * @deprecated This doesn't actually work, will be removed in next version
      * @param Builder<Model> $query
      */
-    public function scopeWithoutSelf(Builder $query): void
+    protected function scopeWithoutSelf(Builder $query): void
     {
         /** @phpstan-ignore argument.type */
         $query->where('id', '!=', $this->id);
@@ -532,7 +532,7 @@ trait HasDrafts
     /**
      * @return static|null
      */
-    public function getDraftAttribute(): ?self
+    protected function getDraftAttribute(): ?self
     {
         if ($this->relationLoaded('drafts')) {
             /** @phpstan-ignore return.type */

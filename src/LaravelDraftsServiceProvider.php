@@ -2,6 +2,7 @@
 
 namespace Oddvalue\LaravelDrafts;
 
+use Closure;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Route;
@@ -28,8 +29,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(LaravelDrafts::class, fn (): LaravelDrafts => new LaravelDrafts());
 
-        /** @phpstan-ignore offsetAccess.nonOffsetAccessible, method.nonObject */
-        $this->app[Kernel::class]->prependToMiddlewarePriority(WithDraftsMiddleware::class);
+        $this->app->make(Kernel::class)->prependToMiddlewarePriority(WithDraftsMiddleware::class);
 
         Blueprint::macro('drafts', function (
             ?string $uuid = null,
@@ -87,7 +87,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ]);
         });
 
-        Route::macro('withDrafts', function (\Closure $routes): void {
+        Route::macro('withDrafts', function (Closure $routes): void {
             Route::middleware(WithDraftsMiddleware::class)->group($routes);
         });
     }
