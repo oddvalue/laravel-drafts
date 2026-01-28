@@ -118,12 +118,12 @@ it('creates drafts without altering the original post', function (): void {
     $post->updateAsDraft(['title' => 'Baz']);
     $post->updateAsDraft(['title' => 'Qux']);
 
-    expect(Post::find($originalId)->title)->toBe('Foo')
+    expect(Post::query()->find($originalId)->title)->toBe('Foo')
         ->and(DB::table('posts')->count())->toBe(4);
 
     $post->publish()->save();
 
-    expect(Post::find($originalId)->title)->toBe('Qux');
+    expect(Post::query()->find($originalId)->title)->toBe('Qux');
 });
 
 it('can get all revisions excluding self', function (): void {

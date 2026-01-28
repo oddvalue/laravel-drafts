@@ -2,13 +2,15 @@
 
 namespace Oddvalue\LaravelDrafts\Concerns;
 
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Oddvalue\LaravelDrafts\Scopes\PublishingScope;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withPublished(bool $withPublished = true)
- * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyPublished()
- * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withoutPublished()
+ * @method static Builder<static>|\Illuminate\Database\Query\Builder withPublished(bool $withPublished = true)
+ * @method static Builder<static>|\Illuminate\Database\Query\Builder onlyPublished()
+ * @method static Builder<static>|\Illuminate\Database\Query\Builder withoutPublished()
  */
 trait Publishes
 {
@@ -70,7 +72,7 @@ trait Publishes
     /**
      * Register a "published" model event callback with the dispatcher.
      */
-    public static function publishing(string|\Closure $callback): void
+    public static function publishing(string|Closure $callback): void
     {
         static::registerModelEvent('publishing', $callback);
     }
@@ -78,7 +80,7 @@ trait Publishes
     /**
      * Register a "softDeleted" model event callback with the dispatcher.
      */
-    public static function published(string|\Closure $callback): void
+    public static function published(string|Closure $callback): void
     {
         static::registerModelEvent('published', $callback);
     }

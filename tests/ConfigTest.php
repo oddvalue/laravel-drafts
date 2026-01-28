@@ -1,6 +1,10 @@
 <?php
 
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 it('can override columns via config', function (): void {
@@ -13,7 +17,7 @@ it('can override columns via config', function (): void {
             'publisher_morph_name' => 'publisher_override',
         ],
     ]);
-    $post = Post::make();
+    $post = Post::query()->make();
 
     expect($post->getPublishedAtColumn())->toBe('published_at_override')
         ->and($post->getIsPublishedColumn())->toBe('is_published_override')
@@ -48,7 +52,7 @@ it('can override columns via class constants', function (): void {
 
 it('honors column name overrides', function (): void {
 
-    $post = OverridePost::make([
+    $post = OverridePost::query()->make([
 
     ]);
     invade($post)->newRevision();
@@ -60,10 +64,11 @@ it('honors column name overrides', function (): void {
         ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']);
 });
 
-class OverridePost extends \Illuminate\Database\Eloquent\Model
+class OverridePost extends Model
 {
-    use \Oddvalue\LaravelDrafts\Concerns\HasDrafts;
-    use \Illuminate\Database\Eloquent\SoftDeletes;
+    use HasFactory;
+    use HasDrafts;
+    use SoftDeletes;
 
     public const PUBLISHED_AT = 'published_at_override';
 
