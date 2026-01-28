@@ -1,5 +1,6 @@
 <?php
 
+use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 use function Spatie\PestPluginTestTime\testTime;
@@ -14,7 +15,7 @@ it('can draft model', function (): void {
 
 it('can publish a draft model', function (): void {
     testTime()->freeze();
-    Post::create(['title' => 'Hello World']);
+    Post::query()->create(['title' => 'Hello World']);
     Post::withDrafts()->first()->save();
     $this->assertDatabaseHas('posts', [
         'published_at' => now()->toDateTimeString(),
@@ -23,7 +24,7 @@ it('can publish a draft model', function (): void {
 
 it('can publish a model', function (): void {
     testTime()->freeze();
-    Post::make(['title' => 'Hello World'])->save();
+    Post::query()->make(['title' => 'Hello World'])->save();
     $this->assertDatabaseHas('posts', [
         'title' => 'Hello World',
         'published_at' => now()->toDateTimeString(),
@@ -68,27 +69,27 @@ it('does not create multiple published records', function (): void {
 });
 
 it('can publish a draft that is not the current one', function (): void {
-    \Oddvalue\LaravelDrafts\Facades\LaravelDrafts::withDrafts();
+    LaravelDrafts::withDrafts();
 
     Post::factory()->create(['title' => 'a']);
 
-    $post = Post::where('title', 'a')->first();
+    $post = Post::query()->where('title', 'a')->first();
     $post->title = 'b';
 
     $b = $post->saveAsDraft();
 
-    $post = Post::where('title', 'b')->first();
+    $post = Post::query()->where('title', 'b')->first();
     $post->title = 'c';
     $post->saveAsDraft();
 
-    expect(Post::where('title', 'a')->first()->isPublished())->toBeTrue();
-    expect(Post::where('title', 'c')->first()->isCurrent())->toBeTrue();
+    expect(Post::query()->where('title', 'a')->first()->isPublished())->toBeTrue();
+    expect(Post::query()->where('title', 'c')->first()->isCurrent())->toBeTrue();
 
-    $draftB = Post::where('title', 'b')->first();
+    $draftB = Post::query()->where('title', 'b')->first();
     $draftB->setLive();
     $draftB->save();
 
-    expect(Post::where('title', 'a')->first()->isPublished())->toBeFalse();
-    expect(Post::where('title', 'b')->first()->isPublished())->toBeTrue();
-    expect(Post::current()->count())->toBe(1);
+    expect(Post::query()->where('title', 'a')->first()->isPublished())->toBeFalse();
+    expect(Post::query()->where('title', 'b')->first()->isPublished())->toBeTrue();
+    expect(Post::query()->current()->count())->toBe(1);
 });

@@ -1,8 +1,5 @@
-includes:
-    - phpstan-baseline.neon
-
 parameters:
-    level: 4
+    level: 10
     paths:
         - src
         - config
@@ -11,3 +8,77 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
+    ignoreErrors:
+        # Trait method calls in closures - PHPStan doesn't recognize trait methods on $model parameter
+        -
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::(getIsCurrentColumn|setPublisher|generateUuid|getIsPublishedColumn|publish|newRevision|setLive|revisions|getUuidColumn|isCurrent|drafts|getQualifiedIsPublishedColumn)\(\)#'
+            paths:
+                - src/Concerns/*.php
+                - src/Scopes/*.php
+            reportUnmatched: false
+        # Method chaining on dynamic relations
+        -
+            message: '#Cannot call method (current|excludeRevision|withDrafts|withoutCurrent|onlyDrafts|published|merge|pluck|take|whereNotIn|delete|get|each|sync|create|getAttributes|getDraftableAttributes|where|first|replicate) on mixed#'
+            paths:
+                - src/Concerns/*.php
+            reportUnmatched: false
+        # Access to undefined constants in trait context
+        -
+            message: '#Access to undefined constant#'
+            paths:
+                - src/Concerns/*.php
+            reportUnmatched: false
+        # Method return types in trait context
+        -
+            message: '#Method Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\[A-Za-z]+::[a-zA-Z]+\(\) (should return|return type)#'
+            paths:
+                - src/Concerns/*.php
+            reportUnmatched: false
+        # HasFactory generic type - these models define factory types via newFactory() method
+        -
+            message: '#Class Oddvalue\\LaravelDrafts\\Tests\\app\\Models\\[A-Za-z]+ uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types: TFactory#'
+            paths:
+                - tests/app/Models/*.php
+            reportUnmatched: false
+        # ArrayShape attribute
+        -
+            message: '#Attribute class JetBrains\\PhpStorm\\ArrayShape does not exist#'
+            paths:
+                - src/Concerns/*.php
+            reportUnmatched: false
+        # Argument type issues in trait context
+        -
+            message: '#Parameter .* expects .*, (mixed|array|Closure\|string|class-string\|object) given#'
+            paths:
+                - src/Concerns/*.php
+            reportUnmatched: false
+        # Method not found errors in Scopes
+        -
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::(withDrafts|withoutDrafts)#'
+            paths:
+                - src/Scopes/*.php
+            reportUnmatched: false
+        # withoutGlobalScope argument type in macros
+        -
+            message: '#Parameter \#1 \$scope of method Illuminate\\Database\\Eloquent\\Builder.*::withoutGlobalScope\(\) expects.*Illuminate\\Database\\Eloquent\\Builder.*given#'
+            paths:
+                - src/Scopes/*.php
+            reportUnmatched: false
+        # HasMany relation methods
+        -
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany.*::(withDrafts|onlyDrafts|published)\(\)#'
+            paths:
+                - src/Concerns/*.php
+            reportUnmatched: false
+        # array_map callback type
+        -
+            message: '#Parameter \#1 \$callback of function array_map expects#'
+            paths:
+                - src/Concerns/*.php
+            reportUnmatched: false
+        # where() argument types in scopes
+        -
+            message: '#Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder.*::where\(\) expects#'
+            paths:
+                - src/Scopes/*.php
+            reportUnmatched: false

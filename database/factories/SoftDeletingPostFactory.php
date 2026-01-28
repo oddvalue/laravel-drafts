@@ -9,16 +9,16 @@ class SoftDeletingPostFactory extends PostFactory
     protected $model = SoftDeletingPost::class;
 
     /**
-     * @inheritDoc
+     * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'title' => $this->faker->sentence,
         ];
     }
 
-    public function draft()
+    public function draft(): static
     {
         return $this->state(function () {
             return [
@@ -28,7 +28,7 @@ class SoftDeletingPostFactory extends PostFactory
         });
     }
 
-    public function published()
+    public function published(): static
     {
         return $this->state(function () {
             return [

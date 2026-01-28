@@ -18,6 +18,7 @@
     ],
     "require": {
         "php": "^8.0",
+        "driftingly/rector-laravel": "^2.1",
         "illuminate/contracts": "^11.0|^12.0",
         "spatie/laravel-package-tools": "^1.9.2"
     },

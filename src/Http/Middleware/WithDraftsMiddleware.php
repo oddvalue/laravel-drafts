@@ -8,6 +8,7 @@ use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
 class WithDraftsMiddleware
 {
+    /** @phpstan-ignore missingType.return */
     public function handle(Request $request, Closure $next)
     {
         LaravelDrafts::withDrafts();

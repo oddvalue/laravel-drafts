@@ -2,11 +2,14 @@
 
 namespace Oddvalue\LaravelDrafts\Scopes;
 
-use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
+/**
+ * @template TModel of Model
+ */
 class PublishingScope implements Scope
 {
     /**
@@ -16,15 +19,23 @@ class PublishingScope implements Scope
      */
     protected $extensions = [/*'Publish', 'Unpublish', 'Schedule', */'Published', 'WithDrafts', 'WithoutDrafts', 'OnlyDrafts'];
 
+    /**
+     * @param Builder<TModel> $builder
+     * @param TModel $model
+     */
     public function apply(Builder $builder, Model $model): void
     {
         if (LaravelDrafts::isPreviewModeEnabled() || LaravelDrafts::isWithDraftsEnabled()) {
             return;
         }
 
+        /** @phpstan-ignore method.notFound */
         $builder->where($model->getQualifiedIsPublishedColumn(), 1);
     }
 
+    /**
+     * @param Builder<TModel> $builder
+     */
     public function extend(Builder $builder): void
     {
         foreach ($this->extensions as $extension) {
@@ -57,14 +68,21 @@ class PublishingScope implements Scope
     //        });
     //    }
 
+    /**
+     * @param Builder<TModel> $builder
+     */
     protected function addPublished(Builder $builder): void
     {
         $builder->macro(
             'published',
+            /** @param Builder<TModel> $builder */
             fn (Builder $builder, $withoutDrafts = true) => $builder->withDrafts(! $withoutDrafts),
         );
     }
 
+    /**
+     * @param Builder<TModel> $builder
+     */
     protected function addWithDrafts(Builder $builder): void
     {
         $builder->macro('withDrafts', function (Builder $builder, $withDrafts = true) {
@@ -76,24 +94,32 @@ class PublishingScope implements Scope
         });
     }
 
+    /**
+     * @param Builder<TModel> $builder
+     */
     protected function addWithoutDrafts(Builder $builder): void
     {
         $builder->macro('withoutDrafts', function (Builder $builder): Builder {
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
+                /** @phpstan-ignore argument.type */
                 ->where($model->getQualifiedIsPublishedColumn(), 1);
 
             return $builder;
         });
     }
 
+    /**
+     * @param Builder<TModel> $builder
+     */
     protected function addOnlyDrafts(Builder $builder): void
     {
         $builder->macro('onlyDrafts', function (Builder $builder): Builder {
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
+                /** @phpstan-ignore argument.type */
                 ->where($model->getQualifiedIsPublishedColumn(), 0);
 
             return $builder;

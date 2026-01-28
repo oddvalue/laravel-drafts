@@ -4,14 +4,18 @@ namespace Oddvalue\LaravelDrafts\Database\Factories;
 
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<Post>
+ */
 class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
 {
     protected $model = Post::class;
 
     /**
-     * @inheritDoc
+     * @return array<string, mixed>
+     * @phpstan-ignore method.childReturnType
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'title' => $this->faker->sentence,
@@ -19,7 +23,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
         ];
     }
 
-    public function draft()
+    public function draft(): static
     {
         return $this->state(function () {
             return [
@@ -29,7 +33,7 @@ class PostFactory extends \Illuminate\Database\Eloquent\Factories\Factory
         });
     }
 
-    public function published()
+    public function published(): static
     {
         return $this->state(function () {
             return [

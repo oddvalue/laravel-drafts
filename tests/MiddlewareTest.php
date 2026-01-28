@@ -7,7 +7,7 @@ use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 use function Pest\Laravel\get;
 
 beforeEach(function (): void {
-    test()->post = Post::create(['title' => 'Hello World']);
+    test()->post = Post::query()->create(['title' => 'Hello World']);
     test()->draftPost = Post::createDraft(['title' => 'Hello World draft']);
 
     Route::middleware(['web'])->group(function (): void {
