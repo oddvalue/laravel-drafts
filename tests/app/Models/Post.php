@@ -12,11 +12,11 @@ use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 use Oddvalue\LaravelDrafts\Database\Factories\PostFactory;
 
 /**
- * @mixes \Oddvalue\LaravelDrafts\Concerns\HasDrafts
  * @use HasFactory<PostFactory>
  */
 class Post extends Model
 {
+    /** @use HasDrafts<Post> */
     use HasDrafts;
     use HasFactory;
 
