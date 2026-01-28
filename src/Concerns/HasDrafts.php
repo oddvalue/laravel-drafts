@@ -16,11 +16,13 @@ use JetBrains\PhpStorm\ArrayShape;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
 /**
- * @method static Builder | Model current()
- * @method static Builder | Model withoutCurrent()
- * @method static Builder | Model excludeRevision(int | Model $exclude)
+ * @template TModel of Model
  *
- * @mixin Model
+ * @method static Builder<TModel> | TModel current()
+ * @method static Builder<TModel> | TModel withoutCurrent()
+ * @method static Builder<TModel> | TModel excludeRevision(int | TModel $exclude)
+ *
+ * @mixin TModel
  */
 trait HasDrafts
 {
@@ -472,7 +474,7 @@ trait HasDrafts
     }
 
     /**
-     * @return MorphTo<Model, $this>
+     * @return MorphTo<Model, TModel>
      */
     public function publisher(): MorphTo
     {
@@ -489,7 +491,7 @@ trait HasDrafts
     */
 
     /**
-     * @param Builder<Model> $query
+     * @param Builder<TModel> $query
      */
     protected function scopeCurrent(Builder $query): void
     {
@@ -498,7 +500,7 @@ trait HasDrafts
     }
 
     /**
-     * @param Builder<Model> $query
+     * @param Builder<TModel> $query
      */
     protected function scopeWithoutCurrent(Builder $query): void
     {
@@ -506,7 +508,7 @@ trait HasDrafts
     }
 
     /**
-     * @param Builder<Model> $query
+     * @param Builder<TModel> $query
      */
     protected function scopeExcludeRevision(Builder $query, int | Model $exclude): void
     {
@@ -515,7 +517,7 @@ trait HasDrafts
 
     /**
      * @deprecated This doesn't actually work, will be removed in next version
-     * @param Builder<Model> $query
+     * @param Builder<TModel> $query
      */
     protected function scopeWithoutSelf(Builder $query): void
     {

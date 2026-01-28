@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 
+/**
+ * @template TModel of Model
+ */
 class PublishingScope implements Scope
 {
     /**
@@ -17,7 +20,8 @@ class PublishingScope implements Scope
     protected $extensions = [/*'Publish', 'Unpublish', 'Schedule', */'Published', 'WithDrafts', 'WithoutDrafts', 'OnlyDrafts'];
 
     /**
-     * @param Builder<Model> $builder
+     * @param Builder<TModel> $builder
+     * @param TModel $model
      */
     public function apply(Builder $builder, Model $model): void
     {
@@ -30,7 +34,7 @@ class PublishingScope implements Scope
     }
 
     /**
-     * @param Builder<Model> $builder
+     * @param Builder<TModel> $builder
      */
     public function extend(Builder $builder): void
     {
@@ -65,19 +69,19 @@ class PublishingScope implements Scope
     //    }
 
     /**
-     * @param Builder<Model> $builder
+     * @param Builder<TModel> $builder
      */
     protected function addPublished(Builder $builder): void
     {
         $builder->macro(
             'published',
-            /** @param Builder<Model> $builder */
+            /** @param Builder<TModel> $builder */
             fn (Builder $builder, $withoutDrafts = true) => $builder->withDrafts(! $withoutDrafts),
         );
     }
 
     /**
-     * @param Builder<Model> $builder
+     * @param Builder<TModel> $builder
      */
     protected function addWithDrafts(Builder $builder): void
     {
@@ -91,7 +95,7 @@ class PublishingScope implements Scope
     }
 
     /**
-     * @param Builder<Model> $builder
+     * @param Builder<TModel> $builder
      */
     protected function addWithoutDrafts(Builder $builder): void
     {
@@ -107,7 +111,7 @@ class PublishingScope implements Scope
     }
 
     /**
-     * @param Builder<Model> $builder
+     * @param Builder<TModel> $builder
      */
     protected function addOnlyDrafts(Builder $builder): void
     {
