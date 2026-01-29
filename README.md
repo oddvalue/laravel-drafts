@@ -37,12 +37,12 @@
 
 ## Version compatibility
 
-| Laravel | Drafts |
-|---------|--------|
-| v9.x    | v1.x   |
-| v10.x   | v1.x   |
-| v11.x   | v2.x   |
-| v12.x   | >2.1   |
+| Laravel | Drafts   |
+|---------|----------|
+| v9.x    | v1.x     |
+| v10.x   | v1.x     |
+| v11.x   | v2.x     |
+| v12.x   | >2.1|3.x |
 
 ## Installation
 
