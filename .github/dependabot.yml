@@ -10,3 +10,7 @@ updates:
       interval: "weekly"
     labels:
       - "dependencies"
+    groups:
+      actions:
+        patterns:
+          - "*"
