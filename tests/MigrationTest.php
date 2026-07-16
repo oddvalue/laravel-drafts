@@ -20,6 +20,7 @@ it('adds the required draft columns to the table', function (): void {
         config('drafts.column_names.published_at'),
         config('drafts.column_names.is_published'),
         config('drafts.column_names.is_current'),
+        config('drafts.column_names.is_auto'),
         config('drafts.column_names.publisher_morph_name').'_id',
         config('drafts.column_names.publisher_morph_name').'_type',
     ]))->toBeTrue();
@@ -32,7 +33,8 @@ it('allows column names to be overridden when migrating', function (): void {
             publishedAt: 'published_at_override',
             isPublished: 'is_published_override',
             isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
+            publisherMorphName: 'publisher_override',
+            isAuto: 'is_auto_override'
         );
     });
 
@@ -41,6 +43,7 @@ it('allows column names to be overridden when migrating', function (): void {
         'published_at_override',
         'is_published_override',
         'is_current_override',
+        'is_auto_override',
         'publisher_override_id',
         'publisher_override_type',
     ]))->toBeTrue();
@@ -56,6 +59,7 @@ it('drops draft columns', function (): void {
         'published_at',
         'is_published',
         'is_current',
+        'is_auto',
         'publisher_id',
         'publisher_type',
     ]))->toBeTrue();
@@ -69,6 +73,7 @@ it('drops draft columns', function (): void {
         'published_at',
         'is_published',
         'is_current',
+        'is_auto',
         'publisher_id',
         'publisher_type',
     ]))->toBeFalse();
@@ -81,7 +86,8 @@ it('drops custom named draft columns', function (): void {
             publishedAt: 'published_at_override',
             isPublished: 'is_published_override',
             isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
+            publisherMorphName: 'publisher_override',
+            isAuto: 'is_auto_override'
         );
     });
 
@@ -90,6 +96,7 @@ it('drops custom named draft columns', function (): void {
         'published_at_override',
         'is_published_override',
         'is_current_override',
+        'is_auto_override',
         'publisher_override_id',
         'publisher_override_type',
     ]))->toBeTrue();
@@ -100,7 +107,8 @@ it('drops custom named draft columns', function (): void {
             publishedAt: 'published_at_override',
             isPublished: 'is_published_override',
             isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
+            publisherMorphName: 'publisher_override',
+            isAuto: 'is_auto_override'
         );
     });
 
@@ -109,6 +117,7 @@ it('drops custom named draft columns', function (): void {
         'published_at_override',
         'is_published_override',
         'is_current_override',
+        'is_auto_override',
         'publisher_override_id',
         'publisher_override_type',
     ]))->toBeFalse();

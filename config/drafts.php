@@ -1,4 +1,5 @@
 <?php
+
 // config for Oddvalue/LaravelDrafts
 return [
     'revisions' => [
@@ -15,6 +16,12 @@ return [
          * Boolean column that marks a row as live and displayable to the public.
          */
         'is_published' => 'is_published',
+
+        /*
+         * Boolean column that marks a row as an auto draft: an auto-saved
+         * working copy that is updated in place and never published.
+         */
+        'is_auto' => 'is_auto',
 
         /*
          * Timestamp column that stores the date and time when the row was published.

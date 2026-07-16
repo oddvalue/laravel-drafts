@@ -25,6 +25,7 @@
     - [Published revision](#published-revision)
     - [Current Revision](#current-revision)
     - [Revisions](#revisions)
+    - [Auto drafts](#auto-drafts)
     - [Preview mode](#preview-mode)
   + [Middleware](#middleware)
     - [WithDraftsMiddleware](#withdraftsmiddleware)
@@ -76,6 +77,12 @@ return [
          * Boolean column that marks a row as live and displayable to the public.
          */
         'is_published' => 'is_published',
+
+        /*
+         * Boolean column that marks a row as an auto draft: an auto-saved
+         * working copy that is updated in place and never published.
+         */
+        'is_auto' => 'is_auto',
 
         /*
          * Timestamp column that stores the date and time when the row was published.
@@ -150,6 +157,7 @@ The following database columns are required for the model to store drafts and re
 
 * is_current
 * is_published
+* is_auto
 * published_at
 * uuid
 * publisher_type
@@ -282,6 +290,34 @@ If you need to update a record without creating revision
 ```php
 $post->withoutRevision()->update($options);
 ```
+
+#### Auto drafts
+
+Auto drafts are intended for auto-save/recovery features, e.g. periodically persisting half-finished form state. An auto draft is a single working copy of a record that is upserted in place on every save, so it never churns the revision history. It is saved quietly (no model events fire), is never flagged as current or published, and is ignored by the `drafts()` relation, the `draft` accessor, revision pruning and publish flows.
+
+```php
+$post = Post::find(1);
+
+# Create or update the record's auto draft
+$post->saveAsAutoDraft(['title' => 'Partially typed title']);
+
+# Retrieve it
+$autoDraft = $post->autoDraft;
+
+# Check whether a revision is an auto draft
+$autoDraft->isAutoDraft();
+
+# Discard it
+$post->discardAutoDraft();
+```
+
+The `onlyAutoDrafts()` and `withoutAutoDrafts()` query builder scopes are available for custom queries. Auto drafts are deleted along with the record and its revisions.
+
+> **Note**
+> If you are upgrading from a version without auto draft support you will need to add the `is_auto` column to your existing tables: `$table->boolean('is_auto')->default(false);`
+
+> **Note**
+> [oddvalue/filament-draft-recovery](https://github.com/oddvalue/filament-draft-recovery) will switch its laravel-drafts driver to this API once released, using the auto draft as the store for Filament form auto-saves.
 
 #### Preview Mode
 

@@ -13,6 +13,7 @@ it('can override columns via config', function (): void {
             'published_at' => 'published_at_override',
             'is_published' => 'is_published_override',
             'is_current' => 'is_current_override',
+            'is_auto' => 'is_auto_override',
             'uuid' => 'uuid_override',
             'publisher_morph_name' => 'publisher_override',
         ],
@@ -22,6 +23,7 @@ it('can override columns via config', function (): void {
     expect($post->getPublishedAtColumn())->toBe('published_at_override')
         ->and($post->getIsPublishedColumn())->toBe('is_published_override')
         ->and($post->getIsCurrentColumn())->toBe('is_current_override')
+        ->and($post->getIsAutoColumn())->toBe('is_auto_override')
         ->and($post->getUuidColumn())->toBe('uuid_override')
         ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']);
 });
@@ -34,6 +36,8 @@ it('can override columns via class constants', function (): void {
 
         public const IS_CURRENT = 'is_current_override';
 
+        public const IS_AUTO = 'is_auto_override';
+
         public const UUID = 'uuid_override';
 
         public const PUBLISHER_ID = 'publisher_override_id';
@@ -45,6 +49,7 @@ it('can override columns via class constants', function (): void {
         ->and($post->getQualifiedPublishedAtColumn())->toBe($post->qualifyColumn($post::PUBLISHED_AT))
         ->and($post->getIsPublishedColumn())->toBe($post::IS_PUBLISHED)
         ->and($post->getIsCurrentColumn())->toBe($post::IS_CURRENT)
+        ->and($post->getIsAutoColumn())->toBe($post::IS_AUTO)
         ->and($post->getUuidColumn())->toBe($post::UUID)
         ->and($post->getPublisherColumns())->toBe(['id' => $post::PUBLISHER_ID, 'type' => $post::PUBLISHER_TYPE])
         ->and($post->getQualifiedPublisherColumns())->toBe($post->qualifyColumns(['id' => $post::PUBLISHER_ID, 'type' => $post::PUBLISHER_TYPE]));
@@ -60,6 +65,7 @@ it('honors column name overrides', function (): void {
     expect($post->getPublishedAtColumn())->toBe('published_at_override')
         ->and($post->getIsPublishedColumn())->toBe('is_published_override')
         ->and($post->getIsCurrentColumn())->toBe('is_current_override')
+        ->and($post->getIsAutoColumn())->toBe('is_auto_override')
         ->and($post->getUuidColumn())->toBe('uuid_override')
         ->and($post->getPublisherColumns())->toBe(['id' => 'publisher_override_id', 'type' => 'publisher_override_type']);
 });
@@ -75,6 +81,8 @@ class OverridePost extends Model
     public const IS_PUBLISHED = 'is_published_override';
 
     public const IS_CURRENT = 'is_current_override';
+
+    public const IS_AUTO = 'is_auto_override';
 
     public const UUID = 'uuid_override';
 

@@ -37,6 +37,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ?string $isPublished = null,
             ?string $isCurrent = null,
             ?string $publisherMorphName = null,
+            ?string $isAuto = null,
         ): void {
             /** @var string $uuidCol */
             $uuidCol = $uuid ?? config('drafts.column_names.uuid', 'uuid');
@@ -48,11 +49,14 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             $isCurrentCol = $isCurrent ?? config('drafts.column_names.is_current', 'is_current');
             /** @var string $publisherMorphNameCol */
             $publisherMorphNameCol = $publisherMorphName ?? config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+            /** @var string $isAutoCol */
+            $isAutoCol = $isAuto ?? config('drafts.column_names.is_auto', 'is_auto');
 
             $this->uuid($uuidCol)->nullable();
             $this->timestamp($publishedAtCol)->nullable();
             $this->boolean($isPublishedCol)->default(false);
             $this->boolean($isCurrentCol)->default(false);
+            $this->boolean($isAutoCol)->default(false);
             $this->nullableMorphs($publisherMorphNameCol);
 
             $this->index([$uuidCol, $isPublishedCol, $isCurrentCol]);
@@ -64,6 +68,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             ?string $isPublished = null,
             ?string $isCurrent = null,
             ?string $publisherMorphName = null,
+            ?string $isAuto = null,
         ): void {
             /** @var string $uuidCol */
             $uuidCol = $uuid ?? config('drafts.column_names.uuid', 'uuid');
@@ -75,6 +80,8 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
             $isCurrentCol = $isCurrent ?? config('drafts.column_names.is_current', 'is_current');
             /** @var string $publisherMorphNameCol */
             $publisherMorphNameCol = $publisherMorphName ?? config('drafts.column_names.publisher_morph_name', 'publisher_morph_name');
+            /** @var string $isAutoCol */
+            $isAutoCol = $isAuto ?? config('drafts.column_names.is_auto', 'is_auto');
 
             $this->dropIndex([$uuidCol, $isPublishedCol, $isCurrentCol]);
             $this->dropMorphs($publisherMorphNameCol);
@@ -84,6 +91,7 @@ class LaravelDraftsServiceProvider extends PackageServiceProvider
                 $publishedAtCol,
                 $isPublishedCol,
                 $isCurrentCol,
+                $isAutoCol,
             ]);
         });
 
