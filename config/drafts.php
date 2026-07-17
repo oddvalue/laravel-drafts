@@ -6,6 +6,16 @@ return [
         'keep' => 10,
     ],
 
+    'auto_drafts' => [
+        /*
+         * Whether auto draft support is enabled. Auto drafts require the
+         * `is_auto` column, so installations upgrading from a version without
+         * it must add the column to their drafted tables before enabling:
+         * $table->boolean('is_auto')->default(false);
+         */
+        'enabled' => false,
+    ],
+
     'column_names' => [
         /*
          * Boolean column that marks a row as the current version of the data for editing.

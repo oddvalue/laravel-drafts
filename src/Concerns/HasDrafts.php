@@ -46,9 +46,14 @@ trait HasDrafts
         $this->mergeCasts([
             $this->getIsCurrentColumn() => 'boolean',
             $this->getIsPublishedColumn() => 'boolean',
-            $this->getIsAutoColumn() => 'boolean',
             $this->getPublishedAtColumn() => 'datetime',
         ]);
+
+        if (static::autoDraftsEnabled()) {
+            $this->mergeCasts([
+                $this->getIsAutoColumn() => 'boolean',
+            ]);
+        }
     }
 
     public static function bootHasDrafts(): void
@@ -388,6 +393,7 @@ trait HasDrafts
      */
     public function saveAsAutoDraft(array $attributes = []): static
     {
+        throw_unless(static::autoDraftsEnabled(), LogicException::class, 'Auto drafts are disabled. Set the drafts.auto_drafts.enabled config option to true to use them.');
         throw_unless($this->exists, LogicException::class, 'An auto draft can only be saved for an existing record.');
 
         /** @var static|null $autoDraft */
@@ -415,6 +421,8 @@ trait HasDrafts
      */
     public function discardAutoDraft(): void
     {
+        throw_unless(static::autoDraftsEnabled(), LogicException::class, 'Auto drafts are disabled. Set the drafts.auto_drafts.enabled config option to true to use them.');
+
         $this->newModelQuery()
             ->where($this->getUuidColumn(), $this->{$this->getUuidColumn()})
             ->where($this->getIsAutoColumn(), true)
@@ -510,6 +518,18 @@ trait HasDrafts
             : config('drafts.column_names.is_auto', 'is_auto');
     }
 
+    /**
+     * Whether auto draft support is enabled.
+     *
+     * Disabled by default so that existing installations without the
+     * `is_auto` column keep working; no query references the column until
+     * the feature is switched on.
+     */
+    public static function autoDraftsEnabled(): bool
+    {
+        return (bool) config('drafts.auto_drafts.enabled', false);
+    }
+
     public function isCurrent(): bool
     {
         return $this->{$this->getIsCurrentColumn()} ?? false;
@@ -590,6 +610,8 @@ trait HasDrafts
      */
     protected function scopeOnlyAutoDrafts(Builder $query): void
     {
+        throw_unless(static::autoDraftsEnabled(), LogicException::class, 'Auto drafts are disabled. Set the drafts.auto_drafts.enabled config option to true to use them.');
+
         /** @phpstan-ignore method.notFound, method.nonObject */
         $query->withDrafts()->where($this->getIsAutoColumn(), true);
     }
@@ -599,6 +621,10 @@ trait HasDrafts
      */
     protected function scopeWithoutAutoDrafts(Builder $query): void
     {
+        if (! static::autoDraftsEnabled()) {
+            return;
+        }
+
         $query->where($this->getIsAutoColumn(), false);
     }
 

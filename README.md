@@ -300,6 +300,19 @@ revision history. It is saved quietly (no model events fire), is never
 flagged as current or published, and is ignored by the `drafts()` relation,
 the `draft` accessor, revision pruning and publish flows.
 
+Auto drafts are **opt-in**. Enable them in `config/drafts.php`:
+
+```php
+'auto_drafts' => [
+    'enabled' => true,
+],
+```
+
+While disabled (the default) no query references the `is_auto` column, so
+existing installations keep working unchanged, and the auto draft API
+(`saveAsAutoDraft()`, `autoDraft`, `onlyAutoDrafts()`, `discardAutoDraft()`)
+throws a `LogicException`.
+
 ```php
 $post = Post::find(1);
 
@@ -322,8 +335,9 @@ and its revisions.
 
 > **Note**
 > If you are upgrading from a version without auto draft support you will
-> need to add the `is_auto` column to your existing tables:
-> `$table->boolean('is_auto')->default(false);`
+> need to add the `is_auto` column to your existing tables before enabling
+> the feature: `$table->boolean('is_auto')->default(false);`
+> New tables created with `$table->drafts()` include the column already.
 >
 > [oddvalue/filament-draft-recovery][filament-draft-recovery] will switch its
 > laravel-drafts driver to this API once released, using the auto draft as

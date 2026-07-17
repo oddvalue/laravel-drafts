@@ -1,6 +1,12 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
+
+beforeEach(function (): void {
+    config(['drafts.auto_drafts.enabled' => true]);
+});
 
 it('saves an auto draft without altering the record', function (): void {
     $post = Post::factory()->create(['title' => 'Foo']);
@@ -141,4 +147,40 @@ it('can save an auto draft for an unpublished draft record', function (): void {
     expect($autoDraft->isAutoDraft())->toBeTrue()
         ->and($post->fresh()->isCurrent())->toBeTrue()
         ->and($post->autoDraft->title)->toBe('Auto');
+});
+
+it('throws when saving an auto draft while auto drafts are disabled', function (): void {
+    config(['drafts.auto_drafts.enabled' => false]);
+    $post = Post::factory()->create(['title' => 'Foo']);
+
+    $post->saveAsAutoDraft(['title' => 'Auto']);
+})->throws(LogicException::class, 'Auto drafts are disabled.');
+
+it('throws when discarding an auto draft while auto drafts are disabled', function (): void {
+    config(['drafts.auto_drafts.enabled' => false]);
+    $post = Post::factory()->create(['title' => 'Foo']);
+
+    $post->discardAutoDraft();
+})->throws(LogicException::class, 'Auto drafts are disabled.');
+
+it('throws when querying auto drafts while auto drafts are disabled', function (): void {
+    config(['drafts.auto_drafts.enabled' => false]);
+
+    Post::query()->onlyAutoDrafts()->get();
+})->throws(LogicException::class, 'Auto drafts are disabled.');
+
+it('does not reference the is_auto column while auto drafts are disabled', function (): void {
+    config(['drafts.auto_drafts.enabled' => false]);
+    Schema::table('posts', function (Blueprint $table): void {
+        $table->dropColumn('is_auto');
+    });
+
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $post->update(['title' => 'Bar']);
+    $post = $post->fresh();
+    $post->updateAsDraft(['title' => 'Draft']);
+
+    expect($post->fresh()->draft->title)->toBe('Draft')
+        ->and($post->drafts()->toSql())->not->toContain('is_auto')
+        ->and($post->revisions()->count())->toBeGreaterThan(1);
 });
