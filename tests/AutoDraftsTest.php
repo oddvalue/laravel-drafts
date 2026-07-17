@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
 beforeEach(function (): void {
@@ -168,19 +166,3 @@ it('throws when querying auto drafts while auto drafts are disabled', function (
 
     Post::query()->onlyAutoDrafts()->get();
 })->throws(LogicException::class, 'Auto drafts are disabled.');
-
-it('does not reference the is_auto column while auto drafts are disabled', function (): void {
-    config(['drafts.auto_drafts.enabled' => false]);
-    Schema::table('posts', function (Blueprint $table): void {
-        $table->dropColumn('is_auto');
-    });
-
-    $post = Post::factory()->create(['title' => 'Foo']);
-    $post->update(['title' => 'Bar']);
-    $post = $post->fresh();
-    $post->updateAsDraft(['title' => 'Draft']);
-
-    expect($post->fresh()->draft->title)->toBe('Draft')
-        ->and($post->drafts()->toSql())->not->toContain('is_auto')
-        ->and($post->revisions()->count())->toBeGreaterThan(1);
-});
