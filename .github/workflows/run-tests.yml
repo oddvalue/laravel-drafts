@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         php: [8.2, 8.3, 8.4, 8.5]
@@ -54,6 +54,11 @@ jobs:
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          # Laravel 11 is EOL, so advisories against it (e.g. illuminate/mail) will
+          # never be patched and roave/security-advisories can no longer resolve on 11.x.
+          if [ "${{ matrix.laravel }}" = "11.*" ]; then
+            composer remove roave/security-advisories --dev --no-interaction --no-update
+          fi
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Execute tests
