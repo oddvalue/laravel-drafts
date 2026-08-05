@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
+use Oddvalue\LaravelDrafts\Contracts\Draftable;
 
 class PublishScheduledDrafts extends Command
 {
@@ -21,8 +22,14 @@ class PublishScheduledDrafts extends Command
             throw new InvalidArgumentException('The model argument must be a class name.');
         }
 
-        if (! class_exists($class) || ! in_array(HasDrafts::class, class_uses_recursive($class), true)) {
-            throw new InvalidArgumentException("The model `{$class}` either doesn't exist or doesn't use the `HasDrafts` trait.");
+        if (
+            ! class_exists($class)
+            || (
+                ! is_subclass_of($class, Draftable::class)
+                && ! in_array(HasDrafts::class, class_uses_recursive($class), true)
+            )
+        ) {
+            throw new InvalidArgumentException("The model `{$class}` either doesn't exist, or doesn't implement the `Draftable` contract or use the `HasDrafts` trait.");
         }
 
         if (! $class::scheduledDraftsEnabled()) {

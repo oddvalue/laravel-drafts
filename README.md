@@ -115,14 +115,16 @@ return [
 
 #### Add the trait
 
-Add the `HasDrafts` trait and `Draftable` contact to your model
+Add the `HasDrafts` trait to your model. Optionally implement the
+`Draftable` contract as well; the trait satisfies it, and it lets your own
+code typehint against the contract instead of a concrete model.
 
 ```php
 <?php
 
 use Illuminate\Database\Eloquent\Model;
 use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
-use Oddvalue\LaravelDrafts\Contacts\Draftable;
+use Oddvalue\LaravelDrafts\Contracts\Draftable;
 
 class Post extends Model implements Draftable
 {
