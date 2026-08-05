@@ -72,3 +72,7 @@ return RectorConfig::configure()
         HasDrafts::class => Draftable::class,
     ]);
 ```
+
+The rule is idempotent and appends to any existing `implements` list. Note
+that it also adds the interface to child classes that inherit the trait
+from a parent; that is redundant but harmless.
