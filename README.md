@@ -117,7 +117,10 @@ return [
 
 Add the `HasDrafts` trait to your model. Optionally implement the
 `Draftable` contract as well; the trait satisfies it, and it lets your own
-code typehint against the contract instead of a concrete model.
+code typehint against the contract instead of a concrete model. A future
+major version will require the contract, so new models should implement it
+now. See [UPGRADING.md](UPGRADING.md) for a Rector rule that adds it to
+existing models automatically.
 
 ```php
 <?php
