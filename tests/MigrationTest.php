@@ -3,15 +3,15 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-beforeEach(function () {
-    $this->app['db']->connection()->getSchemaBuilder()->create('foo', function (Blueprint $table) {
+beforeEach(function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->create('foo', function (Blueprint $table): void {
         $table->increments('id');
         $table->timestamps();
     });
 });
 
-it('adds the required draft columns to the table', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('adds the required draft columns to the table', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts();
     });
 
@@ -20,19 +20,21 @@ it('adds the required draft columns to the table', function () {
         config('drafts.column_names.published_at'),
         config('drafts.column_names.is_published'),
         config('drafts.column_names.is_current'),
+        config('drafts.column_names.is_auto'),
         config('drafts.column_names.publisher_morph_name').'_id',
         config('drafts.column_names.publisher_morph_name').'_type',
     ]))->toBeTrue();
 });
 
-it('allows column names to be overridden when migrating', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('allows column names to be overridden when migrating', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts(
             uuid: 'uuid_override',
             publishedAt: 'published_at_override',
             isPublished: 'is_published_override',
             isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
+            publisherMorphName: 'publisher_override',
+            isAuto: 'is_auto_override'
         );
     });
 
@@ -41,13 +43,14 @@ it('allows column names to be overridden when migrating', function () {
         'published_at_override',
         'is_published_override',
         'is_current_override',
+        'is_auto_override',
         'publisher_override_id',
         'publisher_override_type',
     ]))->toBeTrue();
 });
 
-it('drops draft columns', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('drops draft columns', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts();
     });
 
@@ -56,11 +59,12 @@ it('drops draft columns', function () {
         'published_at',
         'is_published',
         'is_current',
+        'is_auto',
         'publisher_id',
         'publisher_type',
     ]))->toBeTrue();
 
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->dropDrafts();
     });
 
@@ -69,19 +73,21 @@ it('drops draft columns', function () {
         'published_at',
         'is_published',
         'is_current',
+        'is_auto',
         'publisher_id',
         'publisher_type',
     ]))->toBeFalse();
 });
 
-it('drops custom named draft columns', function () {
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+it('drops custom named draft columns', function (): void {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->drafts(
             uuid: 'uuid_override',
             publishedAt: 'published_at_override',
             isPublished: 'is_published_override',
             isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
+            publisherMorphName: 'publisher_override',
+            isAuto: 'is_auto_override'
         );
     });
 
@@ -90,17 +96,19 @@ it('drops custom named draft columns', function () {
         'published_at_override',
         'is_published_override',
         'is_current_override',
+        'is_auto_override',
         'publisher_override_id',
         'publisher_override_type',
     ]))->toBeTrue();
 
-    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table) {
+    $this->app['db']->connection()->getSchemaBuilder()->table('foo', function (Blueprint $table): void {
         $table->dropDrafts(
             uuid: 'uuid_override',
             publishedAt: 'published_at_override',
             isPublished: 'is_published_override',
             isCurrent: 'is_current_override',
-            publisherMorphName: 'publisher_override'
+            publisherMorphName: 'publisher_override',
+            isAuto: 'is_auto_override'
         );
     });
 
@@ -109,6 +117,7 @@ it('drops custom named draft columns', function () {
         'published_at_override',
         'is_published_override',
         'is_current_override',
+        'is_auto_override',
         'publisher_override_id',
         'publisher_override_type',
     ]))->toBeFalse();

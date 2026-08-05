@@ -1,5 +1,7 @@
 <?php
 
-it('gets the logged in user', function () {
-    $this->assertEquals($this->testUser, \Oddvalue\LaravelDrafts\Facades\LaravelDrafts::getCurrentUser());
+use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
+
+it('gets the logged in user', function (): void {
+    $this->assertEquals($this->testUser, LaravelDrafts::getCurrentUser());
 });

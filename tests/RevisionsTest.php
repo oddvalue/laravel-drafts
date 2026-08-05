@@ -1,9 +1,11 @@
 <?php
 
-use Oddvalue\LaravelDrafts\Tests\Post;
-use Oddvalue\LaravelDrafts\Tests\SoftDeletingPost;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\SoftDeletingPost;
 
-it('can fetch revisions', function () {
+use function Spatie\PestPluginTestTime\testTime;
+
+it('can fetch revisions', function (): void {
     $post = Post::factory()
         ->hasRevisions(3)
         ->create();
@@ -13,19 +15,19 @@ it('can fetch revisions', function () {
         ->toContain($post->id);
 });
 
-it('can exclude a revision from the fetched revisions', function () {
+it('can exclude a revision from the fetched revisions', function (): void {
     $post = Post::factory()
         ->hasRevisions(3)
         ->create();
 
     expect($post->revisions()->excludeRevision($post->id)->pluck('id'))
         ->toHaveCount(3)
-        ->not->toContain($post);
+        ->not->toContain($post->id);
 });
 
-it('keeps the correct number of revisions', function () {
+it('keeps the correct number of revisions', function (): void {
     config(['drafts.revisions.keep' => 3]);
-    $revsExist = function (...$titles) {
+    $revsExist = function (...$titles): void {
         $this->assertDatabaseCount('posts', count($titles));
         foreach ($titles as $title) {
             $this->assertDatabaseHas('posts', [
@@ -34,7 +36,6 @@ it('keeps the correct number of revisions', function () {
         }
     };
 
-    config(['drafts.revisions.keep' => 3]);
     $post = Post::factory()->create(['title' => 'Rev 1']);
     $revsExist('Rev 1');
     $this->travel(1)->minutes();
@@ -59,7 +60,47 @@ it('keeps the correct number of revisions', function () {
     ]);
 });
 
-it('can disable revisions', function () {
+it('sets the correct timestamps on revisions', function (): void {
+    $recordsExist = function (...$records): void {
+        foreach ($records as $record) {
+            $this->assertDatabaseHas('posts', $record);
+        }
+    };
+
+    testTime()->freeze('2021-01-02 14:00:00');
+
+    $post = Post::factory()->create(['title' => 'Rev 1']);
+    $recordsExist(['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00']);
+
+    testTime()->addMinute();
+    $post->fresh()->update(['title' => 'Rev 2']);
+
+    $recordsExist(
+        ['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00'],
+        ['title' => 'Rev 2', 'updated_at' => '2021-01-02 14:01:00'],
+    );
+
+    testTime()->addMinute();
+    $post->fresh()->update(['title' => 'Rev 3']);
+
+    $recordsExist(
+        ['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00'],
+        ['title' => 'Rev 2', 'updated_at' => '2021-01-02 14:01:00'],
+        ['title' => 'Rev 3', 'updated_at' => '2021-01-02 14:02:00'],
+    );
+
+    testTime()->addMinute();
+    $post->fresh()->update(['title' => 'Rev 4']);
+
+    $recordsExist(
+        ['title' => 'Rev 1', 'updated_at' => '2021-01-02 14:00:00'],
+        ['title' => 'Rev 2', 'updated_at' => '2021-01-02 14:01:00'],
+        ['title' => 'Rev 3', 'updated_at' => '2021-01-02 14:02:00'],
+        ['title' => 'Rev 4', 'updated_at' => '2021-01-02 14:03:00'],
+    );
+});
+
+it('can disable revisions', function (): void {
     config(['drafts.revisions.keep' => 0]);
     $post = Post::factory()->create(['title' => 'Foo']);
     $this->assertDatabaseCount('posts', 1);
@@ -67,12 +108,12 @@ it('can disable revisions', function () {
     $this->assertDatabaseCount('posts', 1);
 });
 
-it('deletes revisions', function () {
+it('deletes revisions', function (): void {
     config(['drafts.revisions.keep' => 5]);
 
     $post = Post::factory()->create();
     for ($i = 0; $i < 5; $i++) {
-        $post->fresh()->update(['title' => "Title {$i}"]);
+        $post->fresh()->update(['title' => 'Title ' . $i]);
     }
 
     $this->assertDatabaseCount(Post::class, 6);
@@ -82,12 +123,12 @@ it('deletes revisions', function () {
     $this->assertDatabaseCount(Post::class, 0);
 });
 
-it('soft deletes revisions', function () {
+it('soft deletes revisions', function (): void {
     config(['drafts.revisions.keep' => 5]);
 
     $post = SoftDeletingPost::factory()->create();
     for ($i = 0; $i < 5; $i++) {
-        $post->fresh()->update(['title' => "Title {$i}"]);
+        $post->fresh()->update(['title' => 'Title ' . $i]);
     }
 
     $this->assertDatabaseCount(SoftDeletingPost::class, 6);
@@ -102,12 +143,12 @@ it('soft deletes revisions', function () {
     $this->assertDatabaseCount(SoftDeletingPost::class, 0);
 });
 
-it('retores soft deleted revisions', function () {
+it('retores soft deleted revisions', function (): void {
     config(['drafts.revisions.keep' => 5]);
 
     $post = SoftDeletingPost::factory()->create();
     for ($i = 0; $i < 5; $i++) {
-        $post->fresh()->update(['title' => "Title {$i}"]);
+        $post->fresh()->update(['title' => 'Title ' . $i]);
     }
 
     $this->assertDatabaseCount(SoftDeletingPost::class, 6);
@@ -123,7 +164,7 @@ it('retores soft deleted revisions', function () {
     expect(SoftDeletingPost::withDrafts()->count())->toBe(6);
 });
 
-it('save without revision', function () {
+it('save without revision', function (): void {
     $post = Post::factory()->published()->create(['title' => 'Foo']);
     $this->assertDatabaseCount('posts', 1);
 

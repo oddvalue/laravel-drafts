@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
-use Oddvalue\LaravelDrafts\Tests\Post;
-use Oddvalue\LaravelDrafts\Tests\PostSection;
-use Oddvalue\LaravelDrafts\Tests\Tag;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
+use Oddvalue\LaravelDrafts\Tests\app\Models\PostSection;
+use Oddvalue\LaravelDrafts\Tests\app\Models\Tag;
 
-it('can draft HasMany relations', function () {
+it('can draft HasMany relations', function (): void {
     $post = Post::factory()->create([
         'title' => 'Foo',
     ]);
@@ -23,10 +23,10 @@ it('can draft HasMany relations', function () {
 
     expect($draft->fresh()->sections)->toHaveCount(2)
         ->and($post->fresh()->sections)->toHaveCount(2)
-        ->and(PostSection::count())->toBe(4);
+        ->and(PostSection::query()->count())->toBe(4);
 });
 
-it('can draft BelongsToMany relations', function () {
+it('can draft BelongsToMany relations', function (): void {
     $post = Post::factory()->create([
         'title' => 'Foo',
     ]);
@@ -44,11 +44,11 @@ it('can draft BelongsToMany relations', function () {
 
     expect($draft->fresh()->tags)->toHaveCount(2)
         ->and($post->fresh()->tags)->toHaveCount(2)
-        ->and(Tag::count())->toBe(2)
+        ->and(Tag::query()->count())->toBe(2)
         ->and(DB::table('post_tag')->count())->toBe(4);
 });
 
-it('can draft MorphToMany relations', function () {
+it('can draft MorphToMany relations', function (): void {
     $post = Post::factory()->create([
         'title' => 'Foo',
     ]);
@@ -66,11 +66,11 @@ it('can draft MorphToMany relations', function () {
 
     expect($draft->fresh()->morphToTags)->toHaveCount(2)
         ->and($post->fresh()->morphToTags)->toHaveCount(2)
-        ->and(Tag::count())->toBe(2)
+        ->and(Tag::query()->count())->toBe(2)
         ->and(DB::table('taggables')->count())->toBe(4);
 });
 
-it('can draft HasOne relations', function () {
+it('can draft HasOne relations', function (): void {
     $post = Post::factory()->create([
         'title' => 'Foo',
     ]);
@@ -88,5 +88,5 @@ it('can draft HasOne relations', function () {
 
     expect($draft->fresh()->section)->toBeInstanceOf(PostSection::class)
         ->and($post->fresh()->section)->toBeInstanceOf(PostSection::class)
-        ->and(PostSection::count())->toBe(2);
+        ->and(PostSection::query()->count())->toBe(2);
 });

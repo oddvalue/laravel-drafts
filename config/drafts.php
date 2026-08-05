@@ -1,8 +1,30 @@
 <?php
+
 // config for Oddvalue/LaravelDrafts
 return [
     'revisions' => [
         'keep' => 10,
+    ],
+
+    'auto_drafts' => [
+        /*
+         * Whether auto draft support is enabled. Auto drafts require the
+         * `is_auto` column, so installations upgrading from a version without
+         * it must add the column to their drafted tables before enabling:
+         * $table->boolean('is_auto')->default(false);
+         */
+        'enabled' => false,
+    ],
+
+    'scheduled_drafts' => [
+        /*
+         * Whether scheduled draft support is enabled. Scheduled drafts require
+         * the `will_publish_at` column, so installations upgrading from a
+         * version without it must add the column to their drafted tables
+         * before enabling:
+         * $table->timestamp('will_publish_at')->nullable();
+         */
+        'enabled' => false,
     ],
 
     'column_names' => [
@@ -15,6 +37,12 @@ return [
          * Boolean column that marks a row as live and displayable to the public.
          */
         'is_published' => 'is_published',
+
+        /*
+         * Boolean column that marks a row as an auto draft: an auto-saved
+         * working copy that is updated in place and never published.
+         */
+        'is_auto' => 'is_auto',
 
         /*
          * Timestamp column that stores the date and time when the row was published.

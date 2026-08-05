@@ -1,0 +1,44 @@
+exclude: ^(legacy/|app/functions/)
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-byte-order-marker # Forbid UTF-8 byte-order markers
+      # Check for files with names that would conflict on a case-insensitive
+      # filesystem like MacOS HFS+ or Windows FAT.
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+  - repo: https://github.com/digitalpulp/pre-commit-php
+    rev: 1.4.0
+    hooks:
+      - id: php-lint
+  - repo: local
+    hooks:
+      - id: donotcommit
+        name: DO NOT COMMIT check
+        entry: 'do not commit|DO NOT COMMIT'
+        args: [ --multiline ]
+        language: pygrep
+        types: [ text ]
+      - id: checkfordebugging
+        name: check for debugging methods
+        description: 'Check the dd(), debug(), dump() or any ray() methods have not been left in'
+        entry: '[\s>@]dd\(|[\s>@]debug\(|[\s>@]dump\(|[\s>@]ray\(|[\s>@]rd\(|[\s]die\(|[\s]exit\('
+        language: pygrep
+        types: [ text ]
+      - id: pint
+        name: Laravel Pint
+        description: Run rector against all staged PHP files.
+        files: \.php$
+        entry: .pre-commit/rector.sh
+        language: script
+      - id: rector
+        name: Format PHP files
+        description: 'Format PHP files with php-cs-fixer'
+        files: \.php$
+        entry: .pre-commit/phpcs.sh
+        language: script

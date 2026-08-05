@@ -5,9 +5,12 @@
 # A simple, drop-in drafts/revisions system for Laravel models
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
+![PHP Support](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Foddvalue%2Flaravel-drafts%2Fmain%2Fcomposer.json&query=require.php&label=PHP)
+![Laravel Support](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Foddvalue%2Flaravel-drafts%2Fmain%2Fcomposer.json&query=require%5B'illuminate%2Fcontracts'%5D&label=Laravel)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/oddvalue/laravel-drafts/run-tests.yml?label=tests&style=flat-square)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/oddvalue/laravel-drafts/php-cs-fixer.yml?label=code%20style&style=flat-square)](https://github.com/oddvalue/laravel-drafts/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/oddvalue/laravel-drafts.svg?style=flat-square)](https://packagist.org/packages/oddvalue/laravel-drafts)
+![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/oddvalue/9dd8e508cb2433728d42a258193770eb/raw/laravel-drafts-cobertura-coverage.json)
 
 * [Installation](#installation)
 * [Usage](#usage)
@@ -22,6 +25,7 @@
     - [Published revision](#published-revision)
     - [Current Revision](#current-revision)
     - [Revisions](#revisions)
+    * [Auto drafts](#auto-drafts)
     - [Preview mode](#preview-mode)
   + [Middleware](#middleware)
     - [WithDraftsMiddleware](#withdraftsmiddleware)
@@ -31,6 +35,15 @@
 * [Security Vulnerabilities](#security-vulnerabilities)
 * [Credits](#credits)
 * [License](#license)
+
+## Version compatibility
+
+| Laravel | Drafts   |
+|---------|----------|
+| v9.x    | v1.x     |
+| v10.x   | v1.x     |
+| v11.x   | v2.x     |
+| v12.x   | >2.1|3.x |
 
 ## Installation
 
@@ -64,6 +77,12 @@ return [
          * Boolean column that marks a row as live and displayable to the public.
          */
         'is_published' => 'is_published',
+
+        /*
+         * Boolean column that marks a row as an auto draft: an auto-saved
+         * working copy that is updated in place and never published.
+         */
+        'is_auto' => 'is_auto',
 
         /*
          * Timestamp column that stores the date and time when the row was published.
@@ -108,7 +127,7 @@ use Oddvalue\LaravelDrafts\Contacts\Draftable;
 class Post extends Model implements Draftable
 {
     use HasDrafts;
-    
+
     ...
 }
 ```
@@ -133,18 +152,19 @@ public function getDraftableRelations()
 }
 ```
 
-#### Database 
+#### Database
 
 The following database columns are required for the model to store drafts and revisions:
 
 * is_current
 * is_published
+* is_auto
 * published_at
 * uuid
 * publisher_type
 * publisher_id
 
-The names of these columns can be changed in the config file or per model using constants 
+The names of these columns can be changed in the config file or per model using constants
 
 e.g. To alter the name of the `is_current` column then you would add a class constant called `IS_CURRENT`
 
@@ -157,9 +177,9 @@ use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 class Post extends Model
 {
     use HasDrafts;
-    
+
     public const IS_CURRENT = 'admin_editing';
-    
+
     ...
 }
 ```
@@ -169,11 +189,11 @@ There are two helper methods added to the schema builder for use in your migrati
 ```php
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
- 
+
 Schema::table('posts', function (Blueprint $table) {
     $table->drafts();
 });
- 
+
 Schema::table('posts', function (Blueprint $table) {
     $table->dropDrafts();
 });
@@ -183,7 +203,7 @@ Schema::table('posts', function (Blueprint $table) {
 
 The `HasDrafts` trait will add a default scope that will only return published/live records.
 
-The following quiery builder methods are available to alter this behavior:
+The following query builder methods are available to alter this behavior:
 
 * `withoutDrafts()`/`published(bool $withoutDrafts = true)` Only select published records (default)
 * `withDrafts(bool $withDrafts = false)` Include draft record
@@ -221,10 +241,10 @@ $post->updateAsDraft(['title' => 'Bar']);
 # OR
 
 $post->title = 'Bar';
-$post->saveAsDraft(); 
+$post->saveAsDraft();
 ```
 
-This will create a draft record and the original record will be left unchanged. 
+This will create a draft record and the original record will be left unchanged.
 
 | # | title | uuid                                 | published_at        | is_published | is_current | created_at          | updated_at          |
 |---|-------|--------------------------------------|---------------------|--------------|------------|---------------------|---------------------|
@@ -244,7 +264,8 @@ $posts = Post::all();
 
 #### Current Revision
 
-Every record will have a current revision. That is the most recent revision and what you would want to display in your admin. 
+Every record will have a current revision. That is the most recent revision and what you would want to display in your
+admin.
 
 To fetch the current revision you can call the `current` scope.
 
@@ -270,6 +291,108 @@ If you need to update a record without creating revision
 ```php
 $post->withoutRevision()->update($options);
 ```
+
+#### Auto drafts
+
+Auto drafts are intended for auto-save/recovery features, e.g. periodically
+persisting half-finished form state. An auto draft is a single working copy
+of a record that is upserted in place on every save, so it never churns the
+revision history. It is saved quietly (no model events fire), is never
+flagged as current or published, and is ignored by the `drafts()` relation,
+the `draft` accessor, revision pruning and publish flows.
+
+Auto drafts are **opt-in**. Enable them in `config/drafts.php`:
+
+```php
+'auto_drafts' => [
+    'enabled' => true,
+],
+```
+
+While disabled (the default) no query references the `is_auto` column, so
+existing installations keep working unchanged, and the auto draft API
+(`saveAsAutoDraft()`, `autoDraft`, `onlyAutoDrafts()`, `discardAutoDraft()`)
+throws a `LogicException`.
+
+```php
+$post = Post::find(1);
+
+# Create or update the record's auto draft
+$post->saveAsAutoDraft(['title' => 'Partially typed title']);
+
+# Retrieve it
+$autoDraft = $post->autoDraft;
+
+# Check whether a revision is an auto draft
+$autoDraft->isAutoDraft();
+
+# Discard it
+$post->discardAutoDraft();
+```
+
+The `onlyAutoDrafts()` and `withoutAutoDrafts()` query builder scopes are
+available for custom queries. Auto drafts are deleted along with the record
+and its revisions.
+
+> **Note**
+> If you are upgrading from a version without auto draft support you will
+> need to add the `is_auto` column to your existing tables before enabling
+> the feature: `$table->boolean('is_auto')->default(false);`
+> New tables created with `$table->drafts()` include the column already.
+>
+> [oddvalue/filament-draft-recovery][filament-draft-recovery] will switch its
+> laravel-drafts driver to this API once released, using the auto draft as
+> the store for Filament form auto-saves.
+
+[filament-draft-recovery]: https://github.com/oddvalue/filament-draft-recovery
+
+#### Scheduled publishing
+
+Drafts can be scheduled to be published at a later date. The scheduled date
+is stored in the `will_publish_at` column and scheduled drafts are published
+by the `drafts:publish` artisan command.
+
+Scheduled drafts are **opt-in**. Enable them in `config/drafts.php`:
+
+```php
+'scheduled_drafts' => [
+    'enabled' => true,
+],
+```
+
+While disabled (the default) no query references the `will_publish_at`
+column, so existing installations keep working unchanged, and the scheduling
+API (`schedulePublishing()`, `clearScheduledPublishing()`, `drafts:publish`)
+throws an exception.
+
+```php
+$post = Post::find(1);
+$draft = $post->createDraft(['title' => 'Hello World']);
+
+# Schedule the draft to be published in a week (saves the record)
+$draft->schedulePublishing(now()->addWeek());
+
+# Change your mind and clear the schedule (remember to save)
+$draft->clearScheduledPublishing()->save();
+```
+
+Add the publish command to your scheduler for each model that uses scheduled
+drafts:
+
+```php
+use Oddvalue\LaravelDrafts\Commands\PublishScheduledDrafts;
+
+Schedule::command(PublishScheduledDrafts::class, [Post::class])->everyMinute();
+```
+
+Publishing a draft directly clears any scheduled date on it.
+
+> **Note**
+> If you are upgrading from a version without scheduled draft support you
+> will need to add the `will_publish_at` column to your existing tables
+> before enabling the feature:
+> `$table->timestamp('will_publish_at')->nullable();`
+> New tables created with `$table->drafts()` include the column already.
 
 #### Preview Mode
 
