@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD043 -->
 # Upgrade guide
 
 ## Enabling scheduled drafts on an existing installation
