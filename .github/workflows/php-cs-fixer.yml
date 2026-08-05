@@ -19,7 +19,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Run PHP CS Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga
+        uses: docker://oskarstark/php-cs-fixer-ga@sha256:21293a512b8b72cd6dbafe7f82bd06216e933d841d70518d9e606d25b2b6a736 # latest
         with:
           args: --config=.php-cs-fixer.dist.php --allow-risky=yes
 
