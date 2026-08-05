@@ -35,9 +35,21 @@ it('can publish scheduled drafts', function (): void {
 
     $this->assertDatabaseHas('posts', [
         'title' => 'Hello World',
+        'is_published' => true,
         'published_at' => now()->toDateTimeString(),
         'will_publish_at' => null,
     ]);
+});
+
+it('publishes every scheduled draft across multiple batches', function (): void {
+    Post::factory()->count(1001)->draft()->create([
+        'will_publish_at' => now()->subMinute(),
+    ]);
+
+    Artisan::call('drafts:publish', ['model' => Post::class]);
+
+    expect(Post::query()->count())->toBe(1001)
+        ->and(Post::onlyDrafts()->whereNotNull('will_publish_at')->count())->toBe(0);
 });
 
 it('does not publish drafts scheduled for the future', function (): void {
@@ -89,6 +101,11 @@ it('fails when the class does not use the HasDrafts trait', function (): void {
         ->toThrow(InvalidArgumentException::class);
 });
 
+it('fails when the class implements the contract but is not an Eloquent model', function (): void {
+    expect(static fn () => Artisan::call('drafts:publish', ['model' => ContractOnlyDraftable::class]))
+        ->toThrow(InvalidArgumentException::class);
+});
+
 it('fails when the class does not exist', function (): void {
     expect(static fn () => Artisan::call('drafts:publish', ['model' => 'App\\Models\\Nonexistent']))
         ->toThrow(InvalidArgumentException::class);
@@ -104,3 +121,71 @@ it('fails when scheduled drafts are disabled', function (): void {
         ->and(static fn () => Post::factory()->published()->create()->clearScheduledPublishing())
         ->toThrow(LogicException::class);
 });
+
+class ContractOnlyDraftable implements Oddvalue\LaravelDrafts\Contracts\Draftable
+{
+    public function publish(): static
+    {
+        return $this;
+    }
+
+    public function isPublished(): bool
+    {
+        return false;
+    }
+
+    public function isCurrent(): bool
+    {
+        return false;
+    }
+
+    public function saveAsDraft(array $options = []): bool
+    {
+        return true;
+    }
+
+    public function updateAsDraft(array $attributes = [], array $options = []): bool
+    {
+        return true;
+    }
+
+    public function asDraft(): static
+    {
+        return $this;
+    }
+
+    public function schedulePublishing(Carbon\CarbonInterface $date): static
+    {
+        return $this;
+    }
+
+    public function clearScheduledPublishing(): static
+    {
+        return $this;
+    }
+
+    public function getPublishedAtColumn(): string
+    {
+        return 'published_at';
+    }
+
+    public function getWillPublishAtColumn(): string
+    {
+        return 'will_publish_at';
+    }
+
+    public function getIsPublishedColumn(): string
+    {
+        return 'is_published';
+    }
+
+    public function getIsCurrentColumn(): string
+    {
+        return 'is_current';
+    }
+
+    public function getUuidColumn(): string
+    {
+        return 'uuid';
+    }
+}

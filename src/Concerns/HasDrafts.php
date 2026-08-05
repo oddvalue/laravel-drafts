@@ -242,6 +242,10 @@ trait HasDrafts
             $published->{$this->getIsPublishedColumn()} = true;
             /** @phpstan-ignore method.nonObject */
             $published->{$this->getPublishedAtColumn()} ??= now();
+            if (static::scheduledDraftsEnabled()) {
+                /** @phpstan-ignore method.nonObject */
+                $published->{$this->getWillPublishAtColumn()} = null;
+            }
             /** @phpstan-ignore method.nonObject */
             $published->setCurrent();
             /** @phpstan-ignore method.nonObject */
