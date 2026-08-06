@@ -9,7 +9,7 @@ use Oddvalue\LaravelDrafts\Concerns\HasDrafts;
 
 class PublishScheduledDrafts extends Command
 {
-    protected $signature = 'drafts:publish {model}';
+    protected $signature = 'drafts:publish {model} {--chunk=1000 : Number of records to fetch per batch}';
 
     protected $description = 'Publish scheduled drafts';
 
@@ -49,7 +49,7 @@ class PublishScheduledDrafts extends Command
                 /** @phpstan-ignore method.notFound */
                 $record->publish();
                 $record->save();
-            });
+            }, (int) $this->option('chunk'));
 
         return Command::SUCCESS;
     }

@@ -42,13 +42,13 @@ it('can publish scheduled drafts', function (): void {
 });
 
 it('publishes every scheduled draft across multiple batches', function (): void {
-    Post::factory()->count(1001)->draft()->create([
+    Post::factory()->count(3)->draft()->create([
         'will_publish_at' => now()->subMinute(),
     ]);
 
-    Artisan::call('drafts:publish', ['model' => Post::class]);
+    Artisan::call('drafts:publish', ['model' => Post::class, '--chunk' => 2]);
 
-    expect(Post::query()->count())->toBe(1001)
+    expect(Post::query()->count())->toBe(3)
         ->and(Post::onlyDrafts()->whereNotNull('will_publish_at')->count())->toBe(0);
 });
 
