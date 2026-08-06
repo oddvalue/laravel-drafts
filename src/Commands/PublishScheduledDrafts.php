@@ -17,24 +17,17 @@ class PublishScheduledDrafts extends Command
     {
         $class = $this->argument('model');
 
-        if (! is_string($class)) {
-            throw new InvalidArgumentException('The model argument must be a class name.');
-        }
+        throw_unless(is_string($class), InvalidArgumentException::class, 'The model argument must be a class name.');
 
-        if (
-            ! class_exists($class)
-            || ! is_subclass_of($class, Model::class)
-            || ! in_array(HasDrafts::class, class_uses_recursive($class), true)
-        ) {
-            throw new InvalidArgumentException("The model `{$class}` either doesn't exist or isn't an Eloquent model using the `HasDrafts` trait.");
-        }
+        throw_if(! class_exists($class)
+        || ! is_subclass_of($class, Model::class)
+        || ! in_array(HasDrafts::class, class_uses_recursive($class), true), InvalidArgumentException::class, sprintf("The model `%s` either doesn't exist or isn't an Eloquent model using the `HasDrafts` trait.", $class));
 
         /** @phpstan-ignore staticMethod.notFound */
         if (! $class::scheduledDraftsEnabled()) {
             throw new InvalidArgumentException('Scheduled drafts are disabled. Set the drafts.scheduled_drafts.enabled config option to true to use them.');
         }
 
-        /** @var Model $model */
         $model = new $class();
 
         $model->newQuery()

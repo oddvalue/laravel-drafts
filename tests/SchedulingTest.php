@@ -1,6 +1,8 @@
 <?php
 
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Artisan;
+use Oddvalue\LaravelDrafts\Contracts\Draftable;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 use Oddvalue\LaravelDrafts\Tests\app\Models\User;
 
@@ -129,7 +131,7 @@ it('fails when scheduled drafts are disabled', function (): void {
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class ContractOnlyDraftable implements Oddvalue\LaravelDrafts\Contracts\Draftable
+class ContractOnlyDraftable implements Draftable
 {
     public function publish(): static
     {
@@ -161,7 +163,7 @@ class ContractOnlyDraftable implements Oddvalue\LaravelDrafts\Contracts\Draftabl
         return $this;
     }
 
-    public function schedulePublishing(Carbon\CarbonInterface $date): static
+    public function schedulePublishing(CarbonInterface $date): static
     {
         return $this;
     }

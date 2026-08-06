@@ -216,6 +216,7 @@ trait HasDrafts
             if (static::scheduledDraftsEnabled()) {
                 $this->{$this->getWillPublishAtColumn()} = null;
             }
+
             $this->setCurrent();
 
             return;
@@ -246,6 +247,7 @@ trait HasDrafts
                 /** @phpstan-ignore method.nonObject */
                 $published->{$this->getWillPublishAtColumn()} = null;
             }
+
             /** @phpstan-ignore method.nonObject */
             $published->setCurrent();
             /** @phpstan-ignore method.nonObject */
@@ -260,6 +262,7 @@ trait HasDrafts
         if (static::scheduledDraftsEnabled()) {
             $this->{$this->getWillPublishAtColumn()} = null;
         }
+
         $this->{$this->getIsCurrentColumn()} = false;
         $this->timestamps = false;
         $this->shouldCreateRevision = false;
