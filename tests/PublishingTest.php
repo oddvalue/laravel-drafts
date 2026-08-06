@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Oddvalue\LaravelDrafts\Concerns\Publishes;
 use Oddvalue\LaravelDrafts\Facades\LaravelDrafts;
 use Oddvalue\LaravelDrafts\Tests\app\Models\Post;
 
@@ -93,3 +96,39 @@ it('can publish a draft that is not the current one', function (): void {
     expect(Post::query()->where('title', 'b')->first()->isPublished())->toBeTrue();
     expect(Post::query()->current()->count())->toBe(1);
 });
+
+it('cancels publishing when a publishing listener returns false', function (): void {
+    $post = new StandalonePublishesModel(['title' => 'Hello World']);
+    StandalonePublishesModel::publishing(static fn (): bool => false);
+
+    $post->publish();
+
+    expect($post->isPublished())->toBeFalse()
+        ->and($post->published_at)->toBeNull();
+});
+
+it('sets the published attributes when a bare Publishes model is published', function (): void {
+    testTime()->freeze();
+    $post = new StandalonePublishesModel(['title' => 'Hello World']);
+
+    $post->publish()->save();
+
+    expect($post->isPublished())->toBeTrue()
+        ->and($post->published_at->toDateTimeString())->toBe(now()->toDateTimeString());
+});
+
+it('supports the deprecated withoutSelf scope', function (): void {
+    Post::factory()->count(2)->create();
+
+    expect(Post::query()->withoutSelf()->get())->toHaveCount(2);
+});
+
+class StandalonePublishesModel extends Model
+{
+    use HasFactory;
+    use Publishes;
+
+    protected $table = 'posts';
+
+    protected $guarded = [];
+}

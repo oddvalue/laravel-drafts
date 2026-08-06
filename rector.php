@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use RectorLaravel\Rector\Class_\FillablePropertyToFillableAttributeRector;
+use RectorLaravel\Rector\Class_\TablePropertyToTableAttributeRector;
 use RectorLaravel\Set\LaravelSetList;
 use RectorLaravel\Set\LaravelSetProvider;
 
@@ -24,6 +26,12 @@ return RectorConfig::configure()
         removeUnusedImports: true,
     )
     ->withComposerBased(laravel: true)
+    // The Table and Fillable attributes require Laravel 12; the package still
+    // supports Laravel 11.
+    ->withSkip([
+        FillablePropertyToFillableAttributeRector::class,
+        TablePropertyToTableAttributeRector::class,
+    ])
     ->withPaths([
         __DIR__ . '/config',
         __DIR__ . '/src',

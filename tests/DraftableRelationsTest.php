@@ -90,3 +90,29 @@ it('can draft HasOne relations', function (): void {
         ->and($post->fresh()->section)->toBeInstanceOf(PostSection::class)
         ->and(PostSection::query()->count())->toBe(2);
 });
+
+it('prefers getDraftableAttributes when replicating HasMany relations', function (): void {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $post->updateAsDraft(['title' => 'Bar']);
+
+    $draft = $post->draft;
+    $draft->draftableAttributesSections()->create(['content' => 'Section']);
+
+    $draft->setDraftableRelations(['draftableAttributesSections']);
+    $draft->publish()->save();
+
+    expect($post->fresh()->draftableAttributesSections)->toHaveCount(1);
+});
+
+it('prefers getDraftableAttributes when replicating HasOne relations', function (): void {
+    $post = Post::factory()->create(['title' => 'Foo']);
+    $post->updateAsDraft(['title' => 'Bar']);
+
+    $draft = $post->draft;
+    $draft->draftableAttributesSection()->create(['content' => 'Section']);
+
+    $draft->setDraftableRelations(['draftableAttributesSection']);
+    $draft->publish()->save();
+
+    expect($post->fresh()->draftableAttributesSection)->not->toBeNull();
+});

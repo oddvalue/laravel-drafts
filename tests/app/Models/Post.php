@@ -68,6 +68,22 @@ class Post extends Model implements Draftable
         return $this->hasOne(PostSection::class);
     }
 
+    /**
+     * @return HasMany<DraftableAttributesSection, $this>
+     */
+    public function draftableAttributesSections(): HasMany
+    {
+        return $this->hasMany(DraftableAttributesSection::class, 'post_id');
+    }
+
+    /**
+     * @return HasOne<DraftableAttributesSection, $this>
+     */
+    public function draftableAttributesSection(): HasOne
+    {
+        return $this->hasOne(DraftableAttributesSection::class, 'post_id');
+    }
+
     protected static function newFactory(): PostFactory
     {
         return new PostFactory();
