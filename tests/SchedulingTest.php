@@ -122,6 +122,13 @@ it('fails when scheduled drafts are disabled', function (): void {
         ->toThrow(LogicException::class);
 });
 
+/**
+ * A deliberately non-Eloquent implementation, proving the drafts:publish
+ * command rejects classes that satisfy the contract but lack the trait's
+ * query APIs. The unused parameters are required by the interface.
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 class ContractOnlyDraftable implements Oddvalue\LaravelDrafts\Contracts\Draftable
 {
     public function publish(): static
