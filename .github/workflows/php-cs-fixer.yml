@@ -19,7 +19,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: '8.3'
           coverage: none
@@ -31,6 +31,6 @@ jobs:
         run: ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
+        uses: stefanzweifel/git-auto-commit-action@d0b01107b5db882071f96de5dd4b54961ea93f4c # v7
         with:
           commit_message: Fix styling
